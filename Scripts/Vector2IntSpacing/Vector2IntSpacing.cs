@@ -17,9 +17,9 @@ public class Vector2IntSpacing
 
     public bool TryPlaceItemAtPos(IVector2IntItem newItem, Vector2Int leftCornerPos)
     {
-        if(!Exceeds(leftCornerPos, newItem.Size))
+        if(!Exceeds(leftCornerPos, newItem.SizeInt))
         {
-            if(!AnyOccupied(leftCornerPos, newItem.Size))
+            if(!AnyOccupied(leftCornerPos, newItem.SizeInt))
             {
                 PutItemInSpace(newItem, leftCornerPos);
                 return true;
@@ -36,13 +36,13 @@ public class Vector2IntSpacing
         return item != null;
     }
 
-    public bool TryPlaceItemAuto(IVector2IntItem newItem, out Vector2Int newPos)
+    public bool TryPlaceItemAuto(IVector2IntItem newItem, out Vector2Int topLeftCornerPos)
     {
-        newPos = Vector2Int.zero;
-        if(TrySearchPlace(newItem.Size, out Vector2Int pos))
+        topLeftCornerPos = Vector2Int.zero;
+        if(TrySearchPlace(newItem.SizeInt, out Vector2Int pos))
         {
             PutItemInSpace(newItem, pos);
-            newPos = pos;
+            topLeftCornerPos = pos;
             return true;
         }
         Debug.Log($"Failed to put item in inventory. No place found");
@@ -89,7 +89,7 @@ public class Vector2IntSpacing
 
     private void PutItemInSpace(IVector2IntItem newItem, Vector2Int leftCornerPos)
     {
-        ApplyActionToAreaIn2DSpace(leftCornerPos, newItem.Size, (int x, int y) => OccupyCell(x, y, newItem));
+        ApplyActionToAreaIn2DSpace(leftCornerPos, newItem.SizeInt, (int x, int y) => OccupyCell(x, y, newItem));
         _items.Add(leftCornerPos, newItem);
     }
 

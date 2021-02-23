@@ -4,7 +4,7 @@ public abstract class Item : IVector2IntItem
 {
     public ItemData ItemData { get; private set; }
 
-    public Vector2Int Size { get; private set; }
+    public Vector2Int SizeInt { get; private set; }
 
     public Vector2Int TopLeftCornerPos { get; private set; }
 
@@ -13,7 +13,7 @@ public abstract class Item : IVector2IntItem
     public Item(ItemData itemData)
     {
         ItemData = itemData;
-        Size = itemData.Size;
+        SizeInt = itemData.SizeInt;
         TheItem = this;
     }
 }

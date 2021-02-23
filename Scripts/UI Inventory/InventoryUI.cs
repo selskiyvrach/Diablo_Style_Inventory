@@ -8,6 +8,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] Canvas inventoryCanvas;
     [SerializeField] Vector2IntSpaceData sizeData;
     private Vector3[] _corners; // 0 - leftBottom, 1 - leftTop, 2 - rightTop 3 - rightBottom
+    private Vector2IntSpacing _space;
 
     // trackers
     float _squareSize;
@@ -17,12 +18,24 @@ public class InventoryUI : MonoBehaviour
     private void Awake() {
         _corners = new Vector3[4];
         storePanel.GetWorldCorners(_corners);
-        _squareSize = storePanel.sizeDelta.x / sizeData.Size.x;
+        _squareSize = storePanel.sizeDelta.x / sizeData.SizeInt.x;
+        _space = new Vector2IntSpacing(sizeData.SizeInt);
+        // highlighter
         _highlighter = new GameObject().AddComponent<Image>();
         _highlighter.rectTransform.sizeDelta = new Vector2(_squareSize, _squareSize);
         _highlighter.transform.SetParent(inventoryCanvas.transform);
         _highlighter.gameObject.SetActive(false);
     }
+
+    public void AddItem(Item newItem)
+    {
+        var uIItem = new GameObject();
+        var i = uIItem.AddComponent<UIItem>();
+        i.Init(newItem, _squareSize, storePanel.transform);
+        if(_space.TryPlaceItemAuto(newItem, out Vector2Int topLeftCornerPos))
+            i.transform.position = CellCenterToScreen(topLeftCornerPos) + new Vector2(i.GetComponent<RectTransform>().sizeDelta.x, - i.GetComponent<RectTransform>().sizeDelta.y) / 2 
+                - new Vector2(_squareSize, - _squareSize) / 2;
+    } 
 
     private void Update() {
         if(PosOverlapInventory(Input.mousePosition))

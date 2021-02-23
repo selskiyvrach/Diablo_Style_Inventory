@@ -574,8 +574,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -2.4249878, y: 169.15718}
-  m_SizeDelta: {x: 714.5, y: 285.8}
+  m_AnchoredPosition: {x: -2.4267883, y: 165}
+  m_SizeDelta: {x: 714.49, y: 285.796}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1320406426
 MonoBehaviour:
@@ -859,6 +859,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2099916837}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3acbd7aa618c91546ad51184a3f39dc1, type: 3}
+  m_Script: {fileID: 11500000, guid: 1177cae700ad0bc4792b5ba961819d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weapons:
+  - {fileID: 11400000, guid: 98bb11a1397cb3347bb6a3d541de285a, type: 2}
+  - {fileID: 11400000, guid: 8823e6995c9575842acc641572fa3864, type: 2}
+  - {fileID: 11400000, guid: dac86dd62f0b0084aba902c8453232be, type: 2}
+  inventory: {fileID: 1385744315}

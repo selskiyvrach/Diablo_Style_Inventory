@@ -13,8 +13,8 @@ public class PreservedRatioRectTransform : MonoBehaviour
     private void CalculateRect()
     {
         storePanel.sizeDelta = matchSide == Match.Width ? 
-            new Vector2(storePanel.sizeDelta.x, storePanel.sizeDelta.x / sizeData.Size.x * sizeData.Size.y) : 
-            new Vector2(storePanel.sizeDelta.y / sizeData.Size.y * sizeData.Size.x, storePanel.sizeDelta.y);
+            new Vector2(storePanel.sizeDelta.x, storePanel.sizeDelta.x / sizeData.SizeInt.x * sizeData.SizeInt.y) : 
+            new Vector2(storePanel.sizeDelta.y / sizeData.SizeInt.y * sizeData.SizeInt.x, storePanel.sizeDelta.y);
     }
 }
 

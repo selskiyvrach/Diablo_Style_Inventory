@@ -10,6 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80aa66fc5c6a16e48892124873d1c922, type: 3}
-  m_Name: Test Weapon Data 2
+  m_Name: Spear
   m_EditorClassIdentifier: 
-  size: {x: 2, y: 2}
+  itemName: 
+  sprite: {fileID: -8748514863643044261, guid: 6014b53b2548fff43afa7aa7a6c662a5, type: 3}
+  size: {x: 1, y: 3}
