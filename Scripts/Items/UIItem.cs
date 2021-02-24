@@ -1,21 +1,25 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIItem : MonoBehaviour, IVector2IntItem
+public class UIItem : MonoBehaviour, IVector2IntSizeAndPos, IUIItem
 {
+    // UIItem
     private Image _image;
-
     public Item TheItem { get; private set; }
 
+    // IVector2IntSizeAndPos
     public Vector2Int SizeInt { get; private set; }
+    public Vector2Int TopLeftCornerPosInt { get; set; }
 
-    public Vector2Int TopLeftCornerPos { get; private set; }
+    // IUIItem
+    public Vector2 ScreenSize { get ; set; }
+    public Vector2 ScreenPos { get ; set; }
 
-    public void Init(Item item, float squareSize, Transform parent)
+    public void Init(Item item, float intUnitSize, Transform parent)
     {
         TheItem = item;
         SizeInt = item.ItemData.SizeInt;
-        CreateVisuals(squareSize);
+        CreateVisuals(intUnitSize);
         transform.SetParent(parent.transform);
     }
 

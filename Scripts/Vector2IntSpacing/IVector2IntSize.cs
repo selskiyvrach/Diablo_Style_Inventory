@@ -7,5 +7,5 @@ public interface IVector2IntSize
 
 public interface IVector2IntPosition
 {
-    Vector2Int TopLeftCornerPos { get; }
+    Vector2Int TopLeftCornerPosInt { get; set; }
 }

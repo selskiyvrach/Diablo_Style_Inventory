@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,63 +8,90 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] RectTransform storePanel;
     [SerializeField] Canvas inventoryCanvas;
     [SerializeField] Vector2IntSpaceData sizeData;
-    private Vector3[] _corners; // 0 - leftBottom, 1 - leftTop, 2 - rightTop 3 - rightBottom
+    [SerializeField] float highlighterAlpha;
+
     private Vector2IntSpacing _space;
+    private UIHighlighter _highlighter;
+    private Vector3[] _corners = new Vector3[4]; // 0 - leftBottom, 1 - leftTop, 2 - rightTop 3 - rightBottom
+    private List<UIItem> _items = new List<UIItem>();
 
     // trackers
-    float _squareSize;
-    Image _highlighter;
-    bool _highlighting;
+    float _unitSize;
+    Vector2 _cursorPos;
+    Vector2Int _cellCoord;
+    Vector2 _highlightAreaSize;
+    Vector2 _highlightAreaPos;
+    Item _highlighted;
 
     private void Awake() {
-        _corners = new Vector3[4];
-        storePanel.GetWorldCorners(_corners);
-        _squareSize = storePanel.sizeDelta.x / sizeData.SizeInt.x;
         _space = new Vector2IntSpacing(sizeData.SizeInt);
-        // highlighter
-        _highlighter = new GameObject().AddComponent<Image>();
-        _highlighter.rectTransform.sizeDelta = new Vector2(_squareSize, _squareSize);
-        _highlighter.transform.SetParent(inventoryCanvas.transform);
-        _highlighter.gameObject.SetActive(false);
+        _highlighter = new UIHighlighter(inventoryCanvas, highlighterAlpha);
+        storePanel.GetWorldCorners(_corners);
+        _unitSize = storePanel.sizeDelta.x / sizeData.SizeInt.x;
     }
-
+    
     public void AddItem(Item newItem)
     {
         var uIItem = new GameObject();
         var i = uIItem.AddComponent<UIItem>();
-        i.Init(newItem, _squareSize, storePanel.transform);
+        i.Init(newItem, _unitSize, storePanel.transform);
         if(_space.TryPlaceItemAuto(newItem, out Vector2Int topLeftCornerPos))
             i.transform.position = CellCenterToScreen(topLeftCornerPos) + new Vector2(i.GetComponent<RectTransform>().sizeDelta.x, - i.GetComponent<RectTransform>().sizeDelta.y) / 2 
-                - new Vector2(_squareSize, - _squareSize) / 2;
+                - new Vector2(_unitSize, - _unitSize) / 2;
     } 
 
     private void Update() {
-        if(PosOverlapInventory(Input.mousePosition))
-            HighlightCell(CellCenterToScreen(ScreenPosToInventoryCell(Input.mousePosition)));
+        // if(Input.GetMouseButtonDown(0))
+        //     if(_highlighted != null)
+        //         if(_space.TryExtractItem(_highlighted.TopLeftCornerPosInt, out IVector2IntItem item))
 
-        if(_highlighting != PosOverlapInventory(Input.mousePosition))
-            _highlighter.gameObject.SetActive(_highlighting = !_highlighting);
+        _cursorPos = Input.mousePosition;
+        _cellCoord = ScreenPosToInventoryCell(_cursorPos);
+
+        if(PosOverlapInventory(_cursorPos))
+        {
+            if(_space.PeekItem(_cellCoord, out IVector2IntSizeAndPos item))
+            {
+                _highlightAreaSize = GetItemScreenArea(item);
+                _highlightAreaPos = GetItemScreenAreaPos(item, _highlightAreaSize);
+                _highlighted = (Item)item;
+            }
+            else 
+            {
+                _highlightAreaSize.Set(_unitSize, _unitSize);
+                _highlightAreaPos = CellCenterToScreen(_cellCoord);
+                _highlighted = null;
+            }
+            _highlighter.Highlight(_highlightAreaPos, _highlightAreaSize);
+        }
+        else
+            _highlighter.StayHidden();
+    }
+
+    public Vector2 GetItemScreenArea(IVector2IntSizeAndPos item)
+        => new Vector2(item.SizeInt.x * _unitSize, item.SizeInt.y * _unitSize);
+
+    private Vector2 GetItemScreenAreaPos(IVector2IntSizeAndPos item, Vector2 screenAreaSize)
+    {
+        var topLeftCellCenter = CellCenterToScreen(item.TopLeftCornerPosInt);
+        var topLeftCornerPos = new Vector2(topLeftCellCenter.x - _unitSize / 2, topLeftCellCenter.y + _unitSize /2);
+        var halfAreaSize = new Vector2(screenAreaSize.x / 2, - screenAreaSize.y / 2);
+        return topLeftCornerPos + halfAreaSize;
     }
 
     public Vector2Int ScreenPosToInventoryCell(Vector2 screenPos)
     {   
         Vector2 relativePos = screenPos - (Vector2)_corners[1]; // screenPos from top lef corner
-        Vector2 squarePos = relativePos / _squareSize; // divided by square size to get square number
+        Vector2 squarePos = relativePos / _unitSize; // divided by square size to get square number
         Vector2Int cellPos = new Vector2Int((int)squarePos.x, - (int)squarePos.y); // converted to int with negative y since it counts cell top to bottom
         return cellPos;
     }
 
     public Vector2 CellCenterToScreen(Vector2Int cellPos)
     {
-        float x = (_squareSize / 2) + (cellPos.x * _squareSize);
-        float y = (_squareSize / 2) + (cellPos.y * _squareSize);
+        float x = (_unitSize / 2) + (cellPos.x * _unitSize);
+        float y = (_unitSize / 2) + (cellPos.y * _unitSize);
         return new Vector2(x, - y) + (Vector2)_corners[1];
-    }
-
-    public void HighlightCell(Vector2 screenPosOfCell)
-    {
-        if(_highlighting)
-            _highlighter.transform.position = screenPosOfCell;
     }
 
     public bool PosOverlapInventory(Vector3 screenPos)

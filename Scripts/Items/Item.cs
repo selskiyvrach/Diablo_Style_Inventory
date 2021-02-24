@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public abstract class Item : IVector2IntItem
+public abstract class Item : IVector2IntSizeAndPos
 {
     public ItemData ItemData { get; private set; }
 
     public Vector2Int SizeInt { get; private set; }
 
-    public Vector2Int TopLeftCornerPos { get; private set; }
+    public Vector2Int TopLeftCornerPosInt { get; set; }
 
     public Item TheItem { get; private set; }
 

@@ -1,5 +1,5 @@
 
-public interface IVector2IntItem : IVector2IntSize, IVector2IntPosition
+public interface IVector2IntSizeAndPos : IVector2IntSize, IVector2IntPosition
 {
-    Item TheItem { get; }
+    
 }

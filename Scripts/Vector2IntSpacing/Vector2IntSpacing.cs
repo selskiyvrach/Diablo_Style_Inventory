@@ -5,17 +5,15 @@ using UnityEngine;
 public class Vector2IntSpacing 
 {
     private Vector2Int _size;
-    private IVector2IntItem[,] _space;
-    private Dictionary<Vector2Int, IVector2IntItem> _items;
+    private IVector2IntSizeAndPos[,] _space;
 
     public Vector2IntSpacing(Vector2Int size)
     {
         _size = size;
-        _space = new IVector2IntItem[_size.x, _size.y];
-        _items = new Dictionary<Vector2Int, IVector2IntItem>();
+        _space = new IVector2IntSizeAndPos[_size.x, _size.y];
     }
 
-    public bool TryPlaceItemAtPos(IVector2IntItem newItem, Vector2Int leftCornerPos)
+    public bool TryPlaceItemAtPos(IVector2IntSizeAndPos newItem, Vector2Int leftCornerPos)
     {
         if(!Exceeds(leftCornerPos, newItem.SizeInt))
         {
@@ -30,13 +28,21 @@ public class Vector2IntSpacing
         return false;
     }
 
-    public bool PeekItem(Vector2Int pos, out IVector2IntItem item)
+    public bool PeekItem(Vector2Int pos, out IVector2IntSizeAndPos item)
     {
         item = _space[pos.x, pos.y];
         return item != null;
     }
 
-    public bool TryPlaceItemAuto(IVector2IntItem newItem, out Vector2Int topLeftCornerPos)
+    public bool TryExtractItem(Vector2Int itemCornerSquare, out IVector2IntSizeAndPos extracted)
+    {
+        extracted = _space[itemCornerSquare.x, itemCornerSquare.y];
+        if(extracted != null)
+            FreeCells(extracted.TopLeftCornerPosInt, extracted.SizeInt);
+        return extracted != null;
+    }
+
+    public bool TryPlaceItemAuto(IVector2IntSizeAndPos newItem, out Vector2Int topLeftCornerPos)
     {
         topLeftCornerPos = Vector2Int.zero;
         if(TrySearchPlace(newItem.SizeInt, out Vector2Int pos))
@@ -87,11 +93,14 @@ public class Vector2IntSpacing
     
 #endregion
 
-    private void PutItemInSpace(IVector2IntItem newItem, Vector2Int leftCornerPos)
+    private void PutItemInSpace(IVector2IntSizeAndPos newItem, Vector2Int leftCornerPos)
     {
         ApplyActionToAreaIn2DSpace(leftCornerPos, newItem.SizeInt, (int x, int y) => OccupyCell(x, y, newItem));
-        _items.Add(leftCornerPos, newItem);
+        newItem.TopLeftCornerPosInt = leftCornerPos;        
     }
+
+    private void FreeCells(Vector2Int startPos, Vector2Int areaSize)
+        => ApplyActionToAreaIn2DSpace(startPos, areaSize, (int x, int y) => _space[x, y] = null);
 
     public bool CanFit(Vector2Int pos, Vector2Int size)
         => !Exceeds(pos, size) && !AnyOccupied(pos, size);
@@ -122,7 +131,7 @@ public class Vector2IntSpacing
     private Vector2Int Constrain(Vector2Int toConstrain)
         => new Vector2Int(Mathf.Clamp(toConstrain.x, 0, _size.x - 1), Mathf.Clamp(toConstrain.y, 0, _size.y - 1));
 
-    private void OccupyCell(int x, int y, IVector2IntItem item)
+    private void OccupyCell(int x, int y, IVector2IntSizeAndPos item)
         => _space[x, y] = item;
 
     public bool Exceeds(Vector2Int pos, Vector2Int size)
