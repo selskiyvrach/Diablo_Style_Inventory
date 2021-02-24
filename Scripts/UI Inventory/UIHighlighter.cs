@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class UIHighlighter 
 {
     private Image _image;
-    bool _active;
+    public bool Active { get; private set; }
 
     public UIHighlighter(Canvas parent, float alpha)
     {
@@ -23,9 +23,9 @@ public class UIHighlighter
 
     public void Highlight(Vector2 screenPos, Vector2 size)
     {
-        if(!_active)
+        if(!Active)
         {
-            _active = true;
+            Active = true;
             _image.gameObject.SetActive(true);
         }
         _image.transform.position = screenPos;
@@ -34,10 +34,10 @@ public class UIHighlighter
 
     public void StayHidden()
     {
-        if(_active)
+        if(Active)
         {
             _image.gameObject.SetActive(false);
-            _active = false;
+            Active = false;
         }
     }
 }

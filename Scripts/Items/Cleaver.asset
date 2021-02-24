@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80aa66fc5c6a16e48892124873d1c922, type: 3}
   m_Name: Cleaver
   m_EditorClassIdentifier: 
-  itemName: 
+  itemName: Cleaver
   sprite: {fileID: -7971296499899165514, guid: 6014b53b2548fff43afa7aa7a6c662a5, type: 3}
   size: {x: 2, y: 3}

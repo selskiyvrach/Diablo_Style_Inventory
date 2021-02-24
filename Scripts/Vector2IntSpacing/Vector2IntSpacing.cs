@@ -38,17 +38,15 @@ public class Vector2IntSpacing
     {
         extracted = _space[itemCornerSquare.x, itemCornerSquare.y];
         if(extracted != null)
-            FreeCells(extracted.TopLeftCornerPosInt, extracted.SizeInt);
+            FreeCells(itemCornerSquare, extracted.SizeInt);
         return extracted != null;
     }
 
-    public bool TryPlaceItemAuto(IVector2IntSizeAndPos newItem, out Vector2Int topLeftCornerPos)
+    public bool TryPlaceItemAuto(IVector2IntSizeAndPos newItem)
     {
-        topLeftCornerPos = Vector2Int.zero;
         if(TrySearchPlace(newItem.SizeInt, out Vector2Int pos))
         {
             PutItemInSpace(newItem, pos);
-            topLeftCornerPos = pos;
             return true;
         }
         Debug.Log($"Failed to put item in inventory. No place found");
@@ -96,7 +94,8 @@ public class Vector2IntSpacing
     private void PutItemInSpace(IVector2IntSizeAndPos newItem, Vector2Int leftCornerPos)
     {
         ApplyActionToAreaIn2DSpace(leftCornerPos, newItem.SizeInt, (int x, int y) => OccupyCell(x, y, newItem));
-        newItem.TopLeftCornerPosInt = leftCornerPos;        
+        newItem.TopLeftCornerPosInt = leftCornerPos;
+        Debug.Log(newItem.TopLeftCornerPosInt);  
     }
 
     private void FreeCells(Vector2Int startPos, Vector2Int areaSize)
