@@ -20,7 +20,8 @@ public class UIItem : MonoBehaviour, IScreenSizeAndPos
 
     public void CreateVisuals(float unitSize, Vector2Int sizeInt)
     {
-        _image = gameObject.AddComponent<Image>();
+        if(_image == null)
+            _image = gameObject.AddComponent<Image>();
         _image.sprite = TheItem.ItemData.Sprite;
         _image.rectTransform.sizeDelta = new Vector2(unitSize * sizeInt.x, unitSize * sizeInt.y);
     }

@@ -13,6 +13,7 @@ public class InventoryUI : MonoBehaviour
     private Vector2IntSpacing _space;
     private UIHighlighter _highlighter;
     private Vector3[] _corners = new Vector3[4]; // 0 - leftBottom, 1 - leftTop, 2 - rightTop 3 - rightBottom
+    private UIItemDragger _dragger = new UIItemDragger();
 
     // trackers
     float _unitSize;
@@ -29,33 +30,69 @@ public class InventoryUI : MonoBehaviour
         storePanel.GetWorldCorners(_corners);
         _unitSize = storePanel.sizeDelta.x / sizeData.SizeInt.x;
     }
-    
-    public void AddItem(Item newItem)
+
+    public bool TryAddItemAtScreenPos(Item newItem, Vector2 screenPos)
     {
-        var uIItem = newItem.CreateOrGetUIItem(_unitSize, inventoryCanvas);
+        Vector2 itemArea = GetItemScreenArea(newItem);
+        Vector2 itemTopLeftCornerOffsRelativeToCenter = new Vector2(itemArea.x / 2, - itemArea.y / 2);
+
+        if(_space.TryPlaceItemAtPos(newItem, ScreenPosToInventoryCell((Vector2)newItem.UIItem.transform.position - itemTopLeftCornerOffsRelativeToCenter)))
+        {
+            AnchorInventoryItemOnScreen(newItem);
+            return true;
+        }
+        return false;
+    }
+    
+    public bool TryAddItemAuto(Item newItem)
+    {
         if(_space.TryPlaceItemAuto(newItem))
         {
-            uIItem.transform.position = CellCenterToScreen(newItem.TopLeftCornerPosInt) 
-                + new Vector2(uIItem.GetComponent<RectTransform>().sizeDelta.x, - uIItem.GetComponent<RectTransform>().sizeDelta.y) / 2 
-                - new Vector2(_unitSize, - _unitSize) / 2;
-            RecalculateHighlighting();
+            AnchorInventoryItemOnScreen(newItem);
+            return true;
         }
+        return false;
     } 
+
+    private void AnchorInventoryItemOnScreen(Item newItem)
+    {
+        var uIItem = newItem.CreateOrGetUIItem(_unitSize, inventoryCanvas);
+        
+        uIItem.transform.position = CellCenterToScreen(newItem.TopLeftCornerPosInt) 
+            + new Vector2(uIItem.GetComponent<RectTransform>().sizeDelta.x, - uIItem.GetComponent<RectTransform>().sizeDelta.y) / 2 
+            - new Vector2(_unitSize, - _unitSize) / 2;
+        RecalculateHighlighting();
+    }
     // test
-    public void ExtractItem()
+    public void DragItems()
     {
         if(Input.GetMouseButtonDown(0))
-            if(_highlighted != null)
-                if(_space.TryExtractItem(_highlighted.TheItem.TopLeftCornerPosInt, out IVector2IntSizeAndPos item))
-                {
-                    _highlighted.TheItem.HideUIItem();
-                    _space.PrintSpacing();
-                    RecalculateHighlighting();
-                }
+        {
+            if(_dragger.Empty)
+            {
+                if(_highlighted != null)
+                    if(_space.TryExtractItem(_highlighted.TheItem.TopLeftCornerPosInt, out IVector2IntSizeAndPos item))
+                    {
+                        _highlighted.TheItem.HideUIItem();
+                        _space.PrintSpacing();
+                        RecalculateHighlighting();
+                        _dragger.AddMouseFollower(((Item)item).UIItem, false);
+                    }
+            }
+            else 
+            {
+                _dragger.ExtractMouseFollower(out UIItem item);
+                if(!TryAddItemAtScreenPos(item.TheItem, item.transform.position))
+                    item.TheItem.HideUIItem();
+            }
+
+        }
     }
 
     private void Update() {
         _cursorPos = Input.mousePosition;
+
+        _dragger.UpdateMe();
 
         if(PosOverlapInventory(_cursorPos))
         {
@@ -75,7 +112,7 @@ public class InventoryUI : MonoBehaviour
             _highlighted = null;
         }
         // test
-        ExtractItem();
+        DragItems();
     }
 
     private void RecalculateHighlighting()

@@ -134,7 +134,7 @@ public class Vector2IntSpacing
         => _space[x, y] = item;
 
     public bool Exceeds(Vector2Int pos, Vector2Int size)
-        => ExceedsX(pos.x, size.x) || ExceedsY(pos.y, size.y);
+        => pos.x < 0 || pos.y < 0 || ExceedsX(pos.x, size.x) || ExceedsY(pos.y, size.y);
 
     private bool ExceedsX(int xPos, int xSize)
         => xPos + (xSize - 1) >= _space.GetLength(0);

@@ -15,7 +15,7 @@ public class ItemTest : MonoBehaviour
 
     private void Update() {
         if(Input.GetMouseButtonDown(1))
-            inventory.AddItem(GetRandomItem());
+            inventory.TryAddItemAuto(GetRandomItem());
     }
 
     public static Item GetRandomItem()
