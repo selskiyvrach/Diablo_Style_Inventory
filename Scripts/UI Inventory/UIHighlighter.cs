@@ -21,7 +21,7 @@ public class UIHighlighter
     public UIHighlighter(Canvas parent, float alpha, Sprite sprite) : this(parent, alpha)
         => _image.sprite = sprite;
 
-    public void Highlight(Vector2 screenPos, Vector2 size)
+    public void NewHighlight(Vector2 screenPos, Vector2 size)
     {
         if(!Active)
         {
@@ -32,12 +32,9 @@ public class UIHighlighter
         _image.rectTransform.sizeDelta = size;
     }
 
-    public void StayHidden()
+    public void Hide()
     {
-        if(Active)
-        {
-            _image.gameObject.SetActive(false);
-            Active = false;
-        }
+        _image.gameObject.SetActive(false);
+        Active = false;
     }
 }

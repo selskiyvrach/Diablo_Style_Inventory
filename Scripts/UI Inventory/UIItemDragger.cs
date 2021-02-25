@@ -2,32 +2,54 @@ using UnityEngine;
 
 public class UIItemDragger
 {
-    private UIItem _draggable;
     private Vector2 _posOffset;
     private bool _withOffset;
+    private InventoryUI _inv;
 
+    public UIItem MouseFollower { get; private set; }
     public bool Empty { get; private set; } = true;
+
+    public UIItemDragger(InventoryUI ui)
+        => _inv = ui;
     
     public void AddMouseFollower(UIItem toDrag, bool withOffset)
     {
         if(_withOffset = withOffset)
-            _posOffset = Input.mousePosition - _draggable.transform.position;
+            _posOffset = Input.mousePosition - MouseFollower.transform.position;
 
-        _draggable = toDrag;
-        _draggable.gameObject.SetActive(true);
+        MouseFollower = toDrag;
+        MouseFollower.gameObject.SetActive(true);
         Empty = false;
     } 
 
-    public void UpdateMe()
+    public void ExternalUpdate()
     {
-        if(_draggable != null)
-            _draggable.transform.position = _withOffset ? (Vector2)Input.mousePosition - _posOffset : (Vector2)Input.mousePosition;
+        if(MouseFollower != null)
+        {
+            MouseFollower.transform.position = _withOffset ? (Vector2)Input.mousePosition - _posOffset : (Vector2)Input.mousePosition;
+            if(Input.GetMouseButtonDown(0))
+                if(_inv.TryAddItemAtItsCurrPos(MouseFollower.TheItem, out UIItem replaced))
+                {
+                    ExtractMouseFollower(out UIItem newItem);
+                    if(replaced != null)
+                        AddMouseFollower(replaced, _withOffset);
+                }
+                else 
+                {
+                    Debug.Log($"Item {MouseFollower.TheItem.ItemData.Name} dropped into the world at {MouseFollower.transform.position} screen pos");
+                    MouseFollower.TheItem.HideUIItem();
+                    ExtractMouseFollower(out UIItem newItem);
+                }
+        }
+        else if(Input.GetMouseButtonDown(0))
+            if(_inv.TryExtractItemAtCursorPos(out UIItem newItem))
+                AddMouseFollower(newItem, _withOffset);
     }
 
     public void ExtractMouseFollower(out UIItem item)
     {
-        item = _draggable;
-        _draggable = null;
+        item = MouseFollower;
+        MouseFollower = null;
         Empty = true;
     }
 }

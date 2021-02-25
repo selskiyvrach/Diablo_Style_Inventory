@@ -7,11 +7,16 @@ public class Vector2IntSpacing
     private Vector2Int _size;
     private IVector2IntSizeAndPos[,] _space;
 
+// TRACKERS
+
+    private List<IVector2IntSizeAndPos> _overlaps = new List<IVector2IntSizeAndPos>();
+
+// CONSTRUCTOR
+
     public Vector2IntSpacing(Vector2Int size)
-    {
-        _size = size;
-        _space = new IVector2IntSizeAndPos[_size.x, _size.y];
-    }
+        =>  _space = new IVector2IntSizeAndPos[(_size = size).x, _size.y];
+
+// PUBLIC
 
     public bool TryPlaceItemAtPos(IVector2IntSizeAndPos newItem, Vector2Int leftCornerPos)
     {
@@ -28,20 +33,6 @@ public class Vector2IntSpacing
         return false;
     }
 
-    public bool PeekItem(Vector2Int pos, out IVector2IntSizeAndPos item)
-    {
-        item = _space[pos.x, pos.y];
-        return item != null;
-    }
-
-    public bool TryExtractItem(Vector2Int itemCornerSquare, out IVector2IntSizeAndPos extracted)
-    {
-        extracted = _space[itemCornerSquare.x, itemCornerSquare.y];
-        if(extracted != null)
-            FreeCells(itemCornerSquare, extracted.SizeInt);
-        return extracted != null;
-    }
-
     public bool TryPlaceItemAuto(IVector2IntSizeAndPos newItem)
     {
         if(TrySearchPlace(newItem.SizeInt, out Vector2Int pos))
@@ -53,26 +44,36 @@ public class Vector2IntSpacing
         return false;
     }
 
-    private bool TrySearchPlace(Vector2Int itemSize, out Vector2Int pos)
+    public bool TryExtractItem(Vector2Int itemCornerSquare, out IVector2IntSizeAndPos extracted)
     {
-        pos = new Vector2Int();
-
-        for(int x = 0; x < _size.x - (itemSize.x - 1); x++)
-        {
-            for(int y = 0; y < _size.y - (itemSize.y - 1); y++)
-            {
-                if(!CellOccupied(x, y))
-                {
-                    pos.Set(x, y);
-                    if(!AnyOccupied(pos, itemSize))
-                        return true;
-                } 
-            }
-        }
-        return false;
+        extracted = _space[itemCornerSquare.x, itemCornerSquare.y];
+        if(extracted != null)
+            FreeCells(itemCornerSquare, extracted.SizeInt);
+        return extracted != null;
     }
 
-#region Unnecessary Production-wise Stuff
+    public bool PeekItem(Vector2Int pos, out IVector2IntSizeAndPos item)
+        => (item = _space[pos.x, pos.y]) != null;
+
+    public IVector2IntSizeAndPos[] GetOvserlaps(Vector2Int topLeftCornerPos, Vector2Int size)
+    {
+        _overlaps.Clear();
+        ApplyActionToAreaIn2DSpace(topLeftCornerPos, size, (int x, int y) => 
+        { 
+            if(_space[x, y] != null && !_overlaps.Contains(_space[x, y]) )
+                _overlaps.Add(_space[x, y] ); 
+        } );
+        return _overlaps.ToArray();
+    }
+
+    public bool Exceeds(Vector2Int pos, Vector2Int size) => 
+        pos.x < 0 || 
+        pos.y < 0 || 
+        pos.x + (size.x - 1) >= _size.x || 
+        pos.y + (size.y - 1) >= _size.y;
+
+    public bool AnyOccupied(Vector2Int pos, Vector2Int size)
+        => ApplyPredicateToAreaIn2DSpace(pos, size, CellOccupied);
 
     public void PrintSpacing()
     {
@@ -84,33 +85,42 @@ public class Vector2IntSpacing
             Debug.Log(rowContent);
             rowContent = "";
         }
+        string GetStringVisualizationOfCell(int x, int y) => CellOccupied(x, y) ? 
+            "[X]   " : 
+            "[_]    ";
     }
 
-    private string GetStringVisualizationOfCell(int x, int y)
-        => CellOccupied(x, y) ? "[X]   " : "[_]    ";
-    
-#endregion
+// PRIVATE  
+
+    private bool TrySearchPlace(Vector2Int itemSize, out Vector2Int pos)
+    {
+        pos = new Vector2Int();
+        for(int x = 0; x < _size.x - (itemSize.x - 1); x++)
+            for(int y = 0; y < _size.y - (itemSize.y - 1); y++)
+                if(!CellOccupied(x, y))
+                {
+                    pos.Set(x, y);
+                    if(!AnyOccupied(pos, itemSize))
+                        return true;
+                } 
+        return false;
+    }
 
     private void PutItemInSpace(IVector2IntSizeAndPos newItem, Vector2Int leftCornerPos)
     {
-        ApplyActionToAreaIn2DSpace(leftCornerPos, newItem.SizeInt, (int x, int y) => OccupyCell(x, y, newItem));
+        ApplyActionToAreaIn2DSpace(leftCornerPos, newItem.SizeInt, (int x, int y) => _space[x, y] = newItem);
         newItem.TopLeftCornerPosInt = leftCornerPos;
-        Debug.Log(newItem.TopLeftCornerPosInt);  
     }
 
     private void FreeCells(Vector2Int startPos, Vector2Int areaSize)
         => ApplyActionToAreaIn2DSpace(startPos, areaSize, (int x, int y) => _space[x, y] = null);
 
-    public bool CanFit(Vector2Int pos, Vector2Int size)
+    private bool CanFit(Vector2Int pos, Vector2Int size)
         => !Exceeds(pos, size) && !AnyOccupied(pos, size);
 
-    public bool AnyOccupied(Vector2Int pos, Vector2Int size)
-        => ApplyPredicateToAreaIn2DSpace(pos, size, CellOccupied);
-
-    public bool ApplyPredicateToAreaIn2DSpace(Vector2Int pos, Vector2Int size, Func<int, int, bool> toApply)
+    private bool ApplyPredicateToAreaIn2DSpace(Vector2Int pos, Vector2Int size, Func<int, int, bool> toApply)
     {
         int finalX = pos.x + size.x; int finalY = pos.y + size.y;
-
         for(int x = pos.x; x < finalX; x++)
             for(int y = pos.y; y < finalY; y++)
                 if(toApply(x, y)) 
@@ -121,36 +131,11 @@ public class Vector2IntSpacing
     private void ApplyActionToAreaIn2DSpace(Vector2Int pos, Vector2Int size, Action<int, int> toApply)
     {
         int finalX = pos.x + size.x; int finalY = pos.y + size.y;
-
         for(int x = pos.x; x < finalX; x++)
             for(int y = pos.y; y < finalY; y++)
                 toApply(x, y);
     }
 
-    private Vector2Int Constrain(Vector2Int toConstrain)
-        => new Vector2Int(Mathf.Clamp(toConstrain.x, 0, _size.x - 1), Mathf.Clamp(toConstrain.y, 0, _size.y - 1));
-
-    private void OccupyCell(int x, int y, IVector2IntSizeAndPos item)
-        => _space[x, y] = item;
-
-    public bool Exceeds(Vector2Int pos, Vector2Int size)
-        => pos.x < 0 || pos.y < 0 || ExceedsX(pos.x, size.x) || ExceedsY(pos.y, size.y);
-
-    private bool ExceedsX(int xPos, int xSize)
-        => xPos + (xSize - 1) >= _space.GetLength(0);
-
-    private bool ExceedsY(int yPos, int ySize)
-        => yPos + (ySize - 1) >= _space.GetLength(1);
-
-    public bool CellAvailible(int xPos, int yPos)
-        => CellPresent(xPos, yPos) && !CellOccupied(xPos, yPos);
-
-    public bool CellOccupied(Vector2Int cell)
-        => _space[cell.x, cell.y] != null;
-    
-    public bool CellOccupied(int xPos, int yPos)
+    private bool CellOccupied(int xPos, int yPos)
         => _space[xPos, yPos] != null;
-
-    public bool CellPresent(int xPos, int yPos)
-        => xPos < _size.x && yPos < _size.y;
 }
