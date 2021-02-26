@@ -1,6 +1,8 @@
 using UnityEngine;
 
-public abstract class ItemData : ScriptableObject, IVector2IntSize
+
+[CreateAssetMenu(menuName="Scriptable Objects/Item Data/Inventory Item Data")]
+public abstract class InventoryItemData : ScriptableObject
 {
     [SerializeField] string itemName;
     [SerializeField] Sprite sprite;

@@ -38,7 +38,7 @@ public class InventoryUI : MonoBehaviour
         if(!notOverlapsInventory && !cannotReplaceOverlappedItems)
         {
             if(_toReplace != null)
-                _space.TryExtractItem(_toReplace.TheItem.TopLeftCornerPosInt, out IVector2IntSizeAndPos extracted);
+                _space.TryExtractItem(_toReplace.TheItem.TopLeftCornerPosInt, out IVector2IntItem extracted);
             _space.PlaceItemAtPos(newItem, ScreenPosToInventoryCell(newItem.UIItem.GetCornerCenterInScreen(0, _unitSize)));
             AnchorInventoryItemOnScreen(newItem);
             RecalculateHighlighting();
@@ -60,7 +60,7 @@ public class InventoryUI : MonoBehaviour
         item = null;
         if(_highlightedInventoryItem != null)
         {
-            _space.TryExtractItem(_highlightedInventoryItem.TheItem.TopLeftCornerPosInt, out IVector2IntSizeAndPos extracted);
+            _space.TryExtractItem(_highlightedInventoryItem.TheItem.TopLeftCornerPosInt, out IVector2IntItem extracted);
             item = _highlightedInventoryItem;
             RecalculateHighlighting();
         }
@@ -143,7 +143,7 @@ public class InventoryUI : MonoBehaviour
             _canReplaceOverlappedIfPresent = overlaps.Length <= 1;
         }
         // INVENTORY ITEM
-        else if(!_space.Exceeds(_cellCoord, new Vector2Int(1, 1)) && _space.PeekItem(_cellCoord, out IVector2IntSizeAndPos item))
+        else if(!_space.Exceeds(_cellCoord, new Vector2Int(1, 1)) && _space.PeekItem(_cellCoord, out IVector2IntItem item))
         {
             if(((Item)item).UIItem != _highlightedInventoryItem)
             {

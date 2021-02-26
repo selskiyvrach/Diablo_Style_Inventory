@@ -869,3 +869,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dac86dd62f0b0084aba902c8453232be, type: 2}
   - {fileID: 11400000, guid: 98bb11a1397cb3347bb6a3d541de285a, type: 2}
   inventory: {fileID: 1385744315}
+  fitType: 0

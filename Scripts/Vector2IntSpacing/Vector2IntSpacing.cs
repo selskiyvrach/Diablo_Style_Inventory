@@ -5,20 +5,20 @@ using UnityEngine;
 public class Vector2IntSpacing 
 {
     private Vector2Int _size;
-    private IVector2IntSizeAndPos[,] _space;
+    private IVector2IntItem[,] _space;
 
 // TRACKERS
 
-    private List<IVector2IntSizeAndPos> _overlaps = new List<IVector2IntSizeAndPos>();
+    private List<IVector2IntItem> _overlaps = new List<IVector2IntItem>();
 
 // CONSTRUCTOR
 
     public Vector2IntSpacing(Vector2Int size)
-        =>  _space = new IVector2IntSizeAndPos[(_size = size).x, _size.y];
+        =>  _space = new IVector2IntItem[(_size = size).x, _size.y];
 
 // PUBLIC
 
-    public bool TryPlaceItemAtPos(IVector2IntSizeAndPos newItem, Vector2Int leftCornerPos)
+    public bool TryPlaceItemAtPos(IVector2IntItem newItem, Vector2Int leftCornerPos)
     {
         if(!Exceeds(leftCornerPos, newItem.SizeInt))
         {
@@ -33,7 +33,7 @@ public class Vector2IntSpacing
         return false;
     }
 
-    public bool TryPlaceItemAuto(IVector2IntSizeAndPos newItem)
+    public bool TryPlaceItemAuto(IVector2IntItem newItem)
     {
         if(TrySearchPlace(newItem.SizeInt, out Vector2Int pos))
         {
@@ -44,10 +44,10 @@ public class Vector2IntSpacing
         return false;
     }
 
-    public void PlaceItemAtPos(IVector2IntSizeAndPos newItem, Vector2Int leftCornerPos)
+    public void PlaceItemAtPos(IVector2IntItem newItem, Vector2Int leftCornerPos)
         => PutItemInSpace(newItem, leftCornerPos);
 
-    public bool TryExtractItem(Vector2Int itemCornerSquare, out IVector2IntSizeAndPos extracted)
+    public bool TryExtractItem(Vector2Int itemCornerSquare, out IVector2IntItem extracted)
     {
         extracted = _space[itemCornerSquare.x, itemCornerSquare.y];
         if(extracted != null)
@@ -55,10 +55,10 @@ public class Vector2IntSpacing
         return extracted != null;
     }
 
-    public bool PeekItem(Vector2Int pos, out IVector2IntSizeAndPos item)
+    public bool PeekItem(Vector2Int pos, out IVector2IntItem item)
         => (item = _space[pos.x, pos.y]) != null;
 
-    public IVector2IntSizeAndPos[] GetOverlaps(Vector2Int topLeftCornerPos, Vector2Int size)
+    public IVector2IntItem[] GetOverlaps(Vector2Int topLeftCornerPos, Vector2Int size)
     {
         _overlaps.Clear();
         ApplyActionToAreaIn2DSpace(topLeftCornerPos, size, (int x, int y) => 
@@ -109,7 +109,7 @@ public class Vector2IntSpacing
         return false;
     }
 
-    private void PutItemInSpace(IVector2IntSizeAndPos newItem, Vector2Int leftCornerPos)
+    private void PutItemInSpace(IVector2IntItem newItem, Vector2Int leftCornerPos)
     {
         ApplyActionToAreaIn2DSpace(leftCornerPos, newItem.SizeInt, (int x, int y) => _space[x, y] = newItem);
         newItem.TopLeftCornerPosInt = leftCornerPos;

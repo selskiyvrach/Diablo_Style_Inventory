@@ -2,7 +2,7 @@ using UnityEngine;
 
 
 [CreateAssetMenu(menuName="Scriptable Objects/Item Data/Weapon Data")]
-public class WeaponData : ItemData
+public class WeaponData : InventoryItemData
 {
     
 }

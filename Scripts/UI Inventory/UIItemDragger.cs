@@ -4,14 +4,14 @@ using UnityEngine;
 public class UIItemDragger
 {
     private Vector2 _posOffset;
+    private InventoryUI _inventory;
     private bool _withOffset;
-    private InventoryUI _inv;
 
     public UIItem MouseFollower { get; private set; }
     public bool Empty { get; private set; } = true;
 
     public UIItemDragger(InventoryUI ui)
-        => _inv = ui;
+        => _inventory = ui;
     
     public void AddMouseFollower(UIItem toDrag, bool withOffset)
     {
@@ -30,7 +30,7 @@ public class UIItemDragger
             MouseFollower.transform.position = _withOffset ? (Vector2)Input.mousePosition - _posOffset : (Vector2)Input.mousePosition;
             if(Input.GetMouseButtonDown(0))
             {
-                _inv.TryAddItemAtItsCurrPos(MouseFollower.TheItem, out bool notOverIventory, out bool CannotReplaceItems, out UIItem replaced);
+                _inventory.TryAddItemAtItsCurrPos(MouseFollower.TheItem, out bool notOverIventory, out bool CannotReplaceItems, out UIItem replaced);
                 if(notOverIventory)
                     DropItemIntoWorld();
                 else if(!CannotReplaceItems)
@@ -42,7 +42,7 @@ public class UIItemDragger
             }
         }
         else if(Input.GetMouseButtonDown(0))
-            if(_inv.TryExtractItemAtCursorPos(out UIItem newItem))
+            if(_inventory.TryExtractItemAtCursorPos(out UIItem newItem))
                 AddMouseFollower(newItem, _withOffset);
     }
 
