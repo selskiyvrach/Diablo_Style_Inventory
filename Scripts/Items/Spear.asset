@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80aa66fc5c6a16e48892124873d1c922, type: 3}
+  m_Script: {fileID: 11500000, guid: fb03e264fa7ada94baee30596d2e248d, type: 3}
   m_Name: Spear
   m_EditorClassIdentifier: 
   itemName: Spear

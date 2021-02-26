@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ItemTest : MonoBehaviour
 {
-    [SerializeField] WeaponData[] weapons;
+    [SerializeField] InventoryItemData[] itemsData;
     [SerializeField] InventoryUI inventory;
     [SerializeField] ItemFitType fitType;
 
@@ -19,6 +19,6 @@ public class ItemTest : MonoBehaviour
             inventory.TryAddItemAuto(GetRandomItem());
     }
 
-    public static Item GetRandomItem()
-        => new Weapon(_instance.weapons[Random.Range(0, _instance.weapons.Length)]);
+    public static InventoryItem GetRandomItem()
+        => new InventoryItem(_instance.itemsData[Random.Range(0, _instance.itemsData.Length)]);
 }

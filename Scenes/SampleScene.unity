@@ -863,10 +863,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1177cae700ad0bc4792b5ba961819d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weapons:
+  itemsData:
   - {fileID: 11400000, guid: 98bb11a1397cb3347bb6a3d541de285a, type: 2}
-  - {fileID: 11400000, guid: 8823e6995c9575842acc641572fa3864, type: 2}
-  - {fileID: 11400000, guid: dac86dd62f0b0084aba902c8453232be, type: 2}
   - {fileID: 11400000, guid: 98bb11a1397cb3347bb6a3d541de285a, type: 2}
+  - {fileID: 11400000, guid: 321ecaa88e4142f4d9cc2b98e21bfcac, type: 2}
+  - {fileID: 11400000, guid: 979e12058f0969c47834bf1b01c66f40, type: 2}
   inventory: {fileID: 1385744315}
   fitType: 0

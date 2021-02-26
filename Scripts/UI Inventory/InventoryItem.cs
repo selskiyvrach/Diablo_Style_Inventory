@@ -9,7 +9,13 @@ public class InventoryItem : IVector2IntItem
     // PARENT GAMEOBJECT 
 
     private static Transform _parentHolder;
-    private static Transform _parent => _parentHolder != null ? _parentHolder : _parentHolder = new GameObject("Inventory Items' Storage").transform;
+    private static Transform GetParent(Canvas parent) 
+    {
+        if(_parentHolder == null)
+            _parentHolder = new GameObject("Inventory Items' Storage").transform;
+        _parentHolder.SetParent(parent.transform);
+        return _parentHolder;
+    } 
 
     // POOL OF UNUSED ITEMS
 
@@ -21,15 +27,17 @@ public class InventoryItem : IVector2IntItem
         if(_abandoned.Count > 0 && _abandoned.Peek() != null)
         {
             image = _abandoned.Pop();
+            image.gameObject.name = data.Name;
             image.gameObject.SetActive(true);
         }
         // OR CREATE
         else 
         {
             image = new GameObject(data.Name).AddComponent<Image>();
-            image.transform.SetParent(_parent);
+            image.transform.SetParent(GetParent(parent));
         }
-        image.rectTransform.sizeDelta = new Vector2(data.SizeInt.x + unitSize, data.SizeInt.y * unitSize);
+        image.sprite = data.Sprite;
+        image.rectTransform.sizeDelta = new Vector2(data.SizeInt.x * unitSize, data.SizeInt.y * unitSize); 
         return image;
     }
 
@@ -53,23 +61,23 @@ public class InventoryItem : IVector2IntItem
 
     public InventoryItemData ItemData { get; private set; }
 
+    public Vector2 ScreenPos { get => _image.transform.position; set => _image.transform.position = value; }
+
     public bool _oneCellItem;
 
     public Vector2 ScreenSize => _image.rectTransform.sizeDelta;
 
-    public void SetScreenPosition(Vector2 screenPos)
-        => _image.transform.position = screenPos;
-
     public InventoryItem(InventoryItemData data)
     {
         ItemData = data;
+        SizeInt = ItemData.SizeInt;
         _oneCellItem = ItemData.SizeInt.magnitude < 2;
     }
 
-    public Image GetInventoryViewOfItem(Canvas parent, float unitSize)
-        => _image != null ? _image : _image = GetImage(ItemData, parent, unitSize);
+    public void EnableInventoryViewOfItem(Canvas parent, float unitSize)
+        => _image = _image != null ? _image : _image = GetImage(ItemData, parent, unitSize);
 
-    public void HideInventoryViewOfItem()
+    public void DisableInventoryViewOfItem()
     {
         if(_image != null)
         {
