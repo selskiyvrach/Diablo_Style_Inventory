@@ -44,6 +44,9 @@ public class Vector2IntSpacing
         return false;
     }
 
+    public void PlaceItemAtPos(IVector2IntSizeAndPos newItem, Vector2Int leftCornerPos)
+        => PutItemInSpace(newItem, leftCornerPos);
+
     public bool TryExtractItem(Vector2Int itemCornerSquare, out IVector2IntSizeAndPos extracted)
     {
         extracted = _space[itemCornerSquare.x, itemCornerSquare.y];
@@ -55,7 +58,7 @@ public class Vector2IntSpacing
     public bool PeekItem(Vector2Int pos, out IVector2IntSizeAndPos item)
         => (item = _space[pos.x, pos.y]) != null;
 
-    public IVector2IntSizeAndPos[] GetOvserlaps(Vector2Int topLeftCornerPos, Vector2Int size)
+    public IVector2IntSizeAndPos[] GetOverlaps(Vector2Int topLeftCornerPos, Vector2Int size)
     {
         _overlaps.Clear();
         ApplyActionToAreaIn2DSpace(topLeftCornerPos, size, (int x, int y) => 

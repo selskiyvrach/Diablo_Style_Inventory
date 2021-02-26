@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class UIItemDragger
@@ -28,22 +29,28 @@ public class UIItemDragger
         {
             MouseFollower.transform.position = _withOffset ? (Vector2)Input.mousePosition - _posOffset : (Vector2)Input.mousePosition;
             if(Input.GetMouseButtonDown(0))
-                if(_inv.TryAddItemAtItsCurrPos(MouseFollower.TheItem, out UIItem replaced))
+            {
+                _inv.TryAddItemAtItsCurrPos(MouseFollower.TheItem, out bool notOverIventory, out bool CannotReplaceItems, out UIItem replaced);
+                if(notOverIventory)
+                    DropItemIntoWorld();
+                else if(!CannotReplaceItems)
                 {
                     ExtractMouseFollower(out UIItem newItem);
                     if(replaced != null)
                         AddMouseFollower(replaced, _withOffset);
                 }
-                else 
-                {
-                    Debug.Log($"Item {MouseFollower.TheItem.ItemData.Name} dropped into the world at {MouseFollower.transform.position} screen pos");
-                    MouseFollower.TheItem.HideUIItem();
-                    ExtractMouseFollower(out UIItem newItem);
-                }
+            }
         }
         else if(Input.GetMouseButtonDown(0))
             if(_inv.TryExtractItemAtCursorPos(out UIItem newItem))
                 AddMouseFollower(newItem, _withOffset);
+    }
+
+    private void DropItemIntoWorld()
+    {
+        Debug.Log($"Item {MouseFollower.TheItem.ItemData.Name} dropped into the world at {MouseFollower.transform.position} screen pos");
+        MouseFollower.TheItem.HideUIItem();
+        ExtractMouseFollower(out UIItem newItem);
     }
 
     public void ExtractMouseFollower(out UIItem item)

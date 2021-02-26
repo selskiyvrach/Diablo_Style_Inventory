@@ -15,47 +15,34 @@ public class InventoryUI : MonoBehaviour
 // TRACKERS
 
     private float _unitSize;
+    // CURSOR-WISE
     private Vector2 _cursorPos;
     private Vector2Int _cellCoord;
     private Vector2Int _prevCellCoord = new Vector2Int(-1, -1);
+    // HIGHLIGHTED
     private Vector2 _highlightAreaSize;
     private Vector2 _highlightAreaPos;
     private UIItem _highlightedInventoryItem;
+    // DRAGGED ITEM RELATED
+    private bool _canReplaceOverlappedIfPresent;
+    private UIItem _toReplace;
 
 // PUBLIC
 
-    public bool TryAddItemAtItsCurrPos(Item newItem, out UIItem replaced)
+    public void TryAddItemAtItsCurrPos(Item newItem, out bool notOverlapsInventory, out bool cannotReplaceOverlappedItems, out UIItem replaced)
     {
-        replaced = null;
-        if(!PosOverlapInventory(_cursorPos)) return false;
-        
-        var pos = ScreenPosToInventoryCell(newItem.UIItem.GetCornerCenterInScreen(0, _unitSize));
+        replaced = _toReplace;
+        notOverlapsInventory = !_highlighter.Active;
+        cannotReplaceOverlappedItems = !_canReplaceOverlappedIfPresent;
 
-        if(!_space.Exceeds(pos, newItem.SizeInt))
+        if(!notOverlapsInventory && !cannotReplaceOverlappedItems)
         {
-            if(_space.AnyOccupied(pos, newItem.SizeInt))
-            {
-                var overlaps = _space.GetOvserlaps(pos, newItem.SizeInt);
-                if(overlaps.Length == 1)
-                {
-                    if(_space.TryExtractItem(overlaps[0].TopLeftCornerPosInt, out IVector2IntSizeAndPos item))
-                    {
-                        replaced = ((Item)item).UIItem;
-                        if(_space.TryPlaceItemAtPos(newItem, pos))
-                        {
-                            AnchorInventoryItemOnScreen(newItem);
-                            return true;
-                        }   
-                    }
-                }
-            }
-            else if(_space.TryPlaceItemAtPos(newItem, pos))
-            {
-                AnchorInventoryItemOnScreen(newItem);
-                return true;
-            }
+            if(_toReplace != null)
+                _space.TryExtractItem(_toReplace.TheItem.TopLeftCornerPosInt, out IVector2IntSizeAndPos extracted);
+            _space.PlaceItemAtPos(newItem, ScreenPosToInventoryCell(newItem.UIItem.GetCornerCenterInScreen(0, _unitSize)));
+            AnchorInventoryItemOnScreen(newItem);
+            RecalculateHighlighting();
         }
-        return false;
     }
     
     public bool TryAddItemAuto(Item newItem)
@@ -72,10 +59,11 @@ public class InventoryUI : MonoBehaviour
     {
         item = null;
         if(_highlightedInventoryItem != null)
-            if(_space.TryExtractItem(ScreenPosToInventoryCell(_highlightedInventoryItem.GetCornerCenterInScreen(0, _unitSize)), out IVector2IntSizeAndPos extracted))
-                item = ((Item)extracted).UIItem;
-        if(item != null)
+        {
+            _space.TryExtractItem(_highlightedInventoryItem.TheItem.TopLeftCornerPosInt, out IVector2IntSizeAndPos extracted);
+            item = _highlightedInventoryItem;
             RecalculateHighlighting();
+        }
         return item != null;
     }
 
@@ -92,20 +80,19 @@ public class InventoryUI : MonoBehaviour
     private void Update()
     {
         _dragger.ExternalUpdate();
-        ChechIfNeededToRecalculateHighlight();
+        CheckIfNeededToRecalculateHighlight();
     }
 
     private void AnchorInventoryItemOnScreen(Item newItem)
     {
-        var uIItem = newItem.CreateOrGetUIItem(_unitSize, inventoryCanvas);
-        
+        var uIItem = newItem.CreateOrGetUIItem(_unitSize, inventoryCanvas);   
         uIItem.transform.position = CellCenterToScreen(newItem.TopLeftCornerPosInt) 
-            + new Vector2(uIItem.GetComponent<RectTransform>().sizeDelta.x, - uIItem.GetComponent<RectTransform>().sizeDelta.y) / 2 
+            + new Vector2(uIItem.ScreenSize.x, - uIItem.ScreenSize.y) / 2 
             - new Vector2(_unitSize, - _unitSize) / 2;
         RecalculateHighlighting();
     }
  
-    private void ChechIfNeededToRecalculateHighlight()
+    private void CheckIfNeededToRecalculateHighlight()
     {
         // IS CURSOR/DRAGGED ITEM INSIDE INVENTORY AREA
         bool cursorOnInventory = false;
@@ -140,6 +127,8 @@ public class InventoryUI : MonoBehaviour
 
     private void RecalculateHighlighting()
     {
+        _canReplaceOverlappedIfPresent = true;
+        _toReplace = null;
         // DRAGGED ITEM
         if(!_dragger.Empty)
         {
@@ -148,6 +137,10 @@ public class InventoryUI : MonoBehaviour
             _cellCoord = ScreenPosToInventoryCell(_dragger.MouseFollower.GetCornerCenterInScreen(0, _unitSize));
             _highlightAreaSize = _dragger.MouseFollower.ScreenSize;
             _highlightAreaPos = CellCenterToScreen(_cellCoord) + new Vector2(_highlightAreaSize.x - _unitSize, - _highlightAreaSize.y + _unitSize) / 2;
+            var overlaps = _space.GetOverlaps(_cellCoord, _dragger.MouseFollower.TheItem.SizeInt);
+            if(overlaps.Length == 1)
+                _toReplace = ((Item)overlaps[0]).UIItem;
+            _canReplaceOverlappedIfPresent = overlaps.Length <= 1;
         }
         // INVENTORY ITEM
         else if(!_space.Exceeds(_cellCoord, new Vector2Int(1, 1)) && _space.PeekItem(_cellCoord, out IVector2IntSizeAndPos item))
@@ -168,7 +161,7 @@ public class InventoryUI : MonoBehaviour
             _highlightAreaPos = CellCenterToScreen(_cellCoord);
             _highlighter.NewHighlight(_highlightAreaPos, _highlightAreaSize);
         }
-        _highlighter.NewHighlight(_highlightAreaPos, _highlightAreaSize);
+        _highlighter.NewHighlight(_highlightAreaPos, _highlightAreaSize, !_canReplaceOverlappedIfPresent);
     }
 
     public Vector2Int ScreenPosToInventoryCell(Vector2 screenPos)
