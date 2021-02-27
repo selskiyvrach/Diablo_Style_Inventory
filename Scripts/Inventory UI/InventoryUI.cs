@@ -7,7 +7,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] Canvas inventoryCanvas;
     public Canvas InventoryCanvas => inventoryCanvas;
     [SerializeField] Vector2IntSpaceData sizeData;
-    [SerializeField] [Range(0, 1)] float highlighterAlpha;
+    [SerializeField] InventorySettings settings;
     private Vector2IntSpacing _space;
     private UIHighlighter _highlighter;
     private Vector3[] _corners = new Vector3[4]; // 0 - leftBottom, 1 - leftTop, 2 - rightTop 3 - rightBottom
@@ -72,7 +72,7 @@ public class InventoryUI : MonoBehaviour
 
     private void Awake() {
         _space = new Vector2IntSpacing(sizeData.SizeInt);
-        _highlighter = new UIHighlighter(inventoryCanvas, highlighterAlpha);
+        _highlighter = new UIHighlighter(inventoryCanvas, settings);
         _dragger = new UIItemDragger(this);
         storePanel.GetWorldCorners(_corners);
         UnitSize = storePanel.sizeDelta.x / sizeData.SizeInt.x;

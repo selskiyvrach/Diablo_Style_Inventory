@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb03e264fa7ada94baee30596d2e248d, type: 3}
-  m_Name: Axe
+  m_Script: {fileID: 11500000, guid: 7507fa160ad74cf4b85518123469bd71, type: 3}
+  m_Name: 1 X 3 Int Size
   m_EditorClassIdentifier: 
-  itemName: Axe
-  sprite: {fileID: 7031321920036925963, guid: 6014b53b2548fff43afa7aa7a6c662a5, type: 3}
-  size: {x: 1, y: 2}
+  size: {x: 1, y: 3}

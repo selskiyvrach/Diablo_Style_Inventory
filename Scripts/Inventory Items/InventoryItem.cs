@@ -43,7 +43,7 @@ public class InventoryItem : IVector2IntItem
 
 // INSTANCE: 
 
-    // IVector2SbyteItem
+    // IVector2IntItem
 
     public Vector2Int SizeInt { get; set; }
    
@@ -67,6 +67,12 @@ public class InventoryItem : IVector2IntItem
 
     public Vector2 ScreenSize => _image.rectTransform.sizeDelta;
 
+    public void MoveOnTopOfViewSorting()
+        => _image?.transform.SetSiblingIndex(1000);
+
+    public void MoveInTheBackOfViewSorting()
+        => _image?.transform.SetSiblingIndex(0);
+
     public InventoryItem(InventoryItemData data)
     {
         ItemData = data;
@@ -89,6 +95,7 @@ public class InventoryItem : IVector2IntItem
 
     ///<param name="cornerNumber">if CornersNumbers is 1: 0 = center of one-cell item, if 2: 0 = top-left corner, 1 = bottom-right</param>
     ///<summary>if CornersNumbers is 1: 0 = center of one-cell item, if 2: 0 = top-left corner, 1 = bottom-right</summary>
+
     public Vector2 GetCornerCenterInScreen(int cornerNumber, float unitSize)
     {   
         Vector2 temp = new Vector2();

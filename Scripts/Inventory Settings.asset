@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb03e264fa7ada94baee30596d2e248d, type: 3}
-  m_Name: Cleaver
+  m_Script: {fileID: 11500000, guid: 4d4f32552c361d346b8304fcb9643617, type: 3}
+  m_Name: Inventory Settings
   m_EditorClassIdentifier: 
-  itemName: Cleaver
-  sprite: {fileID: -7971296499899165514, guid: 6014b53b2548fff43afa7aa7a6c662a5, type: 3}
-  size: {x: 2, y: 3}
+  highlightColor: {r: 1, g: 1, b: 1, a: 0.39215687}
+  cantPlaceHereColor: {r: 0.6037736, g: 0.08760637, b: 0, a: 0.5882353}

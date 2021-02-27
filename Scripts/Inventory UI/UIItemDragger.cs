@@ -10,9 +10,13 @@ public class UIItemDragger
     public InventoryItem DraggedItem { get; private set; }
     public bool Empty { get; private set; } = true;
 
+// CONSTRUCTOR
+
     public UIItemDragger(InventoryUI ui)
         => _inventory = ui;
     
+// PUBLIC
+
     public void AddMouseFollower(InventoryItem toDrag, bool withOffset)
     {
         if(_withOffset = withOffset)
@@ -20,6 +24,7 @@ public class UIItemDragger
 
         DraggedItem = toDrag;
         DraggedItem.EnableInventoryViewOfItem(_inventory.InventoryCanvas, _inventory.UnitSize);
+        DraggedItem.MoveOnTopOfViewSorting();
         Empty = false;
     } 
 
@@ -46,6 +51,8 @@ public class UIItemDragger
                 AddMouseFollower(newItem, _withOffset);
     }
 
+// PRIVATE
+
     private void DropItemIntoWorld()
     {
         Debug.Log($"Item {DraggedItem.ItemData.Name} dropped into the world at {DraggedItem.ScreenPos} screen pos");
@@ -53,10 +60,12 @@ public class UIItemDragger
         ExtractMouseFollower(out InventoryItem newItem);
     }
 
-    public void ExtractMouseFollower(out InventoryItem item)
+    private void ExtractMouseFollower(out InventoryItem item)
     {
         item = DraggedItem;
+        item.MoveInTheBackOfViewSorting();
         DraggedItem = null;
         Empty = true;
     }
+
 }

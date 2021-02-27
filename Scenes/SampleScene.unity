@@ -663,7 +663,7 @@ MonoBehaviour:
   storePanel: {fileID: 1320406425}
   inventoryCanvas: {fileID: 329639574}
   sizeData: {fileID: 11400000, guid: 79eb19eca0938cc458ec737215d8b84c, type: 2}
-  highlighterAlpha: 0.35
+  settings: {fileID: 11400000, guid: 2344e953b1b073944b473c87614874bb, type: 2}
 --- !u!114 &1385744316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -869,4 +869,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 321ecaa88e4142f4d9cc2b98e21bfcac, type: 2}
   - {fileID: 11400000, guid: 979e12058f0969c47834bf1b01c66f40, type: 2}
   inventory: {fileID: 1385744315}
-  fitType: 0

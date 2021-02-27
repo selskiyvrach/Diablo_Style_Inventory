@@ -4,7 +4,6 @@ public class ItemTest : MonoBehaviour
 {
     [SerializeField] InventoryItemData[] itemsData;
     [SerializeField] InventoryUI inventory;
-    [SerializeField] ItemFitType fitType;
 
     private static ItemTest _instance;
 

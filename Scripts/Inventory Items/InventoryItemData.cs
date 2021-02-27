@@ -6,9 +6,9 @@ public class InventoryItemData : ScriptableObject
 {
     [SerializeField] string itemName;
     [SerializeField] Sprite sprite;
-    [SerializeField] Vector2Int size;
+    [SerializeField] Vector2IntSpaceData size;
 
     public string Name => itemName;
     public Sprite Sprite => sprite; 
-    public Vector2Int SizeInt => size;
+    public Vector2Int SizeInt => size.SizeInt;
 }
