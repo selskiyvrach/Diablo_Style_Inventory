@@ -7,18 +7,15 @@ public class InventoryItem : IVector2IntItem
 // STATIC:
 
     // PARENT GAMEOBJECT 
-
     private static Transform _parentHolder;
     private static Transform GetParent(Canvas parent) 
     {
-        if(_parentHolder == null)
-            _parentHolder = new GameObject("Inventory Items' Storage").transform;
+        _parentHolder ??= new GameObject("Inventory Items' Storage").transform;
         _parentHolder.SetParent(parent.transform);
         return _parentHolder;
     } 
 
     // POOL OF UNUSED ITEMS
-
     private static Stack<Image> _abandoned = new Stack<Image>();
     private static Image GetImage(InventoryItemData data, Canvas parent, float unitSize)
     {
@@ -43,35 +40,17 @@ public class InventoryItem : IVector2IntItem
 
 // INSTANCE: 
 
-    // IVector2IntItem
-
+    // IVector2IntItem:
     public Vector2Int SizeInt { get; set; }
-   
     public Vector2Int TopLeftCornerPosInt { get; set; }
 
-    public void SetSizeSbyte(Vector2Int newSize)
-        => SizeInt = newSize;
-
-    public void SetTopLeftCornerPosSbyte(Vector2Int newPos)
-        => TopLeftCornerPosInt = newPos;
-
-    // InventoryItem
-
-    private Image _image;
-
+    // InventoryItem:
     public InventoryItemData ItemData { get; private set; }
-
     public Vector2 ScreenPos { get => _image.transform.position; set => _image.transform.position = value; }
-
-    public bool _oneCellItem;
-
     public Vector2 ScreenSize => _image.rectTransform.sizeDelta;
-
-    public void MoveOnTopOfViewSorting()
-        => _image?.transform.SetSiblingIndex(1000);
-
-    public void MoveInTheBackOfViewSorting()
-        => _image?.transform.SetSiblingIndex(0);
+    public bool _oneCellItem;
+    // VISUAL REPRESENTATION OF ITEM IN UI SPACE
+    private Image _image;
 
     public InventoryItem(InventoryItemData data)
     {
@@ -80,8 +59,14 @@ public class InventoryItem : IVector2IntItem
         _oneCellItem = ItemData.SizeInt.magnitude < 2;
     }
 
+    public void MoveOnTopOfViewSorting()
+        => _image?.transform.SetSiblingIndex(_image.transform.parent.childCount);
+
+    public void MoveInTheBackOfViewSorting()
+        => _image?.transform.SetSiblingIndex(0);
+
     public void EnableInventoryViewOfItem(Canvas parent, float unitSize)
-        => _image = _image != null ? _image : _image = GetImage(ItemData, parent, unitSize);
+        => _image ??= GetImage(ItemData, parent, unitSize);
 
     public void DisableInventoryViewOfItem()
     {
@@ -93,8 +78,8 @@ public class InventoryItem : IVector2IntItem
         }
     }
 
-    ///<param name="cornerNumber">if CornersNumbers is 1: 0 = center of one-cell item, if 2: 0 = top-left corner, 1 = bottom-right</param>
-    ///<summary>if CornersNumbers is 1: 0 = center of one-cell item, if 2: 0 = top-left corner, 1 = bottom-right</summary>
+    ///<param name="cornerNumber">if CornersNumber is 1: 0 = center of one-cell item, if 2: 0 = top-left corner, 1 = bottom-right</param>
+    ///<summary>if CornersNumber is 1: 0 = center of one-cell item, if 2: 0 = top-left corner, 1 = bottom-right</summary>
 
     public Vector2 GetCornerCenterInScreen(int cornerNumber, float unitSize)
     {   

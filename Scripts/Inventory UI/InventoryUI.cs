@@ -3,18 +3,29 @@ using UnityEngine;
 [RequireComponent(typeof(PreservedRatioRectTransform))]
 public class InventoryUI : MonoBehaviour
 {
+    // GAME OBJECTS
     [SerializeField] RectTransform storePanel;
     [SerializeField] Canvas inventoryCanvas;
     public Canvas InventoryCanvas => inventoryCanvas;
+
+    // SCRIPTABLE OBJECTS
     [SerializeField] Vector2IntSpaceData sizeData;
     [SerializeField] InventorySettings settings;
+
+    // CREATED HERE
+    
+    // LOW LEVEL VECTOR2INT SPACE OF INVENTORY
     private Vector2IntSpacing _space;
-    private UIHighlighter _highlighter;
+    // CORNERS OF STORE PANEL IN SCREEN SPACE
     private Vector3[] _corners = new Vector3[4]; // 0 - leftBottom, 1 - leftTop, 2 - rightTop 3 - rightBottom
+    // HIGHLIGHTER OF AFFECTED INVENTORY CELLS  
+    private UIHighlighter _highlighter;
+    // KEEPS PICKED ITEM'S SCREEN POS ALONG WITH CURSOR POS
     private UIItemDragger _dragger;
 
 // TRACKERS
 
+    // SIZE OF INVENTORY CELL IN SCREEN SPACE COORDS
     public float UnitSize { get; private set; }
     // CURSOR-WISE
     private Vector2 _cursorPos;
@@ -24,8 +35,9 @@ public class InventoryUI : MonoBehaviour
     private Vector2 _highlightAreaSize;
     private Vector2 _highlightAreaPos;
     private InventoryItem _highlightedInventoryItem;
-    // DRAGGED ITEM RELATED
+    // DRAGGED ITEM RELATED 1
     private bool _canReplaceOverlappedIfPresent;
+    // DRAGGED ITEM RELATED 2. IF DRAGGED ITEM OVERLAPS ONLY ONE ITEM IN INVENTORY AND THEREFORE CAN EXCHANGE PLACES WITH IT
     private InventoryItem _toReplace;
 
 // PUBLIC
@@ -58,14 +70,14 @@ public class InventoryUI : MonoBehaviour
 
     public bool TryExtractItemAtCursorPos(out InventoryItem item)
     {
-        item = null;
-        if(_highlightedInventoryItem != null)
+        item = _highlightedInventoryItem;
+        if(item != null)
         {
             _space.TryExtractItem(_highlightedInventoryItem.TopLeftCornerPosInt, out IVector2IntItem extracted);
-            item = _highlightedInventoryItem;
             RecalculateHighlighting();
+            return true;
         }
-        return item != null;
+        return false;
     }
 
 // PRIVATE
@@ -99,11 +111,11 @@ public class InventoryUI : MonoBehaviour
         bool cursorOnInventory = false;
         
         if(_dragger.Empty)
-            cursorOnInventory = PosOverlapInventory(_cursorPos = Input.mousePosition);
+            cursorOnInventory = PosOverlapsInventory(_cursorPos = Input.mousePosition);
         else
             cursorOnInventory = 
-                PosOverlapInventory(_dragger.DraggedItem.GetCornerCenterInScreen(0, UnitSize)) && 
-                PosOverlapInventory(_dragger.DraggedItem.GetCornerCenterInScreen(1, UnitSize));
+                PosOverlapsInventory(_dragger.DraggedItem.GetCornerCenterInScreen(0, UnitSize)) && 
+                PosOverlapsInventory(_dragger.DraggedItem.GetCornerCenterInScreen(1, UnitSize));
         // CHECK IF CELL POS OF CURSOR HAS CHANGED
         if(cursorOnInventory)
         {
@@ -144,7 +156,7 @@ public class InventoryUI : MonoBehaviour
             _canReplaceOverlappedIfPresent = overlaps.Length <= 1;
         }
         // INVENTORY ITEM
-        else if(PosOverlapInventory(_cursorPos) && _space.PeekItem(_cellCoord, out IVector2IntItem item))
+        else if(PosOverlapsInventory(_cursorPos) && _space.PeekItem(_cellCoord, out IVector2IntItem item))
         {
             if((InventoryItem)item != _highlightedInventoryItem)
             {
@@ -183,9 +195,10 @@ public class InventoryUI : MonoBehaviour
         return new Vector2(x, - y) + (Vector2)_corners[1];
     }
 
-    private bool PosOverlapInventory(Vector3 screenPos) => 
+    private bool PosOverlapsInventory(Vector3 screenPos) => 
         screenPos.x > _corners[0].x && 
         screenPos.x < _corners[2].x && 
         screenPos.y > _corners[0].y && 
         screenPos.y < _corners[2].y;
+
 }
