@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Axe
   sprite: {fileID: 7031321920036925963, guid: 6014b53b2548fff43afa7aa7a6c662a5, type: 3}
+  fitType: {fileID: 11400000, guid: 02031ec3f370b6f4499a91d60c9f2f90, type: 2}
   size: {fileID: 11400000, guid: e69053c9f8d568948a4af5ee13843f1c, type: 2}

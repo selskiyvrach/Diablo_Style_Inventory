@@ -5,12 +5,12 @@ public class InventoryUI : MonoBehaviour
 {
     // GAME OBJECTS
     [SerializeField] RectTransform storePanel;
-    [SerializeField] Canvas inventoryCanvas;
-    public Canvas InventoryCanvas => inventoryCanvas;
+    [SerializeField] Canvas inventoryCanvas; public Canvas InventoryCanvas => inventoryCanvas;
+    [SerializeField] InventoryHighlighter _highlighter;
 
     // SCRIPTABLE OBJECTS
     [SerializeField] Vector2IntSpaceData sizeData;
-    [SerializeField] InventorySettings settings;
+    [SerializeField] InventoryHighlightSettings settings;
 
     // CREATED HERE
     
@@ -18,10 +18,8 @@ public class InventoryUI : MonoBehaviour
     private Vector2IntSpacing _space;
     // CORNERS OF STORE PANEL IN SCREEN SPACE
     private Vector3[] _corners = new Vector3[4]; // 0 - leftBottom, 1 - leftTop, 2 - rightTop 3 - rightBottom
-    // HIGHLIGHTER OF AFFECTED INVENTORY CELLS  
-    private UIHighlighter _highlighter;
     // KEEPS PICKED ITEM'S SCREEN POS ALONG WITH CURSOR POS
-    private UIItemDragger _dragger;
+    private InventoryItemDragger _dragger;
 
 // TRACKERS
 
@@ -84,21 +82,20 @@ public class InventoryUI : MonoBehaviour
 
     private void Awake() {
         _space = new Vector2IntSpacing(sizeData.SizeInt);
-        _highlighter = new UIHighlighter(inventoryCanvas, settings);
-        _dragger = new UIItemDragger(this);
+        // _dragger = new InventoryItemDragger(this);
         storePanel.GetWorldCorners(_corners);
         UnitSize = storePanel.sizeDelta.x / sizeData.SizeInt.x;
     }
 
     private void Update()
     {
-        _dragger.ExternalUpdate();
+        // _dragger.ExternalUpdate();
         CheckIfNeededToRecalculateHighlight();
     }
 
     private void AnchorInventoryItemOnScreen(InventoryItem newItem)
     {  
-        newItem.EnableInventoryViewOfItem(inventoryCanvas, UnitSize);
+        newItem.EnableInventoryViewOfItem(inventoryCanvas.transform, UnitSize);
         newItem.ScreenPos = CellCenterToScreen(newItem.TopLeftCornerPosInt) 
             + new Vector2(newItem.ScreenSize.x, - newItem.ScreenSize.y) / 2 
             - new Vector2(UnitSize, - UnitSize) / 2;
@@ -132,7 +129,7 @@ public class InventoryUI : MonoBehaviour
         // TURN OFF AND RESET
         else if(_highlighter.Active)
         {
-            _highlighter.Hide();
+            _highlighter.HideHighlight();
             _highlightedInventoryItem = null;
             _prevCellCoord.Set(-1, -1);
         }

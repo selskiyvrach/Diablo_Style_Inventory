@@ -2,22 +2,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryItem : IVector2IntItem
+public class InventoryItem : IVector2IntItem, IEquipment
 {
 // STATIC:
 
     // PARENT GAMEOBJECT 
     private static Transform _parentHolder;
-    private static Transform GetParent(Canvas parent) 
+    private static Transform GetParent(Transform parent) 
     {
         _parentHolder ??= new GameObject("Inventory Items' Storage").transform;
-        _parentHolder.SetParent(parent.transform);
+        _parentHolder.SetParent(parent);
         return _parentHolder;
     } 
 
     // POOL OF UNUSED ITEMS
     private static Stack<Image> _abandoned = new Stack<Image>();
-    private static Image GetImage(InventoryItemData data, Canvas parent, float unitSize)
+    private static Image GetImage(InventoryItemData data, Transform parent, float unitSize)
     {
         Image image = null;
         // TAKE FROM STACK
@@ -44,10 +44,14 @@ public class InventoryItem : IVector2IntItem
     public Vector2Int SizeInt { get; set; }
     public Vector2Int TopLeftCornerPosInt { get; set; }
 
+    // IEquipment:
+    public EquipmentFitType FitType { get; private set; }
+
     // InventoryItem:
     public InventoryItemData ItemData { get; private set; }
     public Vector2 ScreenPos { get => _image.transform.position; set => _image.transform.position = value; }
-    public Vector2 ScreenSize => _image.rectTransform.sizeDelta;
+    public Vector2 ScreenSize { get => _image.rectTransform.sizeDelta; set => _image.rectTransform.sizeDelta = value; }
+
     public bool _oneCellItem;
     // VISUAL REPRESENTATION OF ITEM IN UI SPACE
     private Image _image;
@@ -55,6 +59,7 @@ public class InventoryItem : IVector2IntItem
     public InventoryItem(InventoryItemData data)
     {
         ItemData = data;
+        FitType = ItemData.FitType;
         SizeInt = ItemData.SizeInt;
         _oneCellItem = ItemData.SizeInt.magnitude < 2;
     }
@@ -65,7 +70,7 @@ public class InventoryItem : IVector2IntItem
     public void MoveInTheBackOfViewSorting()
         => _image?.transform.SetSiblingIndex(0);
 
-    public void EnableInventoryViewOfItem(Canvas parent, float unitSize)
+    public void EnableInventoryViewOfItem(Transform parent, float unitSize)
         => _image ??= GetImage(ItemData, parent, unitSize);
 
     public void DisableInventoryViewOfItem()
@@ -97,5 +102,13 @@ public class InventoryItem : IVector2IntItem
         float NegativeX() => ItemData.SizeInt.x == 1 ? _image.transform.position.x : ( - (float)ItemData.SizeInt.x / 2 + 0.5f) * unitSize + _image.transform.position.x;
         float PositiveY() => ItemData.SizeInt.y == 1 ? _image.transform.position.y : ((float)ItemData.SizeInt.y / 2 - 0.5f) * unitSize + _image.transform.position.y;
         float NegativeY() => ItemData.SizeInt.y == 1 ? _image.transform.position.y : ( - (float)ItemData.SizeInt.y / 2 + 0.5f) * unitSize + _image.transform.position.y;
+    }
+
+    public void OnEquip()
+    {
+    }
+
+    public void OnUnequip()
+    {
     }
 }
