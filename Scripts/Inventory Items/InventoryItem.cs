@@ -50,11 +50,11 @@ public class InventoryItem : IVector2IntItem, IEquipment
     // InventoryItem:
     public InventoryItemData ItemData { get; private set; }
     public Vector2 ScreenPos { get => _image.transform.position; set => _image.transform.position = value; }
-    public Vector2 ScreenSize { get => _image.rectTransform.sizeDelta; set => _image.rectTransform.sizeDelta = value; }
+    public Vector2 ScreenSize { get => _image.RectTransform.sizeDelta; set => _image.RectTransform.sizeDelta = value; }
 
     public bool _oneCellItem;
     // VISUAL REPRESENTATION OF ITEM IN UI SPACE
-    private Image _image;
+    private InventoryItemVisuals _image;
 
     public InventoryItem(InventoryItemData data)
     {
@@ -70,15 +70,14 @@ public class InventoryItem : IVector2IntItem, IEquipment
     public void MoveInTheBackOfViewSorting()
         => _image?.transform.SetSiblingIndex(0);
 
-    public void EnableInventoryViewOfItem(Transform parent, float unitSize)
-        => _image ??= GetImage(ItemData, parent, unitSize);
+    public void EnableInventoryViewOfItem(float unitSize, Canvas parent)
+        => _image ??= InventoryItemVisuals.GetItemVisuals(ItemData, GetParent(parent.transform), unitSize);
 
     public void DisableInventoryViewOfItem()
     {
         if(_image != null)
         {
-            _image.gameObject.SetActive(false);
-            _abandoned.Push(_image);
+            InventoryItemVisuals.AbandonItemVisuals(_image);            
             _image = null;
         }
     }
@@ -104,11 +103,4 @@ public class InventoryItem : IVector2IntItem, IEquipment
         float NegativeY() => ItemData.SizeInt.y == 1 ? _image.transform.position.y : ( - (float)ItemData.SizeInt.y / 2 + 0.5f) * unitSize + _image.transform.position.y;
     }
 
-    public void OnEquip()
-    {
-    }
-
-    public void OnUnequip()
-    {
-    }
 }

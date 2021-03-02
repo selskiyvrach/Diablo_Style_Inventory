@@ -20,10 +20,8 @@ public class EquipmentSlot : ItemStorePanel
         replaced = null;
         if(CanPlaceItem(item))
         {
-            _content?.OnUnequip();
             replaced = _content;
             _content = item;
-            _content.OnEquip();
             PlaceItemVisuals(item);
         }
     }
@@ -35,10 +33,6 @@ public class EquipmentSlot : ItemStorePanel
         => _panelRect;
 
     protected override void PlaceItemVisuals(InventoryItem item)
-    {
-        item.EnableInventoryViewOfItem(_parentCanvas.transform, _unitSize);
-        item.ScreenPos = _panelRect.center;
-        item.ScreenSize = _panelRect.size;
-    }
+        => item.ScreenPos = _panelRect.center;
 
 }

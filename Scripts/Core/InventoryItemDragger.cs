@@ -22,7 +22,6 @@ public class InventoryItemDragger : MonoBehaviour
             _posOffset = (Vector2)Input.mousePosition - DraggedItem.ScreenPos;
 
         DraggedItem = toDrag;
-        DraggedItem.EnableInventoryViewOfItem(parentCanvas.transform, 71.449f);
         DraggedItem.MoveOnTopOfViewSorting();
         Empty = false;
     } 

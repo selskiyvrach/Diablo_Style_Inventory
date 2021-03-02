@@ -14,7 +14,6 @@ public class InventoryHighlighter : MonoBehaviour
     {
         _image = new GameObject("Highlighter").AddComponent<Image>();
         _image.transform.SetParent(transform);
-        _image.transform.SetSiblingIndex(0);
         _image.gameObject.SetActive(Active = false);
     }
 

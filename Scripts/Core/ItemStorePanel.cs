@@ -12,8 +12,7 @@ public abstract class ItemStorePanel : MonoBehaviour
     protected Vector2IntSpaceData _sizeData => sizeData;
     
     protected Rect _panelRect;
-    protected Canvas _parentCanvas;
-    protected float _unitSize;
+    public float UnitSize { get; private set; }
 
 
     public virtual void Init(Canvas parentCanvas)
@@ -21,8 +20,7 @@ public abstract class ItemStorePanel : MonoBehaviour
         _panelRect = new Rect(
             (Vector2)storePanel.transform.position - new Vector2(storePanel.rectTransform.sizeDelta.x / 2, storePanel.rectTransform.sizeDelta.y / 2), 
             storePanel.rectTransform.sizeDelta);
-        _parentCanvas = parentCanvas;
-        _unitSize = _panelRect.width / sizeData.SizeInt.x;
+        UnitSize = _panelRect.width / sizeData.SizeInt.x;
     }
 
     public bool ContainsPoint(Vector3 screenPos)

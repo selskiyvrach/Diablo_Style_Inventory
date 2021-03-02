@@ -22,11 +22,11 @@ public class ItemStorageSpace : ItemStorePanel
     }
 
     public override bool ContainsItemCorners(InventoryItem item)
-        => ContainsPoint(item.GetCornerCenterInScreen(0, _unitSize)) && ContainsPoint(item.GetCornerCenterInScreen(1, _unitSize));
+        => ContainsPoint(item.GetCornerCenterInScreen(0, UnitSize)) && ContainsPoint(item.GetCornerCenterInScreen(1, UnitSize));
 
     public override bool CanPlaceItem(InventoryItem item)
     {
-        _lastCheckedCellCoord = ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, _unitSize));
+        _lastCheckedCellCoord = ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, UnitSize));
         if(_space.Exceeds(_lastCheckedCellCoord, item.SizeInt))
         {
             _toReplace = null;
@@ -56,7 +56,7 @@ public class ItemStorageSpace : ItemStorePanel
             _space.TryExtractItem(_toReplace.TopLeftCornerPosInt, out IVector2IntItem replaced2);
             replaced = (InventoryItem)replaced2;
         }
-        _space.PlaceItemAtPos(item, ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, _unitSize)));
+        _space.PlaceItemAtPos(item, ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, UnitSize)));
         PlaceItemVisuals(item);
     }
     // NOT ACTUALLY USED HERE   
@@ -65,17 +65,16 @@ public class ItemStorageSpace : ItemStorePanel
 
     protected override void PlaceItemVisuals(InventoryItem item)
     {
-        item.EnableInventoryViewOfItem(_parentCanvas.transform, _unitSize);
         item.ScreenPos = CellCenterToScreen(item.TopLeftCornerPosInt) 
             + new Vector2(item.ScreenSize.x, - item.ScreenSize.y) / 2 
-            - new Vector2(_unitSize, - _unitSize) / 2;
+            - new Vector2(UnitSize, - UnitSize) / 2;
     }
 
     public override bool NeedHighlightRecalculation(Vector3 cursorPos)
         => ScreenPosToInventoryCell(cursorPos) != _lastCheckedCellCoord;
     
     public override bool NeedHighlightRecalculation(InventoryItem item)
-        => ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, _unitSize)) != _lastCheckedCellCoord;
+        => ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, UnitSize)) != _lastCheckedCellCoord;
 
     public override Rect GetHighlightRect(Vector3 screenPos)
     {
@@ -83,22 +82,22 @@ public class ItemStorageSpace : ItemStorePanel
         _toReplace = null;
         if(_space.PeekItem(_lastCheckedCellCoord, out IVector2IntItem peeked))
             return GetHighlightRect((InventoryItem)peeked);
-        return new Rect(CellCenterToScreen(_lastCheckedCellCoord) - new Vector2(_unitSize / 2, _unitSize / 2), new Vector2(_unitSize, _unitSize));
+        return new Rect(CellCenterToScreen(_lastCheckedCellCoord) - new Vector2(UnitSize / 2, UnitSize / 2), new Vector2(UnitSize, UnitSize));
     }
 
     public override Rect GetHighlightRect(InventoryItem item)
     {
-        _lastCheckedCellCoord = ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, _unitSize));
+        _lastCheckedCellCoord = ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, UnitSize));
         _toReplace = null;
-        var size = new Vector2(item.SizeInt.x * _unitSize, item.SizeInt.y * _unitSize);
-        var pos = CellCenterToScreen(_lastCheckedCellCoord) - new Vector2(_unitSize / 2, size.y - _unitSize / 2);
+        var size = new Vector2(item.SizeInt.x * UnitSize, item.SizeInt.y * UnitSize);
+        var pos = CellCenterToScreen(_lastCheckedCellCoord) - new Vector2(UnitSize / 2, size.y - UnitSize / 2);
         return new Rect(pos, size);
     }
 
     private Vector2 CellCenterToScreen(Vector2Int cellPos)
     {
-        float x = (_unitSize / 2) + (cellPos.x * _unitSize);
-        float y = (_unitSize / 2) + (cellPos.y * _unitSize);
+        float x = (UnitSize / 2) + (cellPos.x * UnitSize);
+        float y = (UnitSize / 2) + (cellPos.y * UnitSize);
         return new Vector2(x, - y) + (Vector2)_corners[1];
     }
 
@@ -110,7 +109,7 @@ public class ItemStorageSpace : ItemStorePanel
         if(relativePos.x < 0 || relativePos.y > 0)
             return new Vector2Int(-1, -1); 
         // GETTING CELL NUMBER
-        Vector2 squarePos = relativePos / _unitSize; 
+        Vector2 squarePos = relativePos / UnitSize; 
         // SINCE SCREEN Y IS TOP TO BOTTOM CELL POS SHOULD HAVE NEGATIVE Y
         Vector2Int cellPos = new Vector2Int((int)squarePos.x, - (int)squarePos.y); 
         return cellPos;

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 public class Inventory : MonoBehaviour
@@ -6,20 +7,26 @@ public class Inventory : MonoBehaviour
     [SerializeField] Canvas inventoryCanvas;
     [SerializeField] InventoryHighlighter highlighter;
     [SerializeField] InventoryItemDragger dragger;
-    [SerializeField] ItemStorePanel[] panels;
+    [SerializeField] ItemStorageSpace itemStorage;
+    [SerializeField] ItemStorePanel[] equipmentSlots;
 
     // TRACKERS
+    private float _unitSize;
+    private ItemStorePanel[] _allpanels;
     private ItemStorePanel _currPanel = null;    
     private Vector3 _cursorPos => Input.mousePosition;
 
     public void AddItemToCursor(InventoryItem item)
     {
+        item.EnableInventoryViewOfItem(_unitSize, inventoryCanvas);
         if(dragger.Empty)
             dragger.AddMouseFollower(item, false);
     }
 
     private void Awake() {
+        _allpanels = equipmentSlots.Concat(new ItemStorePanel[] { itemStorage }).ToArray();
         ForeachPanel((ItemStorePanel p) => p.Init(inventoryCanvas));
+        _unitSize = itemStorage.UnitSize;
         highlighter.Initialize(inventoryCanvas);
     }
 
@@ -76,7 +83,7 @@ public class Inventory : MonoBehaviour
 
     private void ForeachPanel(Action<ItemStorePanel> toDo)
     {
-        foreach(var p in panels)
+        foreach(var p in _allpanels)
             toDo(p);
     }
 }
