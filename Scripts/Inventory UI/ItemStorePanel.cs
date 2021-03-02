@@ -15,6 +15,7 @@ public abstract class ItemStorePanel : MonoBehaviour
     protected Canvas _parentCanvas;
     protected float _unitSize;
 
+
     public virtual void Init(Canvas parentCanvas)
     {
         _panelRect = new Rect(
@@ -27,6 +28,15 @@ public abstract class ItemStorePanel : MonoBehaviour
     public bool ContainsPoint(Vector3 screenPos)
         => _panelRect.Contains(screenPos);
 
+    public virtual bool ContainsItemCorners(InventoryItem item)
+        => ContainsPoint(item.ScreenPos);
+
+    public virtual bool NeedHighlightRecalculation(Vector3 cursorPos)
+        => false;
+    
+    public virtual bool NeedHighlightRecalculation(InventoryItem item)
+        => false;
+
     public abstract bool CanPlaceItem(InventoryItem item);
 
     public abstract void PlaceItem(InventoryItem item, out InventoryItem replaced);
@@ -37,7 +47,7 @@ public abstract class ItemStorePanel : MonoBehaviour
 
     public abstract Rect GetHighlightRect(Vector3 screenPos);
 
-    public abstract Rect GetHighlightRect(Vector3 screenPos, InventoryItem item);
+    public abstract Rect GetHighlightRect(InventoryItem item);
 
     protected abstract void PlaceItemVisuals(InventoryItem item);
 

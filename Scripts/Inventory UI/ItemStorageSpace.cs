@@ -8,8 +8,11 @@ public class ItemStorageSpace : ItemStorePanel
     // DRAGGED ITEM RELATED. IF DRAGGED ITEM OVERLAPS ONLY ONE ITEM IN INVENTORY AND THEREFORE CAN EXCHANGE PLACES WITH IT
     private InventoryItem _toReplace;
 
-    // CORNERS OF STORE PANEL IN SCREEN SPACE
-    private Vector3[] _corners = new Vector3[4]; // 0 - leftBottom, 1 - leftTop, 2 - rightTop 3 - rightBottom
+    // CORNERS OF STORE PANEL IN SCREEN SPACE. 0 - leftBottom, 1 - leftTop, 2 - rightTop 3 - rightBottom
+    private Vector3[] _corners = new Vector3[4]; 
+
+    // TRACKS WHETHER IT IS TIME TO ASK FOR NEW HIGHLIGHT AREA
+    private Vector2Int _lastCheckedCellCoord;
     
     public override void Init(Canvas parentCanvas)
     {
@@ -18,33 +21,41 @@ public class ItemStorageSpace : ItemStorePanel
         _storePanel.rectTransform.GetWorldCorners(_corners);
     }
 
+    public override bool ContainsItemCorners(InventoryItem item)
+        => ContainsPoint(item.GetCornerCenterInScreen(0, _unitSize)) && ContainsPoint(item.GetCornerCenterInScreen(1, _unitSize));
+
     public override bool CanPlaceItem(InventoryItem item)
     {
-        var _cellCoord = ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, _unitSize));
-        var overlaps = _space.GetOverlaps(_cellCoord, item.SizeInt);
+        _lastCheckedCellCoord = ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, _unitSize));
+        if(_space.Exceeds(_lastCheckedCellCoord, item.SizeInt))
+        {
+            _toReplace = null;
+            return false;
+        }
+        var overlaps = _space.GetOverlaps(_lastCheckedCellCoord, item.SizeInt);
         if(overlaps.Length == 1)
             _toReplace = (InventoryItem)overlaps[0];
         return overlaps.Length <= 1;
     }
 
-    public override Rect GetHighlightRect(Vector3 screenPos)
-        => new Rect(CellCenterToScreen(ScreenPosToInventoryCell(screenPos)) - new Vector2(_unitSize / 2, _unitSize / 2), new Vector2(_unitSize, _unitSize));
-
-    public override Rect GetHighlightRect(Vector3 screenPos, InventoryItem item)
-        => new Rect(
-            CellCenterToScreen(ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, _unitSize))),
-            new Vector2(item.SizeInt.x * _unitSize, item.SizeInt.y * _unitSize) );
-
     public override bool PeekItem(Vector3 screenPos, out InventoryItem peeked)
     {
+        peeked = null;
+        if(_space.Exceeds(ScreenPosToInventoryCell(screenPos), new Vector2Int(1, 1)))
+            return false;
         _space.PeekItem(ScreenPosToInventoryCell(screenPos), out IVector2IntItem peeked2);
-        return (peeked = (InventoryItem)peeked2) != null;
+        peeked = (InventoryItem)peeked2;
+        return peeked != null;
     }
 
     public override void PlaceItem(InventoryItem item, out InventoryItem replaced)
     {  
-        _space.TryExtractItem(_toReplace.TopLeftCornerPosInt, out IVector2IntItem replaced2);
-        replaced = (InventoryItem)replaced2;
+        replaced = null;
+        if(_toReplace != null)
+        {
+            _space.TryExtractItem(_toReplace.TopLeftCornerPosInt, out IVector2IntItem replaced2);
+            replaced = (InventoryItem)replaced2;
+        }
         _space.PlaceItemAtPos(item, ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, _unitSize)));
         PlaceItemVisuals(item);
     }
@@ -58,6 +69,30 @@ public class ItemStorageSpace : ItemStorePanel
         item.ScreenPos = CellCenterToScreen(item.TopLeftCornerPosInt) 
             + new Vector2(item.ScreenSize.x, - item.ScreenSize.y) / 2 
             - new Vector2(_unitSize, - _unitSize) / 2;
+    }
+
+    public override bool NeedHighlightRecalculation(Vector3 cursorPos)
+        => ScreenPosToInventoryCell(cursorPos) != _lastCheckedCellCoord;
+    
+    public override bool NeedHighlightRecalculation(InventoryItem item)
+        => ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, _unitSize)) != _lastCheckedCellCoord;
+
+    public override Rect GetHighlightRect(Vector3 screenPos)
+    {
+        _lastCheckedCellCoord = ScreenPosToInventoryCell(screenPos);
+        _toReplace = null;
+        if(_space.PeekItem(_lastCheckedCellCoord, out IVector2IntItem peeked))
+            return GetHighlightRect((InventoryItem)peeked);
+        return new Rect(CellCenterToScreen(_lastCheckedCellCoord) - new Vector2(_unitSize / 2, _unitSize / 2), new Vector2(_unitSize, _unitSize));
+    }
+
+    public override Rect GetHighlightRect(InventoryItem item)
+    {
+        _lastCheckedCellCoord = ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, _unitSize));
+        _toReplace = null;
+        var size = new Vector2(item.SizeInt.x * _unitSize, item.SizeInt.y * _unitSize);
+        var pos = CellCenterToScreen(_lastCheckedCellCoord) - new Vector2(_unitSize / 2, size.y - _unitSize / 2);
+        return new Rect(pos, size);
     }
 
     private Vector2 CellCenterToScreen(Vector2Int cellPos)

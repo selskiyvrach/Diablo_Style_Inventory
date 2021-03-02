@@ -12,6 +12,12 @@ public class Inventory : MonoBehaviour
     private ItemStorePanel _currPanel = null;    
     private Vector3 _cursorPos => Input.mousePosition;
 
+    public void AddItemToCursor(InventoryItem item)
+    {
+        if(dragger.Empty)
+            dragger.AddMouseFollower(item, false);
+    }
+
     private void Awake() {
         ForeachPanel((ItemStorePanel p) => p.Init(inventoryCanvas));
         highlighter.Initialize(inventoryCanvas);
@@ -44,12 +50,19 @@ public class Inventory : MonoBehaviour
 
     private void CheckIfOverlappedByPointer(ItemStorePanel p) 
     {
-        if(p.ContainsPoint(_cursorPos))
+        // IF CURR CURSOR POS IS INSIDE PANEL'S AREA
+        if(dragger.Empty ? 
+            // CURSOR POS IF NOTHING DRAGGED
+            p.ContainsPoint(_cursorPos) : 
+            // ITEM'S TOP-LEFT AND BOTTOM-RIGHT CORNERS FOR WHEN ONE IS BEING DRAGGED
+            p.ContainsItemCorners(dragger.DraggedItem))
         {
-            if(p != _currPanel)
+            // add: rescale dragged item
+
+            if(p != _currPanel || (dragger.Empty ? _currPanel.NeedHighlightRecalculation(_cursorPos) : _currPanel.NeedHighlightRecalculation(dragger.DraggedItem)))
             {
-                _currPanel = p; 
-                var rect = _currPanel.GetHighlightRect(_cursorPos);
+                _currPanel = p;
+                var rect = dragger.Empty ? _currPanel.GetHighlightRect(_cursorPos) : _currPanel.GetHighlightRect(dragger.DraggedItem);
                 highlighter.NewHighlight(rect.center, rect.size, dragger.Empty ? false : !_currPanel.CanPlaceItem(dragger.DraggedItem));
             }
         }

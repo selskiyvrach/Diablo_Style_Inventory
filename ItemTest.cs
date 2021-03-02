@@ -3,7 +3,7 @@ using UnityEngine;
 public class ItemTest : MonoBehaviour
 {
     [SerializeField] InventoryItemData[] itemsData;
-    [SerializeField] InventoryUI inventory;
+    [SerializeField] Inventory inventory;
 
     private static ItemTest _instance;
 
@@ -15,7 +15,7 @@ public class ItemTest : MonoBehaviour
 
     private void Update() {
         if(Input.GetMouseButtonDown(1))
-            inventory.TryAddItemAuto(GetRandomItem());
+            inventory.AddItemToCursor(GetRandomItem());
     }
 
     public static InventoryItem GetRandomItem()

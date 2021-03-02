@@ -31,7 +31,7 @@ public class EquipmentSlot : ItemStorePanel
     public override Rect GetHighlightRect(Vector3 screenPos)
         => _panelRect;
 
-    public override Rect GetHighlightRect(Vector3 screenPos, InventoryItem item)
+    public override Rect GetHighlightRect(InventoryItem item)
         => _panelRect;
 
     protected override void PlaceItemVisuals(InventoryItem item)
