@@ -3,9 +3,13 @@ using UnityEngine;
 public class EquipmentSlot : ItemStorePanel
 {
     [SerializeField] EquipmentFitType fitType;
+    public EquipmentFitType FitType => fitType;
 
     private InventoryItem _content;        
-    
+
+    public override bool Empty()
+        => _content == null;
+
     public override bool CanPlaceItem(InventoryItem item)
         => item.FitType != null && item.FitType == fitType;
 

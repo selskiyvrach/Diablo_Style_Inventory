@@ -24,6 +24,19 @@ public class ItemStorageSpace : ItemStorePanel
     public override bool ContainsItemCorners(InventoryItem item)
         => ContainsPoint(item.GetCornerCenterInScreen(0, UnitSize)) && ContainsPoint(item.GetCornerCenterInScreen(1, UnitSize));
 
+    public bool TryPlaceItemAuto(InventoryItem item)
+    {
+        if(_space.TryPlaceItemAuto(item))
+        {
+            PlaceItemVisuals(item);
+            return true;
+        }
+        return false;
+    }
+
+    public override bool Empty()
+        => _space.Empty();
+
     public override bool CanPlaceItem(InventoryItem item)
     {
         _lastCheckedCellCoord = ScreenPosToInventoryCell(item.GetCornerCenterInScreen(0, UnitSize));

@@ -24,7 +24,7 @@ public class InventoryItemVisuals : MonoBehaviour
         }
         visual.RectTransform.sizeDelta = new Vector2(data.SizeInt.x * unitSize, data.SizeInt.y * unitSize);
         visual.gameObject.name = data.Name;
-        visual.SetUpSpriteObject(data, unitSize);
+        visual.SetUpSpriteAndScale(data, unitSize);
         return visual;
     }
 
@@ -37,19 +37,29 @@ public class InventoryItemVisuals : MonoBehaviour
     private Image _image;
 
     public RectTransform RectTransform { get; private set; }
+    public Vector2 DesiredScreenPos { get; set; }
 
-    private void SetUpSpriteObject(InventoryItemData data, float unitSize)
+    private void OnEnable() 
+        => transform.position = DesiredScreenPos;
+    
+    private void Update() 
+        => transform.position = DesiredScreenPos;
+
+    private void SetUpSpriteAndScale(InventoryItemData data, float unitSize)
     {
+        // SETUP CHILD GAMEOBJECT FOR IMAGE SO IT SCALES INDEPENDENTELY FROM RECTTRANSFORM OF ITEM OBJECT
         _image ??= new GameObject("Image").AddComponent<Image>();
         _image.transform.SetParent(transform);
         _image.sprite = data.Sprite;
 
-        var parentSize = RectTransform.sizeDelta;
-        var spriteRect = _image.sprite.rect;
+
+        Vector2 parentSize = RectTransform.sizeDelta;
+        Rect spriteRect = _image.sprite.rect;
 
         Vector2 size;
         float scale;
 
+        // FIND WHICH - SPRITE'S OR ITEM'S - ASPECT RATIO IS HIGHER TO DESIDE ALONG WHICH SIDE OF SPRITE CALCULATE THE SCALE SO IT FITS
         if(spriteRect.width / spriteRect.height >= (float)data.SizeInt.x / (float)data.SizeInt.y)
         {
             size = new Vector2(spriteRect.width * (parentSize.x / spriteRect.width), spriteRect.height * (parentSize.x / spriteRect.width)); 
@@ -61,7 +71,7 @@ public class InventoryItemVisuals : MonoBehaviour
             scale = parentSize.y / size.y;
         }
 
-        _image.rectTransform.sizeDelta = size * scale;  
+        _image.rectTransform.sizeDelta = size * scale * data.ImageScale;  
     }
 
 }

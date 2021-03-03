@@ -13,7 +13,7 @@ public class InventoryItemDragger : MonoBehaviour
 
 // PUBLIC
 
-    public void AddMouseFollower(InventoryItem toDrag, bool withOffset)
+    public void PickUp(InventoryItem toDrag, bool withOffset)
     {
         if(!Empty)
             RemoveMouseFollower();
@@ -26,6 +26,9 @@ public class InventoryItemDragger : MonoBehaviour
         Empty = false;
     } 
 
+    public void Drop()
+        => DropItemIntoWorld();
+
     private void Update()
     {
         if(DraggedItem != null)
@@ -36,6 +39,7 @@ public class InventoryItemDragger : MonoBehaviour
 
     private void DropItemIntoWorld()
     {
+        if(Empty) return;
         Debug.Log($"Item {DraggedItem.ItemData.Name} dropped into the world at {DraggedItem.ScreenPos} screen pos");
         DraggedItem.DisableInventoryViewOfItem();
         RemoveMouseFollower();

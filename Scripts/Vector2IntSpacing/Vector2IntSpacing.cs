@@ -69,6 +69,9 @@ public class Vector2IntSpacing
         return _overlaps.ToArray();
     }
 
+    public bool Empty()
+        => !ApplyPredicateToAreaIn2DSpace(new Vector2Int(0, 0), _size, (int x, int y) => CellOccupied(x, y));
+
     public bool Exceeds(Vector2Int pos, Vector2Int size) => 
         pos.x < 0 || 
         pos.y < 0 || 
@@ -97,21 +100,20 @@ public class Vector2IntSpacing
 
     private bool TrySearchPlace(Vector2Int itemSize, out Vector2Int pos)
     {
-        pos = new Vector2Int();
+        pos = new Vector2Int(-1, -1);
         for(int x = 0; x < _size.x - (itemSize.x - 1); x++)
             for(int y = 0; y < _size.y - (itemSize.y - 1); y++)
-                if(!CellOccupied(x, y))
+                if(!AnyOccupied(new Vector2Int(x, y), itemSize))
                 {
                     pos.Set(x, y);
-                    if(!AnyOccupied(pos, itemSize))
-                        return true;
-                } 
+                    return true;
+                }
         return false;
     }
 
     private void PutItemInSpace(IVector2IntItem newItem, Vector2Int leftCornerPos)
     {
-        ApplyActionToAreaIn2DSpace(leftCornerPos, newItem.SizeInt, (int x, int y) => _space[x, y] = newItem);
+        ApplyActionToAreaIn2DSpace(leftCornerPos, newItem.SizeInt, (int x, int y) => _space[x, y] = newItem );
         newItem.TopLeftCornerPosInt = leftCornerPos;
     }
 

@@ -14,7 +14,6 @@ public abstract class ItemStorePanel : MonoBehaviour
     protected Rect _panelRect;
     public float UnitSize { get; private set; }
 
-
     public virtual void Init(Canvas parentCanvas)
     {
         _panelRect = new Rect(
@@ -34,6 +33,11 @@ public abstract class ItemStorePanel : MonoBehaviour
     
     public virtual bool NeedHighlightRecalculation(InventoryItem item)
         => false;
+
+    public virtual void SetPanelActive(bool value)
+        => _storePanel.gameObject.SetActive(value);
+
+    public abstract bool Empty();
 
     public abstract bool CanPlaceItem(InventoryItem item);
 

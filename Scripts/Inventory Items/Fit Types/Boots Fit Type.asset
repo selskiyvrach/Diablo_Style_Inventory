@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d961f81285c9e804b84a9c0717ae1a05, type: 3}
   m_Name: Boots Fit Type
   m_EditorClassIdentifier: 
-  fitTypeName: Ring
+  fitTypeName: Boots

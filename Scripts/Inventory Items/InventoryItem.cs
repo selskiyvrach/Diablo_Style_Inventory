@@ -12,11 +12,15 @@ public class InventoryItem : IVector2IntItem, IEquipment
     {
         _parentHolder ??= new GameObject("Inventory Items' Storage").transform;
         _parentHolder.SetParent(parent);
+        _parentHolder.gameObject.SetActive(_active);
         return _parentHolder;
-    } 
+    }
+    private static bool _active;
+    public static void SetInventoryItemsActive(bool value)
+        => _parentHolder?.gameObject.SetActive(_active = value);
 
     // POOL OF UNUSED ITEMS
-    private static Stack<Image> _abandoned = new Stack<Image>();
+    private static Stack<Image> _abandoned = new Stack<Image>();    
     private static Image GetImage(InventoryItemData data, Transform parent, float unitSize)
     {
         Image image = null;
@@ -49,7 +53,7 @@ public class InventoryItem : IVector2IntItem, IEquipment
 
     // InventoryItem:
     public InventoryItemData ItemData { get; private set; }
-    public Vector2 ScreenPos { get => _image.transform.position; set => _image.transform.position = value; }
+    public Vector2 ScreenPos { get => _image.transform.position; set => _image.DesiredScreenPos = value; }
     public Vector2 ScreenSize { get => _image.RectTransform.sizeDelta; set => _image.RectTransform.sizeDelta = value; }
 
     public bool _oneCellItem;

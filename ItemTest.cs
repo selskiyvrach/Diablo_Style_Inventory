@@ -15,7 +15,12 @@ public class ItemTest : MonoBehaviour
 
     private void Update() {
         if(Input.GetMouseButtonDown(1))
-            inventory.AddItemToCursor(GetRandomItem());
+            inventory.AddItemAuto(GetRandomItem());
+        if(Input.GetKeyDown(KeyCode.I))
+            if(inventory.IsOn)
+                inventory.SetInventoryActive(false);
+            else 
+                inventory.SetInventoryActive(true);
     }
 
     public static InventoryItem GetRandomItem()

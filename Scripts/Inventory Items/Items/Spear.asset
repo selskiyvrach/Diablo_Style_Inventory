@@ -16,3 +16,4 @@ MonoBehaviour:
   sprite: {fileID: -8748514863643044261, guid: 6014b53b2548fff43afa7aa7a6c662a5, type: 3}
   fitType: {fileID: 11400000, guid: 02031ec3f370b6f4499a91d60c9f2f90, type: 2}
   size: {fileID: 11400000, guid: f37972fdd1705204a81392713c715a60, type: 2}
+  imageScale: 0.85
