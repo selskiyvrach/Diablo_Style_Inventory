@@ -10,4 +10,7 @@ public class ItemFitRule : ScriptableObject
     
     public bool CanFit(ItemFitRule ruleOfCandidate)
         => all ? true : ruleOfCandidate.FitType == FitType; 
+
+    // public bool CanPair(ItemFitRule potentialPair)  
+    //     => 
 }
