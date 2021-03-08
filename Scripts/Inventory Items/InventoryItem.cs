@@ -7,40 +7,16 @@ public class InventoryItem : IVector2IntItem, IEquipment
 // STATIC:
 
     // PARENT GAMEOBJECT 
-    private static Transform _parentHolder;
-    private static Transform GetParent(Transform parent) 
-    {
-        _parentHolder ??= new GameObject("Inventory Items' Storage").transform;
-        _parentHolder.SetParent(parent);
-        _parentHolder.gameObject.SetActive(_active);
-        return _parentHolder;
-    }
-    private static bool _active;
-    public static void SetInventoryItemsActive(bool value)
-        => _parentHolder?.gameObject.SetActive(_active = value);
+    private static Transform _parent;
 
-    // POOL OF UNUSED ITEMS
-    private static Stack<Image> _abandoned = new Stack<Image>();    
-    private static Image GetImage(InventoryItemData data, Transform parent, float unitSize)
+    public static void Init(Canvas parent)
     {
-        Image image = null;
-        // TAKE FROM STACK
-        if(_abandoned.Count > 0 && _abandoned.Peek() != null)
-        {
-            image = _abandoned.Pop();
-            image.gameObject.name = data.Name;
-            image.gameObject.SetActive(true);
-        }
-        // OR CREATE
-        else 
-        {
-            image = new GameObject(data.Name).AddComponent<Image>();
-            image.transform.SetParent(GetParent(parent));
-        }
-        image.sprite = data.Sprite;
-        image.rectTransform.sizeDelta = new Vector2(data.SizeInt.x * unitSize, data.SizeInt.y * unitSize); 
-        return image;
+        _parent ??= new GameObject("Inventory Items' Storage").transform;
+        _parent.transform.SetParent(parent.transform);
     }
+
+    public static void SetInventoryItemsActive(bool value)
+        => _parent.gameObject.SetActive(value);
 
 // INSTANCE: 
 
@@ -49,23 +25,23 @@ public class InventoryItem : IVector2IntItem, IEquipment
     public Vector2Int TopLeftCornerPosInt { get; set; }
 
     // IEquipment:
-    public EquipmentFitType FitType { get; private set; }
+    public ItemFitRule FitRule { get; private set; }
 
     // InventoryItem:
     public InventoryItemData ItemData { get; private set; }
     public Vector2 ScreenPos { get => _image.transform.position; set => _image.DesiredScreenPos = value; }
     public Vector2 ScreenSize { get => _image.RectTransform.sizeDelta; set => _image.RectTransform.sizeDelta = value; }
 
-    public bool _oneCellItem;
+    public bool OneCellItem;
     // VISUAL REPRESENTATION OF ITEM IN UI SPACE
     private InventoryItemVisuals _image;
 
     public InventoryItem(InventoryItemData data)
     {
         ItemData = data;
-        FitType = ItemData.FitType;
+        FitRule = ItemData.FitRule;
         SizeInt = ItemData.SizeInt;
-        _oneCellItem = ItemData.SizeInt.magnitude < 2;
+        OneCellItem = ItemData.SizeInt.magnitude < 2;
     }
 
     public void MoveOnTopOfViewSorting()
@@ -74,8 +50,8 @@ public class InventoryItem : IVector2IntItem, IEquipment
     public void MoveInTheBackOfViewSorting()
         => _image?.transform.SetSiblingIndex(0);
 
-    public void EnableInventoryViewOfItem(float unitSize, Canvas parent)
-        => _image ??= InventoryItemVisuals.GetItemVisuals(ItemData, GetParent(parent.transform), unitSize);
+    public void EnableInventoryViewOfItem(float unitSize)
+        => _image ??= InventoryItemVisuals.GetItemVisuals(ItemData, _parent, unitSize);
 
     public void DisableInventoryViewOfItem()
     {
@@ -94,7 +70,7 @@ public class InventoryItem : IVector2IntItem, IEquipment
         Vector2 temp = new Vector2();
         cornerNumber = (int)Mathf.Clamp01(cornerNumber); 
         // CENTER OF ONE-CELL ITEM
-        if(_oneCellItem) temp = _image.transform.position; 
+        if(OneCellItem) temp = _image.transform.position; 
         // CENTER OF TOP-LEFT CORNER CELL
         if(cornerNumber == 0) temp.Set(NegativeX(), PositiveY()); 
         // CENTER OF BOTTOM-RIGHT CORNER CELL

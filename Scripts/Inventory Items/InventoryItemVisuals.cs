@@ -73,5 +73,4 @@ public class InventoryItemVisuals : MonoBehaviour
 
         _image.rectTransform.sizeDelta = size * scale * data.ImageScale;  
     }
-
 }

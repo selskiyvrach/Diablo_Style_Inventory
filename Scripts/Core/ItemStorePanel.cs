@@ -22,7 +22,7 @@ public abstract class ItemStorePanel : MonoBehaviour
         UnitSize = _panelRect.width / sizeData.SizeInt.x;
     }
 
-    public bool ContainsPoint(Vector3 screenPos)
+    public virtual bool ContainsPoint(Vector3 screenPos)
         => _panelRect.Contains(screenPos);
 
     public virtual bool ContainsItemCorners(InventoryItem item)

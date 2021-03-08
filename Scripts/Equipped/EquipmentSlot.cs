@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class EquipmentSlot : ItemStorePanel
 {
-    [SerializeField] EquipmentFitType fitType;
-    public EquipmentFitType FitType => fitType;
+    [SerializeField] ItemFitRule fitRule;
+    public ItemFitRule FitRule => fitRule;
 
-    private InventoryItem _content;        
+    protected InventoryItem _content; 
 
     public override bool Empty()
         => _content == null;
 
     public override bool CanPlaceItem(InventoryItem item)
-        => item.FitType != null && item.FitType == fitType;
+        => fitRule.CanFit(item.FitRule);
 
     public override bool PeekItem(Vector3 screenPos, out InventoryItem peeked)
         => (peeked = ContainsPoint(screenPos) ? _content : null) != null;

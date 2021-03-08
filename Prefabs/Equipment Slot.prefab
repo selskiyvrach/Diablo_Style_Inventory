@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1486943936619972229}
   - component: {fileID: 1486943936619972227}
-  - component: {fileID: 1486943936619972225}
+  - component: {fileID: 2286367977155032343}
+  - component: {fileID: 5286568675334526864}
   m_Layer: 5
   m_Name: Equipment Slot
   m_TagString: Untagged
@@ -46,7 +47,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1486943936619972230}
   m_CullTransparentMesh: 1
---- !u!114 &1486943936619972225
+--- !u!114 &2286367977155032343
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -55,12 +56,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 1486943936619972230}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68853211f1f688743bdff9bfa80d62ee, type: 3}
+  m_Script: {fileID: 11500000, guid: 1450cc00b75d58b40a7b667cd9457665, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storePanel: {fileID: 1486943937245026585}
+  _panel: {fileID: 1486943937245026585}
+--- !u!114 &5286568675334526864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486943936619972230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5989264c46b48a4d95158f56ee9c19a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   sizeData: {fileID: 11400000, guid: 280ee4ba145a55a4793c89e4601dc6f6, type: 2}
-  fitType: {fileID: 11400000, guid: d011ab9e64228414a91809b53e2b331f, type: 2}
+  fitRule: {fileID: 11400000, guid: 5540f7b83e1061b49ba7c641d3d6a429, type: 2}
+  screenRect: {fileID: 2286367977155032343}
 --- !u!1 &1486943937245026587
 GameObject:
   m_ObjectHideFlags: 0

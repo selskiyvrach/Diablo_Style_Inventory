@@ -1,5 +1,5 @@
 
 public interface IEquipment 
 {
-    EquipmentFitType FitType { get; }
+    ItemFitRule FitRule { get; }
 }

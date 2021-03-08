@@ -9,13 +9,13 @@ public class Inventory : MonoBehaviour
     [SerializeField] Image backgorund;
     [SerializeField] InventoryHighlighter highlighter;
     [SerializeField] InventoryItemDragger dragger;
-    [SerializeField] ItemStorageSpace itemStorage;
-    [SerializeField] ItemStorePanel[] equipmentSlots;
+    [SerializeField] ScreenSpaceItemContainer itemStorage;
+    [SerializeField] ScreenSpaceItemContainer[] equipmentSlots;
 
     // TRACKERS
     private float _unitSize;
-    private ItemStorePanel[] _allpanels;
-    private ItemStorePanel _currPanel = null;    
+    private ScreenSpaceItemContainer[] _allpanels;
+    private ScreenSpaceItemContainer _currPanel = null;    
     private Vector3 _cursorPos => Input.mousePosition;
 
     public bool IsOn { get; private set; } 
@@ -25,13 +25,13 @@ public class Inventory : MonoBehaviour
         if(value == false)
             dragger.Drop();
         backgorund.gameObject.SetActive(IsOn = value);
-        ForeachPanel(_allpanels, (ItemStorePanel p) => p.SetPanelActive(IsOn));
+        ForeachPanel(_allpanels, (ScreenSpaceItemContainer p) => p.SetActive(IsOn));
         InventoryItem.SetInventoryItemsActive(value);
     }
 
     public void AddItemAuto(InventoryItem item)
     {
-        item.EnableInventoryViewOfItem(_unitSize, inventoryCanvas);
+        item.EnableInventoryViewOfItem(_unitSize);
 
         if(IsOn)
         {
@@ -42,7 +42,7 @@ public class Inventory : MonoBehaviour
         else 
         {
             bool placed = false;
-            ForeachPanel(equipmentSlots, (ItemStorePanel p) => { 
+            ForeachPanel(equipmentSlots, (ScreenSpaceItemContainer p) => { 
                 if(!placed && p.Empty() && p.CanPlaceItem(item))
                 {
                     p.PlaceItem(item, out InventoryItem replaced); 
@@ -60,9 +60,9 @@ public class Inventory : MonoBehaviour
     }
 
     private void Awake() {
-        _allpanels = equipmentSlots.Concat(new ItemStorePanel[] { itemStorage }).ToArray();
+        InventoryItem.Init(inventoryCanvas);
+        _allpanels = equipmentSlots.Concat(new ScreenSpaceItemContainer[] { itemStorage }).ToArray();
         SetInventoryActive(IsOn);
-        ForeachPanel(_allpanels, (ItemStorePanel p) => p.Init(inventoryCanvas));
         _unitSize = itemStorage.UnitSize;
         highlighter.Initialize(inventoryCanvas);
     }
@@ -74,6 +74,7 @@ public class Inventory : MonoBehaviour
         ForeachPanel(_allpanels, CheckIfOverlappedByPointer);
 
         if(Input.GetMouseButtonDown(0))
+        {
             if(!dragger.Empty)
             {
                 if(_currPanel != null)
@@ -85,8 +86,8 @@ public class Inventory : MonoBehaviour
                         if(replaced != null)
                             dragger.PickUp(replaced, false);
                     }
-                    else 
-                        Debug.Log(string.Format("Cannot place {0} in {1} slot", dragger.DraggedItem.ItemData.Name, ((EquipmentSlot)_currPanel).FitType.FitTypeName));
+                    else
+                        Debug.Log(string.Format("Cannot place {0} in {1} slot", dragger.DraggedItem.ItemData.Name, "this"));
                 }
                 else
                     dragger.Drop();
@@ -99,35 +100,34 @@ public class Inventory : MonoBehaviour
                     _currPanel.RemoveItem(item);
                 }
             }
+        }
     }
 
-    private void CheckIfOverlappedByPointer(ItemStorePanel p) 
+    private void CheckIfOverlappedByPointer(ScreenSpaceItemContainer c) 
     {
         // IF CURR CURSOR POS IS INSIDE PANEL'S AREA
         if(dragger.Empty ? 
             // CURSOR POS IF NOTHING DRAGGED
-            p.ContainsPoint(_cursorPos) : 
+            c.ContainsPoint(_cursorPos) : 
             // ITEM'S TOP-LEFT AND BOTTOM-RIGHT CORNERS FOR WHEN ONE IS BEING DRAGGED
-            p.ContainsItemCorners(dragger.DraggedItem))
+            c.ContainsItemCorners(dragger.DraggedItem))
         {
-            // add: rescale dragged item
-
-            if(p != _currPanel || (dragger.Empty ? _currPanel.NeedHighlightRecalculation(_cursorPos) : _currPanel.NeedHighlightRecalculation(dragger.DraggedItem)))
+            if(c != _currPanel || (dragger.Empty ? _currPanel.NeedHighlightRecalculation(_cursorPos) : _currPanel.NeedHighlightRecalculation(dragger.DraggedItem)))
             {
-                _currPanel = p;
+                _currPanel = c;
                 var rect = dragger.Empty ? _currPanel.GetHighlightRect(_cursorPos) : _currPanel.GetHighlightRect(dragger.DraggedItem);
                 highlighter.NewHighlight(rect.center, rect.size, dragger.Empty ? false : !_currPanel.CanPlaceItem(dragger.DraggedItem));
             }
         }
         else 
-            if(p == _currPanel)
+            if(c == _currPanel)
             {
                 _currPanel = null;
                 highlighter.HideHighlight();
             }
     }  
 
-    private void ForeachPanel(ItemStorePanel[] arr, Action<ItemStorePanel> toDo)
+    private void ForeachPanel(ScreenSpaceItemContainer[] arr, Action<ScreenSpaceItemContainer> toDo)
     {
         foreach(var p in arr)
             toDo(p);
