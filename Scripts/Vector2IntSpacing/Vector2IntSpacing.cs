@@ -96,9 +96,7 @@ public class Vector2IntSpacing
             "[_]    ";
     }
 
-// PRIVATE  
-
-    private bool TrySearchPlace(Vector2Int itemSize, out Vector2Int pos)
+    public bool TrySearchPlace(Vector2Int itemSize, out Vector2Int pos)
     {
         pos = new Vector2Int(-1, -1);
         for(int x = 0; x < _size.x - (itemSize.x - 1); x++)
@@ -110,6 +108,8 @@ public class Vector2IntSpacing
                 }
         return false;
     }
+
+// PRIVATE  
 
     private void PutItemInSpace(IVector2IntItem newItem, Vector2Int leftCornerPos)
     {

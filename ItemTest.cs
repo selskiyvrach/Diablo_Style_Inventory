@@ -24,5 +24,5 @@ public class ItemTest : MonoBehaviour
     }
 
     public static InventoryItem GetRandomItem()
-        => new InventoryItem(_instance.itemsData[Random.Range(0, _instance.itemsData.Length)]);
+        => InventoryItemFactory.GetInventoryItem(_instance.itemsData[Random.Range(0, _instance.itemsData.Length)]);
 }

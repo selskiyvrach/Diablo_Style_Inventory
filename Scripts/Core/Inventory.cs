@@ -9,7 +9,7 @@ public class Inventory : MonoBehaviour
     [SerializeField] Image backgorund;
     [SerializeField] InventoryHighlighter highlighter;
     [SerializeField] InventoryItemDragger dragger;
-    [SerializeField] ScreenSpaceItemContainer itemStorage;
+    [SerializeField] ScreenSpaceItemContainer mainStorage;
     [SerializeField] ScreenSpaceItemContainer[] equipmentSlots;
 
     // TRACKERS
@@ -27,6 +27,7 @@ public class Inventory : MonoBehaviour
         backgorund.gameObject.SetActive(IsOn = value);
         ForeachPanel(_allpanels, (ScreenSpaceItemContainer p) => p.SetActive(IsOn));
         InventoryItem.SetInventoryItemsActive(value);
+        highlighter.gameObject.SetActive(value);
     }
 
     public void AddItemAuto(InventoryItem item)
@@ -50,7 +51,7 @@ public class Inventory : MonoBehaviour
                 } 
             });
             if(!placed)
-                placed = itemStorage.TryPlaceItemAuto(item);
+                placed = mainStorage.TryPlaceItemAuto(item);
             if(!placed)
             {
                 dragger.PickUp(item, false);
@@ -61,9 +62,9 @@ public class Inventory : MonoBehaviour
 
     private void Awake() {
         InventoryItem.Init(inventoryCanvas);
-        _allpanels = equipmentSlots.Concat(new ScreenSpaceItemContainer[] { itemStorage }).ToArray();
+        _allpanels = equipmentSlots.Concat(new ScreenSpaceItemContainer[] { mainStorage }).ToArray();
         SetInventoryActive(IsOn);
-        _unitSize = itemStorage.UnitSize;
+        _unitSize = mainStorage.UnitSize;
         highlighter.Initialize(inventoryCanvas);
     }
 
@@ -107,10 +108,8 @@ public class Inventory : MonoBehaviour
     {
         // IF CURR CURSOR POS IS INSIDE PANEL'S AREA
         if(dragger.Empty ? 
-            // CURSOR POS IF NOTHING DRAGGED
-            c.ContainsPoint(_cursorPos) : 
-            // ITEM'S TOP-LEFT AND BOTTOM-RIGHT CORNERS FOR WHEN ONE IS BEING DRAGGED
-            c.ContainsItemCorners(dragger.DraggedItem))
+            c.ContainsPoint(_cursorPos) :
+            c == mainStorage ? c.ContainsItemCorners(dragger.DraggedItem) : c.ContainsPoint(_cursorPos))
         {
             if(c != _currPanel || (dragger.Empty ? _currPanel.NeedHighlightRecalculation(_cursorPos) : _currPanel.NeedHighlightRecalculation(dragger.DraggedItem)))
             {

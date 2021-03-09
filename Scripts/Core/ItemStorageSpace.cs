@@ -47,6 +47,9 @@ public class ItemStorageSpace : IItemStoreSpace
         return overlaps.Length <= 1;
     }
 
+    public bool CanPlaceItemAuto(InventoryItem item)
+        => _space.TrySearchPlace(item.SizeInt, out Vector2Int pos);
+
     public bool PeekItem(Vector3 screenPos, out InventoryItem peeked)
     {
         peeked = null;
