@@ -46,7 +46,7 @@ public class Inventory : MonoBehaviour
         {
             bool placed = false;
             ForeachPanel(_activeEquipmentSlots, (ScreenSpaceItemContainer p) => { 
-                if(!placed && p.Empty() && p.CanPlaceItem(item))
+                if(!placed && p.Empty() && p.CanPlaceItemAuto(item))
                 {
                     p.PlaceItem(item, out InventoryItem replaced); 
                     placed = true; 

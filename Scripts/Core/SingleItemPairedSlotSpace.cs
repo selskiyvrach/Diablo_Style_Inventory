@@ -26,6 +26,9 @@ public class SingleItemPairedSlotSpace : SingleItemSlotSpace
         return false;
     }
 
+    public override bool CanPlaceItemAuto(InventoryItem item)
+        => Empty() && _fitRule.CanFit(item.FitRule) && _pair.CanPair(item.FitRule);
+
     public override void PlaceItem(InventoryItem item, Vector2 leftCornerPosNormalized, out Vector2 itemSenterPosNormalized, out InventoryItem replaced)
     {
         itemSenterPosNormalized = new Vector2();

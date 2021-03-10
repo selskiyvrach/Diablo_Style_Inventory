@@ -7,7 +7,7 @@ public class ContainersManager : MonoBehaviour
 {
     [SerializeField] CelledSpaceItemContainer mainStorage;
     [SerializeField] SingleItemContainer[] equipmentSlots;
-    [SerializeField] ContainersSwitch[] switchableSlots;
+    [SerializeField] ContainersSwitcher[] switchableSlots;
 
     public ScreenSpaceItemContainer GetMainStorage()
     {
