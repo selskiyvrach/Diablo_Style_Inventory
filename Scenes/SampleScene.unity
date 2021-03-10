@@ -343,15 +343,15 @@ Transform:
   m_Father: {fileID: 391944908}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1143573021 stripped
+--- !u!114 &985525409 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7629647084062137640, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+  m_CorrespondingSourceObject: {fileID: 3340554807198611342, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
   m_PrefabInstance: {fileID: 4314915619874491688}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ebefbe189ccdf343ac872e8d64f30af, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f04433537e0c3d4198f40a3e98db50c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1385744317 stripped
@@ -512,6 +512,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 979e12058f0969c47834bf1b01c66f40, type: 2}
   - {fileID: 11400000, guid: 321ecaa88e4142f4d9cc2b98e21bfcac, type: 2}
   inventory: {fileID: 1385744317}
+  switcher: {fileID: 985525409}
 --- !u!1001 &4314915619874491688
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -519,6 +520,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3340554807198611342, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: inventory
+      value: 
+      objectReference: {fileID: 1385744317}
     - target: {fileID: 4314915620656220817, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
       propertyPath: m_Name
       value: Inventory
@@ -594,7 +599,7 @@ PrefabInstance:
     - target: {fileID: 8595602088232067574, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
       propertyPath: switchableSlots.Array.data[0]
       value: 
-      objectReference: {fileID: 1143573021}
+      objectReference: {fileID: 985525409}
     m_RemovedComponents:
     - {fileID: 4314915620552932938, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}

@@ -32,9 +32,11 @@ public class Inventory : MonoBehaviour
         highlighter.gameObject.SetActive(value);
     }
 
-    public void AddItemAuto(InventoryItem item)
+    public void AddItemAuto(InventoryItemData itemData)
     {
-        item.EnableInventoryViewOfItem(_unitSize);
+        InventoryItem item = InventoryItemFactory.GetInventoryItem(itemData, _unitSize);
+        
+        item.EnableInventoryViewOfItem();
 
         if(IsOn)
         {
@@ -65,9 +67,11 @@ public class Inventory : MonoBehaviour
     private void Awake() {
         _mainStorage = containersManager.GetMainStorage();
         InventoryItem.Init(inventoryCanvas);
-        SetInventoryActive(IsOn);
         _unitSize = _mainStorage.UnitSize;
         highlighter.Initialize(inventoryCanvas);
+    }
+    private void Start() {
+        SetInventoryActive(IsOn);
     }
 
     private void Update() {

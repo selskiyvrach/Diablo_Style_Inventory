@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SingleItemPairedSlot : ScreenSpaceItemContainer
+public class SingleItemPairedSlot : SingleItemContainer
 {
     [SerializeField] SingleItemPairedSlot pair;
     [SerializeField] ScreenSpaceItemContainer mainStorage;

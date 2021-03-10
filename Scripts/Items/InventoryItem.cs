@@ -36,12 +36,15 @@ public class InventoryItem : IVector2IntItem, IEquipment
     // VISUAL REPRESENTATION OF ITEM IN UI SPACE
     private InventoryItemVisuals _image;
 
-    public InventoryItem(InventoryItemData data)
+    private float _unitSize;
+
+    public InventoryItem(InventoryItemData data, float unitSize)
     {
         ItemData = data;
         FitRule = ItemData.FitRule;
         SizeInt = ItemData.SizeInt;
         OneCellItem = ItemData.SizeInt.magnitude < 2;
+        _unitSize = unitSize;
     }
 
     public void MoveOnTopOfViewSorting()
@@ -50,8 +53,8 @@ public class InventoryItem : IVector2IntItem, IEquipment
     public void MoveInTheBackOfViewSorting()
         => _image?.transform.SetSiblingIndex(0);
 
-    public void EnableInventoryViewOfItem(float unitSize)
-        => _image ??= InventoryItemVisuals.GetItemVisuals(ItemData, _parent, unitSize);
+    public void EnableInventoryViewOfItem()
+        => _image ??= InventoryItemVisuals.GetItemVisuals(ItemData, _parent, _unitSize);
 
     public void DisableInventoryViewOfItem()
     {

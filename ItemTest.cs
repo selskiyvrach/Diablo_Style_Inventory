@@ -4,6 +4,7 @@ public class ItemTest : MonoBehaviour
 {
     [SerializeField] InventoryItemData[] itemsData;
     [SerializeField] Inventory inventory;
+    [SerializeField] ContainersSwitcher switcher;
 
     private static ItemTest _instance;
 
@@ -22,8 +23,13 @@ public class ItemTest : MonoBehaviour
                 inventory.SetInventoryActive(false);
             else 
                 inventory.SetInventoryActive(true);
+            
+        if(Input.GetKeyDown(KeyCode.W))
+            switcher.SetActiveSecondOption();
+        if(Input.GetKeyDown(KeyCode.E))
+            switcher.SetActiveFirstOption();
     }
 
-    public static InventoryItem GetRandomItem()
-        => InventoryItemFactory.GetInventoryItem(_instance.itemsData[Random.Range(0, _instance.itemsData.Length)]);
+    public static InventoryItemData GetRandomItem()
+        => _instance.itemsData[Random.Range(0, _instance.itemsData.Length)];
 }
