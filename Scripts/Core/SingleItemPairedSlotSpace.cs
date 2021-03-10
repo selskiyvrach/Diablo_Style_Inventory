@@ -23,7 +23,6 @@ public class SingleItemPairedSlotSpace : SingleItemSlotSpace
             if(_pair.CanPair(item.FitRule) || _mainStorage.CanPlaceItemAuto(_pair.SlotSpace.Content))
                 return true;
         }
-        Debug.Log("cant place");
         return false;
     }
 

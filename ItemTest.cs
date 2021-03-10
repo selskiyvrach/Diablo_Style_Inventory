@@ -11,6 +11,7 @@ public class ItemTest : MonoBehaviour
         if(_instance != null)
             Destroy(gameObject);
         _instance = this;
+
     }
 
     private void Update() {

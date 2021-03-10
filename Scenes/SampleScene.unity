@@ -343,6 +343,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5dea5c1b02fd834586f925d4b99f03f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1612117461 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3410407904942742403, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+  m_PrefabInstance: {fileID: 4314915619874491688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7b50fbe7ebef8e44b4fe8e7ec549a77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1612117462 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8595602088232067574, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+  m_PrefabInstance: {fileID: 4314915619874491688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea648de151dbb77488f0c98375a5e62f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1831460772
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,5 +534,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4314915620656220821, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: dragger
+      value: 
+      objectReference: {fileID: 1612117461}
+    - target: {fileID: 4314915620656220821, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: containersManager
+      value: 
+      objectReference: {fileID: 1612117462}
+    - target: {fileID: 8595602088232067574, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: switchableSlots.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8595602088232067574, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: switchableSlots.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 4314915620552932938, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
