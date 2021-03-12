@@ -98,14 +98,27 @@ public class ItemStorageSpace : IItemStoreSpace
     public bool NeedHighlightRecalculation(InventoryItem item, Vector2 leftCornerPosNormalized)
     {
         var cell = NormRectToInventoryCell(leftCornerPosNormalized);
-        _toReplace = null;
+        if(_toReplace != null)
+        {
+            var overlaps = _space.GetOverlaps(NormRectToInventoryCell(leftCornerPosNormalized), item.SizeInt);
+            if(overlaps != null)
+                if(overlaps.Length > 1 || (overlaps.Length == 1 && overlaps[0] != _toReplace))
+                {
+                    _toReplace = null;
+                    return true;
+                }
+        }
         return cell != _lastCheckedCellCoord;
     }
 
     public Rect GetHighlightRectNormalized(InventoryItem item, Vector2 normalizedTopLeftCellCenter)
     {
         _lastCheckedCellCoord = NormRectToInventoryCell(normalizedTopLeftCellCenter);
-        return new Rect(GetCellPosNormalized(_lastCheckedCellCoord), GetItemSizeNormalized(item));
+
+        if(_toReplace != null)
+            _lastCheckedCellCoord = _toReplace.TopLeftCornerPosInt;
+        
+        return new Rect(GetCellPosNormalized(_lastCheckedCellCoord), _toReplace != null ? GetItemSizeNormalized(_toReplace) : GetItemSizeNormalized(item));
     }
     
     public Rect GetHighlightRectNormalized(Vector2 screenPosNormalized)

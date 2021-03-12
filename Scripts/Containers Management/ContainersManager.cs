@@ -6,14 +6,24 @@ using UnityEngine;
 public class ContainersManager : MonoBehaviour
 {
     [SerializeField] CelledSpaceItemContainer mainStorage;
+    // [SerializeField] CelledSpaceItemContainer quickSlots;
     [SerializeField] SingleItemContainer[] equipmentSlots;
     [SerializeField] ContainersSwitcher[] switchableSlots;
+
+    // all without nulls 
+    // once checked and cashed
 
     public ScreenSpaceItemContainer GetMainStorage()
     {
         NotNull(mainStorage);
         return mainStorage;
     }
+
+    // public ScreenSpaceItemContainer GetQuickSlots()
+    // {
+    //     NotNull(quickSlots);
+    //     return quickSlots;
+    // }
     
     public ScreenSpaceItemContainer[] GetAllActiveContainers()
         => (GetActiveEquipmentSlots().Concat(new ScreenSpaceItemContainer[] { GetMainStorage() })).ToArray();
@@ -21,7 +31,7 @@ public class ContainersManager : MonoBehaviour
     public ScreenSpaceItemContainer[] GetActiveEquipmentSlots()
     {
         var slots = equipmentSlots.Where(NotNull); 
-        var activeSwitches = switchableSlots.Where(NotNull).SelectMany(n => n.ActiveSlots).Where(NotNull);
+        var activeSwitches = switchableSlots.Where(NotNull).SelectMany(n => n.CurrSlots).Where(NotNull);
         return slots.Concat(activeSwitches).ToArray();
     }
 

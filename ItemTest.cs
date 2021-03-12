@@ -12,7 +12,7 @@ public class ItemTest : MonoBehaviour
         if(_instance != null)
             Destroy(gameObject);
         _instance = this;
-
+        InventoryEventsManager.ClearAllEvents();
     }
 
     private void Update() {
@@ -25,9 +25,12 @@ public class ItemTest : MonoBehaviour
                 inventory.SetInventoryActive(true);
             
         if(Input.GetKeyDown(KeyCode.W))
-            switcher.SetActiveSecondOption();
+            switcher.SetSecondOption();
         if(Input.GetKeyDown(KeyCode.E))
-            switcher.SetActiveFirstOption();
+            switcher.SetFirstOption();
+        
+        if(Input.GetMouseButtonDown(0))
+            inventory.PerformPrimaryInteraction();
     }
 
     public static InventoryItemData GetRandomItem()

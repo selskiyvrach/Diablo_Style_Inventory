@@ -126,7 +126,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1486943936619972230, guid: 4649605c8d364d444815b900d46b76ed, type: 3}
       propertyPath: m_Name
-      value: Right Hand
+      value: Paired Item Slot
       objectReference: {fileID: 0}
     - target: {fileID: 1486943937245026586, guid: 4649605c8d364d444815b900d46b76ed, type: 3}
       propertyPath: m_SizeDelta.x

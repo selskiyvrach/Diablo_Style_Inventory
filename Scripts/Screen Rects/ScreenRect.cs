@@ -7,6 +7,8 @@ public class ScreenRect : MonoBehaviour
 
     public Rect Rect => _panel.rectTransform.RectTransformToScreenSpace();
 
+    public Transform PanelTransform => _panel.transform;
+
     public Vector2 Size => Rect.size;
 
     public void SetSizeDelta(Vector2 newSize)

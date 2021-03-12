@@ -1,49 +1,61 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ContainersSwitcher : MonoBehaviour
 {
+    [SerializeField] Button firstOptionButton;
+    [SerializeField] Button secondOptionButton;
     [SerializeField] SingleItemContainer[] firstOption;
     [SerializeField] SingleItemContainer[] secondOption;
     [SerializeField] Inventory inventory;
 
-    public SingleItemContainer[] ActiveSlots { get; private set; } = null;
+    public SingleItemContainer[] CurrSlots { get; private set; } = null;
+    public bool Active { get; private set; } = false;
 
     private void Start() 
     {
-        Foreach(firstOption.Concat(secondOption).ToArray(), (SingleItemContainer s) => { s.DisableContentsVisuals(); s.SetActive(false); });
-        SetActiveFirstOption();
+        Foreach(firstOption.Concat(secondOption).ToArray(), (SingleItemContainer s) => { s.SetContentVisualsActive(inventory.IsOn); s.SetActive(inventory.IsOn); });
+        SetFirstOption();
     }
 
-    public void SetActiveFirstOption()
+    public void SwitchOptions()
+    {
+        if(CurrSlots == firstOption)
+            SetSecondOption();
+        else 
+            SetFirstOption();
+    }
+
+    public void SetFirstOption()
         => SetNewOptionActive(firstOption);
     
-    public void SetActiveSecondOption()
+    public void SetSecondOption()
         => SetNewOptionActive(secondOption);
 
     private void SetNewOptionActive(SingleItemContainer[] newOption)
     {
-        if(!inventory.IsOn)
-        {
-            if(ActiveSlots != null)
-            {
-                Foreach(ActiveSlots, (SingleItemContainer s) => { s.DisableContentsVisuals(); s.SetActive(false); } );
-                ActiveSlots = null;
-                return;
-            }
-        }
-        if(newOption == ActiveSlots) return;
-
-        Foreach(ActiveSlots, (SingleItemContainer s) => { s.DisableContentsVisuals(); s.SetActive(false); } );
-        ActiveSlots = newOption;
-        Foreach(ActiveSlots, (SingleItemContainer s) => { s.EnableContentsVisuals();  s.SetActive(true);  } );
+        if(newOption == CurrSlots) return;
+        SetActiveCurrSlots(false);
+        SetActiveCurrItems(false);
+        CurrSlots = newOption;
+        SetActiveCurrItems(true);
+        if(inventory.IsOn)
+            SetActiveCurrSlots(true);
     }
+
+    private void SetActiveCurrSlots(bool value)
+        => Foreach(CurrSlots, (SingleItemContainer s) => { s.SetActive(value);  } );
+
+    private void SetActiveCurrItems(bool value)
+        => Foreach(CurrSlots, (SingleItemContainer s) => s.SetContentVisualsActive(value)); 
 
     private void Foreach(SingleItemContainer[] items, Action<SingleItemContainer> toDo)
     {
         if(items == null || items.Length == 0) return;
         foreach(var i in items)
-            toDo(i);
+            if(i != null)
+                toDo(i);
     }
 }

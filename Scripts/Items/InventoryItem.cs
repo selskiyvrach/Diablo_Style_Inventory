@@ -31,6 +31,8 @@ public class InventoryItem : IVector2IntItem, IEquipment
     public InventoryItemData ItemData { get; private set; }
     public Vector2 ScreenPos { get => _image.transform.position; set => _image.DesiredScreenPos = value; }
     public Vector2 ScreenSize { get => _image.RectTransform.sizeDelta; set => _image.RectTransform.sizeDelta = value; }
+    public Transform Parent { get => _image.transform.parent; set => _image.transform.SetParent(value); }
+    public Transform JorneyParent => _parent;
 
     public bool OneCellItem;
     // VISUAL REPRESENTATION OF ITEM IN UI SPACE
@@ -55,6 +57,9 @@ public class InventoryItem : IVector2IntItem, IEquipment
 
     public void EnableInventoryViewOfItem()
         => _image ??= InventoryItemVisuals.GetItemVisuals(ItemData, _parent, _unitSize);
+
+    public void SetVisualsActive(bool value)
+        => _image?.gameObject.SetActive(value);
 
     public void DisableInventoryViewOfItem()
     {

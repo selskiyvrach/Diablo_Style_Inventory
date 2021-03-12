@@ -520,10 +520,34 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 475720643437566365, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_text
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 475720643437566365, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_fontColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 475720643437566365, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_fontColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 475720643437566365, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3340554807198611342, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
       propertyPath: inventory
       value: 
       objectReference: {fileID: 1385744317}
+    - target: {fileID: 3625416876488328762, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_text
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314915619595267006, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 4314915620656220817, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
       propertyPath: m_Name
       value: Inventory
@@ -592,6 +616,14 @@ PrefabInstance:
       propertyPath: activeSlots.Array.data[1]
       value: 
       objectReference: {fileID: 466958750}
+    - target: {fileID: 7946873014024417548, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 556.6172
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946873014024417548, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 69.57715
+      objectReference: {fileID: 0}
     - target: {fileID: 8595602088232067574, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
       propertyPath: switchableSlots.Array.size
       value: 1
