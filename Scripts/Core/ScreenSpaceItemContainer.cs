@@ -42,13 +42,20 @@ public abstract class ScreenSpaceItemContainer : MonoBehaviour
         return success;
     }
 
-    public Rect GetHighlightRect(InventoryItem item) 
-        => screenRect.NormalizedRectToScreenRect(_storeSpace.GetHighlightRectNormalized(item, screenRect.ScreenToRectNormalized(item.GetCornerCenterInScreen(0, UnitSize))));
+    public Rect GetHighlightRect(InventoryItem item, out InventoryItem overlappedItem) 
+    {
+        var rect = screenRect.NormalizedRectToScreenRect(
+            _storeSpace.GetHighlightRectNormalized(
+                item, screenRect.ScreenToRectNormalized(item.GetCornerCenterInScreen(0, UnitSize)), out InventoryItem overlapped));
+        overlappedItem = overlapped;
+        return rect;
+    }
 
-    public Rect GetHighlightRect(Vector2 screenPos)
+    public Rect GetHighlightRect(Vector2 screenPos, out InventoryItem overlappedItem)
     {
         var pos = screenRect.ScreenToRectNormalized(screenPos);
-        var rect = _storeSpace.GetHighlightRectNormalized(pos);
+        var rect = _storeSpace.GetHighlightRectNormalized(pos, out InventoryItem overlapped);
+        overlappedItem = overlapped;
         return screenRect.NormalizedRectToScreenRect(rect);
     } 
 

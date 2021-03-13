@@ -111,9 +111,10 @@ public class ItemStorageSpace : IItemStoreSpace
         return cell != _lastCheckedCellCoord;
     }
 
-    public Rect GetHighlightRectNormalized(InventoryItem item, Vector2 normalizedTopLeftCellCenter)
+    public Rect GetHighlightRectNormalized(InventoryItem item, Vector2 normalizedTopLeftCellCenter, out InventoryItem overlapped)
     {
         _lastCheckedCellCoord = NormRectToInventoryCell(normalizedTopLeftCellCenter);
+        overlapped = _toReplace;
 
         if(_toReplace != null)
             _lastCheckedCellCoord = _toReplace.TopLeftCornerPosInt;
@@ -121,16 +122,18 @@ public class ItemStorageSpace : IItemStoreSpace
         return new Rect(GetCellPosNormalized(_lastCheckedCellCoord), _toReplace != null ? GetItemSizeNormalized(_toReplace) : GetItemSizeNormalized(item));
     }
     
-    public Rect GetHighlightRectNormalized(Vector2 screenPosNormalized)
+    public Rect GetHighlightRectNormalized(Vector2 screenPosNormalized, out InventoryItem overlapped)
     {
         _lastCheckedCellCoord = NormRectToInventoryCell(screenPosNormalized);
+        overlapped = null;
         
         if(_space.PeekItem(_lastCheckedCellCoord, out IVector2IntItem peeked))
         {
             _lastCheckedCellCoord = peeked.TopLeftCornerPosInt;
+            overlapped = (InventoryItem)peeked;
             var normPos = GetCellPosNormalized(_lastCheckedCellCoord);
             var screenNormPos = new Vector2(normPos.x, 1 - normPos.y);
-            return GetHighlightRectNormalized((InventoryItem)peeked, screenNormPos);
+            return GetHighlightRectNormalized((InventoryItem)peeked, screenNormPos, out InventoryItem overlapped2);
         }
 
         Vector2 size = new Vector2(1f / (float)_size.x, 1 / (float)_size.y);

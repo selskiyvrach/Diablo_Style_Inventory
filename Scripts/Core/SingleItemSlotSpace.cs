@@ -24,11 +24,17 @@ public class SingleItemSlotSpace : IItemStoreSpace
     public bool Empty()
         => Content == null;
 
-    public Rect GetHighlightRectNormalized(Vector2 normalizedScreenPos)
-        => _highlightRectNormalized;
+    public Rect GetHighlightRectNormalized(Vector2 normalizedScreenPos, out InventoryItem overlapped)
+    {
+        overlapped = Content;
+        return _highlightRectNormalized;
+    } 
 
-    public Rect GetHighlightRectNormalized(InventoryItem item, Vector2 normalizedRectPoint)
-        => _highlightRectNormalized;
+    public Rect GetHighlightRectNormalized(InventoryItem item, Vector2 normalizedRectPoint, out InventoryItem overlapped)
+    {
+        overlapped = Content;
+        return _highlightRectNormalized;
+    }
 
     public bool NeedHighlightRecalculation(Vector2 normalizedRectPoint)
         => false;
@@ -47,7 +53,10 @@ public class SingleItemSlotSpace : IItemStoreSpace
     }
 
     public void RemoveItem(InventoryItem toRemove)
-        => Content = null;
+    {
+        if(toRemove == Content) 
+            Content = null;
+    }
 
     public virtual bool TryPlaceItemAuto(InventoryItem item, out Vector2 itemSenterPosNormalized)
     {

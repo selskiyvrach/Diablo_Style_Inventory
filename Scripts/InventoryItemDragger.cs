@@ -20,7 +20,7 @@ public class InventoryItemDragger : MonoBehaviour
         
         if(_withOffset = withOffset)
             _posOffset = (Vector2)Input.mousePosition - DraggedItem.ScreenPos;
-
+            
         DraggedItem = toDrag;
         DraggedItem.MoveOnTopOfViewSorting();
         Empty = false;
@@ -29,25 +29,27 @@ public class InventoryItemDragger : MonoBehaviour
     public void Drop()
         => DropItemIntoWorld();
 
+// PRIVATE
+
     private void Update()
+        => MoveItemAlongCursor();
+
+    private void MoveItemAlongCursor()
     {
-        if(DraggedItem != null)
+        if (DraggedItem != null)
             DraggedItem.ScreenPos = _withOffset ? (Vector2)Input.mousePosition - _posOffset : (Vector2)Input.mousePosition;
     }
-
-// PRIVATE
 
     private void DropItemIntoWorld()
     {
         if(Empty) return;
-        Debug.Log($"Item {DraggedItem.ItemData.Name} dropped into the world at {DraggedItem.ScreenPos} screen pos");
         DraggedItem.DisableInventoryViewOfItem();
         RemoveMouseFollower();
     }
 
     public void RemoveMouseFollower()
     {
-        DraggedItem.MoveInTheBackOfViewSorting();
+        DraggedItem?.MoveInTheBackOfViewSorting();
         DraggedItem = null;
         Empty = true;
     }

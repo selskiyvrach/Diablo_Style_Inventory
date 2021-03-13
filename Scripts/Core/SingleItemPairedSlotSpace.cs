@@ -29,17 +29,18 @@ public class SingleItemPairedSlotSpace : SingleItemSlotSpace
     public override bool CanPlaceItemAuto(InventoryItem item)
         => Empty() && _fitRule.CanFit(item.FitRule) && _pair.CanPair(item.FitRule);
 
-    public override void PlaceItem(InventoryItem item, Vector2 leftCornerPosNormalized, out Vector2 itemSenterPosNormalized, out InventoryItem replaced)
+    public override void PlaceItem(InventoryItem item, Vector2 leftCornerPosNormalized, out Vector2 itemCenterPosNormalized, out InventoryItem replaced)
     {
-        itemSenterPosNormalized = new Vector2();
+        itemCenterPosNormalized = new Vector2();
         replaced = null;
         if(!_fitRule.CanFit(item.FitRule)) return;
 
         if(_pair.CanPair(item.FitRule))
         {
             base.PlaceItem(item, leftCornerPosNormalized, out Vector2 itemSenterPosNormalized2, out InventoryItem replaced2);
-            itemSenterPosNormalized = itemSenterPosNormalized2;
+            itemCenterPosNormalized = itemSenterPosNormalized2;
             replaced = replaced2;
+            Debug.Log("placed to slot " + item.ItemData.Name);
         }
         else
         {
@@ -48,7 +49,7 @@ public class SingleItemPairedSlotSpace : SingleItemSlotSpace
                 if(_mainStorage.TryPlaceItemAuto(peeked))
                 {
                     base.PlaceItem(item, leftCornerPosNormalized, out Vector2 itemSenterPosNormalized2, out InventoryItem replaced2);
-                    itemSenterPosNormalized = itemSenterPosNormalized2;
+                    itemCenterPosNormalized = itemSenterPosNormalized2;
                     replaced = replaced2;
                     _pair.RemoveItem(peeked);
                 }

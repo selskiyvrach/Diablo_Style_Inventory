@@ -123,6 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &90385987 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 182192799426688088, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+  m_PrefabInstance: {fileID: 4314915619874491688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1450cc00b75d58b40a7b667cd9457665, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &391944907
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,6 +559,38 @@ PrefabInstance:
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
       objectReference: {fileID: 0}
+    - target: {fileID: 4314915620143833459, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314915620143833460, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314915620143833460, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314915620143833460, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314915620143833460, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 743.3365
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314915620143833460, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 870.7796
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314915620143833460, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 484.1895
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314915620143833460, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -10.0767
+      objectReference: {fileID: 0}
     - target: {fileID: 4314915620656220817, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
       propertyPath: m_Name
       value: Inventory
@@ -600,6 +643,10 @@ PrefabInstance:
       propertyPath: dragger
       value: 
       objectReference: {fileID: 1612117461}
+    - target: {fileID: 4314915620656220821, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
+      propertyPath: background
+      value: 
+      objectReference: {fileID: 90385987}
     - target: {fileID: 4314915620656220821, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
       propertyPath: containersManager
       value: 

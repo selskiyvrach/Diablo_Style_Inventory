@@ -59,10 +59,6 @@ public static class InventoryEventsManager
     public static EnhancedEventHandler OnItemDraggedByCursor { get; } = new EnhancedEventHandler();
 
     ///<summary>
-    /// Sender: the inventory <br/> Args - ItemManipulatedEventArgs: InventoryItem, Manipulation.Released, screen space coords</summary>
-    public static EnhancedEventHandler OnItemReleasedByCursor { get; } = new EnhancedEventHandler();
-
-    ///<summary>
     /// Sender: the inventory <br/> Args - ItemManipulatedEventArgs: InventoryItem, Manipulation.Impossible, screen space coords</summary>
     public static EnhancedEventHandler OnImpossibleToProceed { get; } = new EnhancedEventHandler();
 

@@ -23,7 +23,7 @@ public class EnhancedEventHandler
     public void ClearLastSenderAndArgs()
         => _lastSender = _lastArgs = null;
 
-    public void Invoke(object sender, InventoryItemEventArgs args)
+    public void Invoke(object sender, EventArgs args)
     {
         _lastSender = sender;
         _lastArgs = args;

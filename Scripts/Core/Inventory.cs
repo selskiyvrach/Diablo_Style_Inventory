@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
     [SerializeField] Canvas inventoryCanvas;
-    [SerializeField] Image background;
+    [SerializeField] ScreenRect background;
     [SerializeField] InventoryHighlighter highlighter;
     [SerializeField] InventoryItemDragger dragger;
     [SerializeField] ContainersManager containersManager;
@@ -22,7 +22,7 @@ public class Inventory : MonoBehaviour
     private float _unitSize;
     private ScreenSpaceItemContainer _currContainer = null;
     private Vector3 _cursorPos => Input.mousePosition;
-    private InventoryItemEventArgs args;
+    private bool _overlapsBackground;
 
     public bool IsOn { get; private set; } 
 
@@ -30,7 +30,7 @@ public class Inventory : MonoBehaviour
     {
         if(value == false)
             dragger.Drop();
-        background.gameObject.SetActive(IsOn = value);
+        background.SetActive(IsOn = value);
         ForeachPanel(_allActiveContainers, (ScreenSpaceItemContainer p) => p.SetActive(IsOn));
         InventoryItem.SetInventoryItemsActive(value);
         highlighter.gameObject.SetActive(value);
@@ -41,19 +41,21 @@ public class Inventory : MonoBehaviour
             InventoryEventsManager.OnInventoryClosed.Invoke(this, null);
     }
 
+    private InventoryItemEventArgs GetDraggedItemEventArgs()
+        => new InventoryItemEventArgs(dragger.DraggedItem, _currContainer, _cursorPos); 
+
     public void AddItemAuto(InventoryItemData itemData)
     {
         InventoryItem item = InventoryItemFactory.GetInventoryItem(itemData, _unitSize);
-        
         item.EnableInventoryViewOfItem();
 
         if(IsOn)
-            TakeViaDragger(item);
+            PickUp(item);
         else
-            TryPlaceToContainers(item);
+            TryPlaceToContainersAuto(item);
     }
 
-    private void TryPlaceToContainers(InventoryItem item)
+    private void TryPlaceToContainersAuto(InventoryItem item)
     {
         bool placed = false;
         // TRY PLACE TO EQUIPMENT SLOTS IF EMPTY
@@ -61,7 +63,7 @@ public class Inventory : MonoBehaviour
         {
             if (!placed && p.Empty() && p.CanPlaceItemAuto(item))
             {
-                p.PlaceItem(item, out InventoryItem replaced);
+                PlaceItemToSlot(item, p, new InventoryItemEventArgs(item, p, _cursorPos));
                 placed = true;
             }
         });
@@ -71,16 +73,9 @@ public class Inventory : MonoBehaviour
         // DROP BACK INTO WORLD
         if (!placed)
         {
-            dragger.PickUp(item, false);
-            dragger.Drop();
+            PickUp(item);
+            Drop();
         }
-    }
-
-    private void TakeViaDragger(InventoryItem item)
-    {
-        if (!dragger.Empty)
-            dragger.Drop();
-        dragger.PickUp(item, false);
     }
 
     private void Awake()
@@ -97,17 +92,31 @@ public class Inventory : MonoBehaviour
         highlighter.Initialize(inventoryCanvas);
     }
 
-
     private void Update()
     {
-        if(IsOn) 
-            ForeachPanel(_allActiveContainers, CheckIfPointerIsOverAndItsCurrPanel);
+        if(IsOn)
+        {
+            _overlapsBackground = background.ContainsPoint(_cursorPos);
+
+            if(_overlapsBackground)
+                ForeachPanel(_allActiveContainers, CheckIfPointerIsOverAndItsCurrPanel);
+            else 
+                if(_currContainer != null)
+                {
+                    _currContainer = null;
+                    TurnOffHighlight();
+                }
+        }
+    }
+
+    private void TurnOffHighlight()
+    {
+        highlighter.HideHighlight();
+        InventoryEventsManager.OnHighlightOff.Invoke(this, EventArgs.Empty);
     }
 
     public void PerformPrimaryInteraction()
     {
-        args = new InventoryItemEventArgs(dragger.DraggedItem, _currContainer, _cursorPos);
-
         if(!dragger.Empty)
             PutItemInContainerOrDrop();
         else 
@@ -118,7 +127,7 @@ public class Inventory : MonoBehaviour
     {
         if (_currContainer != null && _currContainer.PeekItem(_cursorPos, out InventoryItem item))
         {
-            dragger.PickUp(item, false);
+            PickUp(item);
             _currContainer.RemoveItem(item);
         }
     }
@@ -126,31 +135,40 @@ public class Inventory : MonoBehaviour
     private void PutItemInContainerOrDrop()
     {
         if(_currContainer != null)
-        {
-            if (_currContainer.CanPlaceItem(dragger.DraggedItem))
-            {
-                _currContainer.PlaceItem(dragger.DraggedItem, out InventoryItem replaced);
-                
-                if (replaced != null)
-                {
-                    var locArgs = new InventoryItemEventArgs(replaced, _currContainer, _cursorPos);
-
-                    dragger.PickUp(replaced, false);
-                    InventoryEventsManager.OnItemUnequipped.Invoke(this, locArgs);
-                    InventoryEventsManager.OnItemTakenByCursor.Invoke(this, locArgs);
-                }
-                InventoryEventsManager.OnItemReleasedByCursor.Invoke(this, args);
-                InventoryEventsManager.OnItemEquipped.Invoke(this, args);
-                dragger.RemoveMouseFollower();
-            }
+            if(_currContainer.CanPlaceItem(dragger.DraggedItem))
+                PlaceItemToSlot(dragger.DraggedItem, _currContainer, GetDraggedItemEventArgs());
             else
-                InventoryEventsManager.OnImpossibleToProceed.Invoke(this, args);
-        }
-        else
-        {
-            InventoryEventsManager.OnItemDroppedIntoWorld.Invoke(this, args);
-            dragger.Drop();
-        }
+                InvokeImpossibleEvent();
+        else 
+            if(!_overlapsBackground)
+                Drop(); 
+    }
+
+    private void InvokeImpossibleEvent()
+        => InventoryEventsManager.OnImpossibleToProceed.Invoke(this, GetDraggedItemEventArgs());
+
+    private void Drop()
+    {
+        InventoryEventsManager.OnItemDroppedIntoWorld.Invoke(this, GetDraggedItemEventArgs());
+        dragger.Drop();
+    }
+
+    private void PlaceItemToSlot(InventoryItem item, ScreenSpaceItemContainer container, InventoryItemEventArgs args)
+    {
+        container.PlaceItem(item, out InventoryItem replaced);
+        InventoryEventsManager.OnItemEquipped.Invoke(this, args); 
+        dragger.RemoveMouseFollower();
+        if(replaced != null)
+            PickUp(replaced);
+    }
+
+    private void PickUp(InventoryItem item)
+    {
+        if(!dragger.Empty)
+            Drop();
+        dragger.PickUp(item, false);
+        InventoryEventsManager.OnItemUnequipped.Invoke(this, GetDraggedItemEventArgs());
+        InventoryEventsManager.OnItemTakenByCursor.Invoke(this, GetDraggedItemEventArgs());
     }
 
     private void CheckIfPointerIsOverAndItsCurrPanel(ScreenSpaceItemContainer c) 
@@ -164,19 +182,31 @@ public class Inventory : MonoBehaviour
         {
             if(c != _currContainer || (dragger.Empty ? _currContainer.NeedHighlightRecalculation(_cursorPos) : _currContainer.NeedHighlightRecalculation(dragger.DraggedItem)))
             {
-                Debug.Log("recalc");
                 _currContainer = c;
                 // NOTE: IMPORTANT TO FIRST CHECK IF CAN BE PLACED SINCE POTENTIALLY REPLACED ITEM WILL BE CASHED AND USED FURTHER IN DETERMINIG THE RECT
                 var canPlace = dragger.Empty ? false : !_currContainer.CanPlaceItem(dragger.DraggedItem); 
-                var rect = dragger.Empty ? _currContainer.GetHighlightRect(_cursorPos) : _currContainer.GetHighlightRect(dragger.DraggedItem);
+
+                InventoryItem overlappedItem = null;
+                var rect = new Rect();
+                if(dragger.Empty)
+                {
+                    rect = _currContainer.GetHighlightRect(_cursorPos, out InventoryItem overlapped);
+                    overlappedItem = overlapped;
+                }
+                else 
+                {
+                    rect = _currContainer.GetHighlightRect(dragger.DraggedItem, out InventoryItem overlapped);
+                    overlappedItem = overlapped;
+                }
                 highlighter.NewHighlight(rect.center, rect.size, canPlace);
+                InventoryEventsManager.OnNewHighlight.Invoke(this, new InventoryItemEventArgs(overlappedItem, _currContainer, _cursorPos));
             }
         }
         else 
             if(c == _currContainer)
             {
                 _currContainer = null;
-                highlighter.HideHighlight();
+                TurnOffHighlight();
             }
     }  
 

@@ -4,8 +4,8 @@ using UnityEngine;
 public interface IItemStoreSpace
 {
     // canvas related
-    Rect GetHighlightRectNormalized(Vector2 screenPos);
-    Rect GetHighlightRectNormalized(InventoryItem item, Vector2 normalizedTopLeftCellCenter);
+    Rect GetHighlightRectNormalized(Vector2 screenPos, out InventoryItem overlappedItem);
+    Rect GetHighlightRectNormalized(InventoryItem item, Vector2 normalizedTopLeftCellCenter, out InventoryItem overlappedItem);
 
     // item storage related
     bool Empty();
