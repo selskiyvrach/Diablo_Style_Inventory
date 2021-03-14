@@ -93,4 +93,7 @@ public abstract class ScreenSpaceItemContainer : MonoBehaviour
 
     public void RemoveItem(InventoryItem toRemove)
         => _storeSpace.RemoveItem(toRemove);
+
+    public void RefreshHighlightInfo()
+        => _storeSpace.RefreshHighlightInfo();
 }

@@ -20,6 +20,7 @@ public static class InventoryEventsManager
 
     private static void ForeachHandler(Action<EnhancedEventHandler> toApply)
     {
+        CashAllHandlers();
         foreach(var i in _handlersCash)
             toApply(i);
     }

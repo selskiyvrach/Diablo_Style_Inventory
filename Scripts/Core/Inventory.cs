@@ -171,7 +171,7 @@ public class Inventory : MonoBehaviour
         InventoryEventsManager.OnItemEquipped.Invoke(this, args); 
         _dragger.RemoveMouseFollower();
         if(replaced != null)
-            UnequipItem(container, replaced);
+            UnequipItem(container, replaced); /////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
     private void PickUp(InventoryItem item)
@@ -221,8 +221,9 @@ public class Inventory : MonoBehaviour
                 _currContainer.NeedHighlightRecalculation(_dragger.DraggedItem)))
             {
                 _currContainer = c;
+                _currContainer.RefreshHighlightInfo();
                 InventoryItem overlappedItem = null;
-                // NOTE: IMPORTANT TO FIRST CHECK IF CAN BE PLACED SINCE POTENTIALLY REPLACED ITEM WILL BE CASHED AND USED FURTHER IN DETERMINIG THE RECT
+                // NOTE: IMPORTANT TO FIRST CHECK IF CAN BE PLACED SINCE POTENTIALLY REPLACED ITEM WILL BE CASHED AND USED FURTHER IN DETERMINING THE RECT
                 var canPlace = _dragger.Empty ? false : !_currContainer.CanPlaceItem(_dragger.DraggedItem);
                 var rect = new Rect();
 

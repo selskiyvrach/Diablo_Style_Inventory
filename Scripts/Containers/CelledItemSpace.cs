@@ -80,7 +80,11 @@ public class CelledItemSpace : IItemStoreSpace
     }
 
     public void RemoveItem(InventoryItem toRemove)
-        => _space.TryExtractItem(toRemove.TopLeftCornerPosInt, out IVector2IntItem extracted);
+    {
+        _space.PeekItem(toRemove.TopLeftCornerPosInt, out IVector2IntItem peeked);
+        if((InventoryItem)peeked == toRemove)
+            _space.TryExtractItem(toRemove.TopLeftCornerPosInt, out IVector2IntItem extracted);
+    }
 
     public bool NeedHighlightRecalculation(Vector2 posNormalized)
     {
@@ -97,22 +101,19 @@ public class CelledItemSpace : IItemStoreSpace
     
     public bool NeedHighlightRecalculation(InventoryItem item, Vector2 leftCornerPosNormalized)
     {
+        // IF OVERLAPPED ONLY ONE ITEM AND IT IS THE SAME AS PREVIOUS CALCULATION - RETURN FALSE
+        var overlapped = _space.GetOverlaps(NormRectToInventoryCell(leftCornerPosNormalized), item.SizeInt);
+        if(overlapped.Length == 1)
+            return overlapped[0] != _toReplace;            
+
+        // IF MORE THAN ONE OR NONE - RETURN IF THE CELL HAS CHANGED FROM THE PREVIOUS CALCULATION
         var cell = NormRectToInventoryCell(leftCornerPosNormalized);
-        if(_toReplace != null)
-        {
-            var overlaps = _space.GetOverlaps(NormRectToInventoryCell(leftCornerPosNormalized), item.SizeInt);
-            if(overlaps != null)
-                if(overlaps.Length > 1 || (overlaps.Length == 1 && overlaps[0] != _toReplace))
-                {
-                    _toReplace = null;
-                    return true;
-                }
-        }
         return cell != _lastCheckedCellCoord;
     }
 
     public Rect GetHighlightRectNormalized(InventoryItem item, Vector2 normalizedTopLeftCellCenter, out InventoryItem overlapped)
     {
+
         _lastCheckedCellCoord = NormRectToInventoryCell(normalizedTopLeftCellCenter);
         overlapped = _toReplace;
 
@@ -151,5 +152,11 @@ public class CelledItemSpace : IItemStoreSpace
         float x = normLeftCornerPos.x / ( 1f / _size.x);
         float y = _size.y - normLeftCornerPos.y / ( 1f / _size.y);
         return new Vector2Int(Mathf.FloorToInt(x), Mathf.FloorToInt(y));
+    }
+
+    public void RefreshHighlightInfo()
+    {
+        _lastCheckedCellCoord.Set(-1, -1);
+        _toReplace = null;
     }
 }

@@ -29,12 +29,7 @@ public class InventoryController : MonoBehaviour
         SetCursorPos(Input.mousePosition);
 
         if(Input.GetKeyDown(KeyCode.I))
-        {
-            if(inventory.IsOn)
-                Close();
-            else 
-                Open();
-        }
+            SwitchState();
 
         if(Input.GetKeyDown(KeyCode.W))
             SwitchWeapons();
@@ -60,7 +55,15 @@ public class InventoryController : MonoBehaviour
 
     public void PerformPrimaryInteraction()
         => inventory.PerformPrimaryInteraction();
-    
+
+    public void SwitchState()
+    {
+        if(inventory.IsOn)
+            Close();
+        else 
+            Open();
+    }
+
     public void Open()
         => inventory.SetInventoryActive(true);
     

@@ -69,4 +69,8 @@ public class SingleItemSlotSpace : IItemStoreSpace
             }
         return false;
     }
+
+    public void RefreshHighlightInfo()
+    {
+    }
 }

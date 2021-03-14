@@ -5,8 +5,7 @@ using UnityEngine.UI;
 
 public class ContainersSwitcher : MonoBehaviour
 {
-    [SerializeField] Button firstOptionButton;
-    [SerializeField] Button secondOptionButton;
+    [SerializeField] Button switchButton;
     [SerializeField] SingleItemContainer[] firstOption;
     [SerializeField] SingleItemContainer[] secondOption;
     [SerializeField] Inventory inventory;
@@ -18,7 +17,11 @@ public class ContainersSwitcher : MonoBehaviour
     {
         Foreach(firstOption.Concat(secondOption).ToArray(), (SingleItemContainer s) => { s.SetContentVisualsActive(inventory.IsOn); s.SetActive(inventory.IsOn); });
         SetFirstOption();
+        switchButton.onClick.AddListener(SwitchOptions);
     }
+
+    private void OnDestroy() 
+        => switchButton.onClick.RemoveListener(SwitchOptions);
 
     public void SwitchOptions()
     {
@@ -43,6 +46,7 @@ public class ContainersSwitcher : MonoBehaviour
         SetActiveCurrItems(true);
         if(inventory.IsOn)
             SetActiveCurrSlots(true);
+        // inventory newWeaponSlots(GetActiveSlots, item[equipped], item[unequipped]);
     }
 
     private void SetActiveCurrSlots(bool value)
