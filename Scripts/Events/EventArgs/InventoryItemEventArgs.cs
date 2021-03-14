@@ -17,4 +17,5 @@ public class InventoryItemEventArgs : EventArgs
 
     public InventoryItemEventArgs(InventoryItem item, ScreenSpaceItemContainer container, Vector2 screenPos, string message) : this(item, container, screenPos)
         => Message = message;
+
 }
