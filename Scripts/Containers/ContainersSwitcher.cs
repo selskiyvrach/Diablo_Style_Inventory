@@ -14,7 +14,7 @@ public class ContainersSwitcher : MonoBehaviour
     public SingleItemContainer[] CurrSlots { get; private set; } = null;
     public bool Active { get; private set; } = false;
 
-    private void Start() 
+    private void Awake() 
     {
         Foreach(firstOption.Concat(secondOption).ToArray(), (SingleItemContainer s) => { s.SetContentVisualsActive(inventory.IsOn); s.SetActive(inventory.IsOn); });
         SetFirstOption();

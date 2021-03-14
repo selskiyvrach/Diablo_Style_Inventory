@@ -1,15 +1,20 @@
 using System;
 using UnityEngine;
 
-public class InventoryItemDragger : MonoBehaviour
+public class InventoryItemDragger
 {
-    [SerializeField] Canvas parentCanvas;
+    private Canvas _parentCanvas;
     private Vector2 _posOffset;
     private bool _withOffset;
 
     public InventoryItem DraggedItem { get; private set; }
     public bool Empty { get; private set; } = true;
     private Vector3 PointerPos => Input.mousePosition;
+
+// CONSTRUCTOR
+
+    public InventoryItemDragger(Canvas parentCanvas)
+        => _parentCanvas = parentCanvas;
 
 // PUBLIC
 
@@ -31,13 +36,13 @@ public class InventoryItemDragger : MonoBehaviour
 
 // PRIVATE
 
-    private void Update()
-        => MoveItemAlongCursor();
+    public void UpdateDraggersCursor(Vector2 screenPos)
+        => MoveItemAlongCursor(screenPos);
 
-    private void MoveItemAlongCursor()
+    private void MoveItemAlongCursor(Vector2 screenPos)
     {
         if (DraggedItem != null)
-            DraggedItem.ScreenPos = _withOffset ? (Vector2)Input.mousePosition - _posOffset : (Vector2)Input.mousePosition;
+            DraggedItem.ScreenPos = _withOffset ? screenPos - _posOffset : screenPos;
     }
 
     private void DropItemIntoWorld()

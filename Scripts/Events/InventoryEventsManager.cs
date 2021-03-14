@@ -11,17 +11,27 @@ public static class InventoryEventsManager
     /// Cash of all enhancedEventHandler properties in the class</summary>
     private static IEnumerable<EnhancedEventHandler> _handlersCash;
 
-    public static void ClearAllEvents()
-    {
-        _handlersCash ??= 
+    private static void CashAllHandlers()
+        => _handlersCash ??= 
         from prop in typeof(InventoryEventsManager).GetProperties()
         let casted = prop.GetValue(null) as EnhancedEventHandler
         where casted != null
         select casted;
 
+    private static void ForeachHandler(Action<EnhancedEventHandler> toApply)
+    {
         foreach(var i in _handlersCash)
-            i.RemoveAllListeners();
+            toApply(i);
     }
+
+    public static void ClearAllHandlers()
+        => ForeachHandler((EnhancedEventHandler e) => e.RemoveAllListeners());
+
+    public static void SubscribeToAll(EventHandler listener, bool getInstantlyLastUpdate)
+        => ForeachHandler((EnhancedEventHandler e) => e.AddListener(listener, getInstantlyLastUpdate));
+
+    public static void UnsubscribeFromAll(EventHandler listener)
+        => ForeachHandler((EnhancedEventHandler e) => e.RemoveListener(listener));
 
 // INVENTORY 
 

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class ItemStorageSpace : IItemStoreSpace
+public class CelledItemSpace : IItemStoreSpace
 {
     // LOW LEVEL VECTOR2INT SPACE FOR ITEMS
     private Vector2IntSpacing _space;
@@ -15,7 +15,7 @@ public class ItemStorageSpace : IItemStoreSpace
     // TRACKS WHETHER IT IS TIME TO ASK FOR NEW HIGHLIGHT AREA
     private Vector2Int _lastCheckedCellCoord;
     
-    public ItemStorageSpace(Vector2IntSpaceData sizeData)
+    public CelledItemSpace(Vector2IntSpaceData sizeData)
         => _space = new Vector2IntSpacing(_size = sizeData.SizeInt);
 
     public bool TryPlaceItemAuto(InventoryItem item, out Vector2 itemCenterNormalized)

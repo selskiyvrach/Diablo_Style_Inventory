@@ -6,7 +6,6 @@ using UnityEngine;
 public class ContainersManager : MonoBehaviour
 {
     [SerializeField] CelledSpaceItemContainer mainStorage;
-    // [SerializeField] CelledSpaceItemContainer quickSlots;
     [SerializeField] SingleItemContainer[] equipmentSlots;
     [SerializeField] ContainersSwitcher[] switchableSlots;
 
@@ -19,12 +18,6 @@ public class ContainersManager : MonoBehaviour
         return mainStorage;
     }
 
-    // public ScreenSpaceItemContainer GetQuickSlots()
-    // {
-    //     NotNull(quickSlots);
-    //     return quickSlots;
-    // }
-    
     public ScreenSpaceItemContainer[] GetAllActiveContainers()
         => (GetActiveEquipmentSlots().Concat(new ScreenSpaceItemContainer[] { GetMainStorage() })).ToArray();
     
