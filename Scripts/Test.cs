@@ -47,7 +47,7 @@ public class Test : MonoBehaviour
             $"Inventory has been closed"), false);
 
         InventoryEventsManager.OnNewHighlight.AddListener((object sender, EventArgs args) => DebugMinorEvent(
-            $"New highlight turned on"), false);
+            ((InventoryItemEventArgs)args).Item == null ? "New empty highlight" : $"Cursor hovered over {((InventoryItemEventArgs)args).Item.ItemData.Name}"), false);
 
         InventoryEventsManager.OnHighlightOff.AddListener((object sender, EventArgs args) => DebugMinorEvent(
             $"Highlight turned off"), false);

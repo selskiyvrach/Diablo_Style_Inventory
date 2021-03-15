@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName="Scriptable Objects/Inventory/New Equipment Fit Rule")]
+[CreateAssetMenu(menuName="Scriptable Objects/Inventory/Fit Rule")]
 public class ItemFitRule : ScriptableObject
 {
     [SerializeField] bool all;

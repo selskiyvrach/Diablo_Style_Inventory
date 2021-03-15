@@ -10,6 +10,7 @@ public class InventoryController : MonoBehaviour
     /// Switch Weapons - 'W' <br/>
     /// Interact with cursor - Input.GetMouseButtton(0)
     ///</summary>
+    [Tooltip("Default controls: CursorPos - Input.MousePos; Open/Close - 'I'; Switch Weapons - 'W'; Interact with cursor - Input.GetMouseButtton(0)")]
     [SerializeField] Control control;
     [SerializeField] ContainersSwitcher[] switchers;
 

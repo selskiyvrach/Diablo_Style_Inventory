@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-[CreateAssetMenu(menuName="Scriptable Objects/Inventory/New Item Pair Type")]
+[CreateAssetMenu(menuName="Scriptable Objects/Inventory/Pair Type")]
 public class ItemPairType : ScriptableObject
 {
     [SerializeField] string pairTypeName;

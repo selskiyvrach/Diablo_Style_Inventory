@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName="Scriptable Objects/Inventory/New Vector2 Int Size")] 
+[CreateAssetMenu(menuName="Scriptable Objects/Inventory/Int Size")] 
 public class Vector2IntSpaceData : ScriptableObject
 {
     [SerializeField] Vector2Int size;

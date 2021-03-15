@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName="Scriptable Objects/Inventory/New Equipment Paired Fit Type")]
+[CreateAssetMenu(menuName="Scriptable Objects/Inventory/Fit And Pair Rule")]
 public class ItemFitAndPairRule : ItemFitRule
 {
     [SerializeField] ItemPairType pairType;
