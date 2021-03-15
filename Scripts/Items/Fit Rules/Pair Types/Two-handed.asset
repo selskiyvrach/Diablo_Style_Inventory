@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Two-handed
   m_EditorClassIdentifier: 
   pairTypeName: Two-handed
+  twoHanded: 1

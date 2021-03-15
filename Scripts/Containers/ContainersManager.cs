@@ -9,9 +9,6 @@ public class ContainersManager : MonoBehaviour
     [SerializeField] SingleItemContainer[] equipmentSlots;
     [SerializeField] ContainersSwitcher[] switchableSlots;
 
-    // all without nulls 
-    // once checked and cashed
-
     public ScreenSpaceItemContainer GetMainStorage()
     {
         NotNull(mainStorage);
@@ -24,7 +21,7 @@ public class ContainersManager : MonoBehaviour
     public ScreenSpaceItemContainer[] GetActiveEquipmentSlots()
     {
         var slots = equipmentSlots.Where(NotNull); 
-        var activeSwitches = switchableSlots.Where(NotNull).SelectMany(n => n.CurrSlots).Where(NotNull);
+        var activeSwitches = switchableSlots.Where(NotNull).SelectMany(n => n.GetCurrentSlots()).Where(NotNull);
         return slots.Concat(activeSwitches).ToArray();
     }
 

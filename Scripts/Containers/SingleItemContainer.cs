@@ -6,4 +6,7 @@ public class SingleItemContainer : ScreenSpaceItemContainer
 
     public void SetContentVisualsActive(bool value)
         => ((SingleItemSlotSpace)_storeSpace)?.Content?.SetVisualsActive(value);
+
+    public InventoryItem Content => ((SingleItemSlotSpace)_storeSpace).Content;
+
 }

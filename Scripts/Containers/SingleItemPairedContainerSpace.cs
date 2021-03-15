@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class SingleItemPairedSlotSpace : SingleItemSlotSpace
+public class SingleItemPairedContainerSpace : SingleItemSlotSpace
 {
-    private SingleItemPairedSlot _pair;
+    private SingleItemPairedContainer _pair;
     private ScreenSpaceItemContainer _mainStorage;
     
-    public SingleItemPairedSlotSpace(ItemFitRule fitRule, SingleItemPairedSlot pair, ScreenSpaceItemContainer mainStorage) : base(fitRule)
+    public SingleItemPairedContainerSpace(ItemFitRule fitRule, SingleItemPairedContainer pair, ScreenSpaceItemContainer mainStorage) : base(fitRule)
     {   
         _pair = pair;
         _mainStorage = mainStorage;
@@ -35,15 +35,16 @@ public class SingleItemPairedSlotSpace : SingleItemSlotSpace
         replaced = null;
         if(!_fitRule.CanFit(item.FitRule)) return;
 
+        // IF PAIRED SLOT EMPTY OR IT'S CONTENT CAN BE EQUIPPED WITH THE ITEM YOU ARE TRYING TO PUT - OK
         if(_pair.CanPair(item.FitRule))
         {
             base.PlaceItem(item, leftCornerPosNormalized, out Vector2 itemSenterPosNormalized2, out InventoryItem replaced2);
             itemCenterPosNormalized = itemSenterPosNormalized2;
             replaced = replaced2;
-            Debug.Log("placed to slot " + item.ItemData.Name);
         }
         else
         {
+            // TRY TO PUT PAIRED SLOTS'S CONTENT TO INVENTORY. IF THERE'S PLACE - OPERATION SUCCEDES
             if(_pair.PeekItem(Vector2.zero, out InventoryItem peeked))
             {
                 if(_mainStorage.TryPlaceItemAuto(peeked))
@@ -53,8 +54,6 @@ public class SingleItemPairedSlotSpace : SingleItemSlotSpace
                     replaced = replaced2;
                     _pair.RemoveItem(peeked);
                 }
-                else 
-                    Debug.Log("Cannot place item. No space in main storage availible");
             }
         }
     }

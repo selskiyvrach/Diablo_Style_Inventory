@@ -17,7 +17,7 @@ public class Test : MonoBehaviour
     {
         // BUTTONS
 
-        newItemButton.onClick.AddListener(() => controller.AddItem(GetRandomItem()));
+        newItemButton.onClick.AddListener(() => controller.AddItem(GetRandomItemData()));
         switchWeaponsButton.onClick.AddListener(() => controller.SwitchWeapons());
         openCloseButton.onClick.AddListener(() => controller.SwitchState());
 
@@ -68,7 +68,6 @@ public class Test : MonoBehaviour
     private void DebugMinorEvent(string message)
         => minorEventLogger.text += "\n" + message;
 
-
-    private InventoryItemData GetRandomItem()
+    private InventoryItemData GetRandomItemData()
         => itemsData[UnityEngine.Random.Range(0, itemsData.Length)];
 }

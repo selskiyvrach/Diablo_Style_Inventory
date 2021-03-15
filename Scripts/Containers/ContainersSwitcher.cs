@@ -10,7 +10,9 @@ public class ContainersSwitcher : MonoBehaviour
     [SerializeField] SingleItemContainer[] secondOption;
     [SerializeField] Inventory inventory;
 
-    public SingleItemContainer[] CurrSlots { get; private set; } = null;
+    private SingleItemContainer[] _currSlots;
+    private InventoryItemVisuals _lockedSlotPlaceholder;
+
     public bool Active { get; private set; } = false;
 
     private void Awake() 
@@ -25,10 +27,24 @@ public class ContainersSwitcher : MonoBehaviour
 
     public void SwitchOptions()
     {
-        if(CurrSlots == firstOption)
+        if(_currSlots == firstOption)
             SetSecondOption();
         else 
             SetFirstOption();
+
+        var unequipped = firstOption == _currSlots ? secondOption : firstOption;
+        var equipped = firstOption == _currSlots ? firstOption : secondOption;
+        
+        inventory.SetUpAvailibleSlotsChanges(
+            unequipped.Where(n => n.Content != null).ToArray(), 
+            equipped.Where(n => n.Content != null).ToArray());
+    }
+
+    public SingleItemContainer[] GetCurrentSlots()
+    {
+        if(_currSlots == null)
+            SetFirstOption();
+        return _currSlots;
     }
 
     public void SetFirstOption()
@@ -39,21 +55,22 @@ public class ContainersSwitcher : MonoBehaviour
 
     private void SetNewOptionActive(SingleItemContainer[] newOption)
     {
-        if(newOption == CurrSlots) return;
+        if(newOption == _currSlots) return;
+        var unequipped = _currSlots;
+        
         SetActiveCurrSlots(false);
         SetActiveCurrItems(false);
-        CurrSlots = newOption;
+        _currSlots = newOption;
         SetActiveCurrItems(true);
         if(inventory.IsOn)
             SetActiveCurrSlots(true);
-        // inventory newWeaponSlots(GetActiveSlots, item[equipped], item[unequipped]);
     }
 
     private void SetActiveCurrSlots(bool value)
-        => Foreach(CurrSlots, (SingleItemContainer s) => { s.SetActive(value);  } );
+        => Foreach(_currSlots, (SingleItemContainer s) => { s.SetActive(value);  } );
 
     private void SetActiveCurrItems(bool value)
-        => Foreach(CurrSlots, (SingleItemContainer s) => s.SetContentVisualsActive(value)); 
+        => Foreach(_currSlots, (SingleItemContainer s) => s.SetContentVisualsActive(value)); 
 
     private void Foreach(SingleItemContainer[] items, Action<SingleItemContainer> toDo)
     {
@@ -62,4 +79,5 @@ public class ContainersSwitcher : MonoBehaviour
             if(i != null)
                 toDo(i);
     }
+
 }

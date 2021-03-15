@@ -10,12 +10,10 @@ public class Inventory : MonoBehaviour
     
     private InventoryItemDragger _dragger;
     
-    // SET ONCE IN AWAKE
+    // SET ONCE IN AWAKE. ON CHANGES CONTAINERSWITCHER CALLS SETUPAVAILIBLESLOTSCHANGES
     private ScreenSpaceItemContainer _mainStorage; 
-    // SET EACH TIME SINCE CONTAINS SWITCHABLE SLOTS
-    private ScreenSpaceItemContainer[] _activeEquipmentSlots => containersManager.GetActiveEquipmentSlots();
-    // SET EACH TIME SINCE CONTAINS SWITCHABLE SLOTS
-    private ScreenSpaceItemContainer[] _allActiveContainers => containersManager.GetAllActiveContainers();
+    private ScreenSpaceItemContainer[] _activeEquipmentSlots;
+    private ScreenSpaceItemContainer[] _allActiveContainers;
 
     // TRACKERS
     private float _unitSize;
@@ -80,6 +78,16 @@ public class Inventory : MonoBehaviour
             RetrieveItemFromContainer();
     }
 
+    public void SetUpAvailibleSlotsChanges(SingleItemContainer[] unequipped, SingleItemContainer[] equipped)
+    {
+        _allActiveContainers = containersManager.GetAllActiveContainers();
+        _activeEquipmentSlots = containersManager.GetActiveEquipmentSlots();
+        foreach(var i in unequipped)
+            InventoryEventsManager.OnItemUnequipped.Invoke(this, new InventoryItemEventArgs(i.Content, i, _cursorPos));
+        foreach(var j in equipped)
+            InventoryEventsManager.OnItemEquipped.Invoke(this, new InventoryItemEventArgs(j.Content, j, _cursorPos));
+    }
+
 // PRIVATE  
 
     // MONOBEHAVIOUR
@@ -92,6 +100,9 @@ public class Inventory : MonoBehaviour
     private void InitializeStuff()
     {
         _mainStorage = containersManager.GetMainStorage();
+        _allActiveContainers = containersManager.GetAllActiveContainers();
+        _activeEquipmentSlots = containersManager.GetActiveEquipmentSlots();
+
         _unitSize = _mainStorage.UnitSize;
         _dragger = new InventoryItemDragger(inventoryCanvas);
         InventoryItem.Init(inventoryCanvas);
@@ -104,8 +115,9 @@ public class Inventory : MonoBehaviour
 
     private void ForeachPanel(ScreenSpaceItemContainer[] arr, Action<ScreenSpaceItemContainer> toDo)
     {
-        foreach(var p in arr)
-            toDo(p);
+        if(arr != null && arr.Length > 0)
+            foreach(var p in arr)
+                toDo(p);
     }
 
     // COMPLEX MANIPULATIONS

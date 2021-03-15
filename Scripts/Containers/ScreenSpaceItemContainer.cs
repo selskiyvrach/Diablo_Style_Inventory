@@ -35,7 +35,7 @@ public abstract class ScreenSpaceItemContainer : MonoBehaviour
             screenRect.ContainsPoint(item.ScreenPos) : 
             (screenRect.ContainsPoint(item.GetCornerCenterInScreen(0, UnitSize)) && screenRect.ContainsPoint(item.GetCornerCenterInScreen(1, UnitSize)));
 
-    public bool PeekItem(Vector3 screenPos, out InventoryItem peeked)
+    public virtual bool PeekItem(Vector3 screenPos, out InventoryItem peeked)
     {
         bool success = _storeSpace.PeekItem(screenRect.ScreenToRectNormalized(screenPos), out InventoryItem peeked2);
         peeked = peeked2;
@@ -68,14 +68,14 @@ public abstract class ScreenSpaceItemContainer : MonoBehaviour
     public bool CanPlaceItem(InventoryItem item)
         => _storeSpace.CanPlaceItem(item, screenRect.ScreenToRectNormalized(item.GetCornerCenterInScreen(0, UnitSize)));
 
-    public void PlaceItem(InventoryItem item, out InventoryItem replaced)
+    public virtual void PlaceItem(InventoryItem item, out InventoryItem replaced)
     {
         _storeSpace.PlaceItem(item, screenRect.ScreenToRectNormalized(item.GetCornerCenterInScreen(0, UnitSize)), out Vector2 itemCenterPosNormalized, out InventoryItem replaced2);
         replaced = replaced2;
         item.ScreenPos = screenRect.NormalizedRectPointToScreen(itemCenterPosNormalized);
     }
 
-    public void SetActive(bool value)
+    public virtual void SetActive(bool value)
         => screenRect.SetActive(value);
 
     public bool TryPlaceItemAuto(InventoryItem item)
@@ -91,7 +91,7 @@ public abstract class ScreenSpaceItemContainer : MonoBehaviour
     public bool CanPlaceItemAuto(InventoryItem item)
         => _storeSpace.CanPlaceItemAuto(item);
 
-    public void RemoveItem(InventoryItem toRemove)
+    public virtual void RemoveItem(InventoryItem toRemove)
         => _storeSpace.RemoveItem(toRemove);
 
     public void RefreshHighlightInfo()

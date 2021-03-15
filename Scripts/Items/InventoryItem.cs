@@ -103,4 +103,7 @@ public class InventoryItem : IVector2IntItem
         float NegativeY() => sizeInt.y == 1 ? pos.y : ( - (float)sizeInt.y / 2 + 0.5f) * unitSize + pos.y;
     }
 
+    public InventoryItemVisuals GetClone()
+        => InventoryItemVisuals.GetClone(_image);
+
 }
