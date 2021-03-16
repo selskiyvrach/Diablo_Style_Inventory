@@ -17,6 +17,7 @@ Features
 		with common cell size. (set 'execute' on FixedRatioRectTransform script on 
 		Inventory Game Object to false if you don't need this feature, or remove
 		items you want to exclude from 'ItemContainers' serialized array.)
+	- event with item info and coords when hovered over item in inventory
 
     API
 
