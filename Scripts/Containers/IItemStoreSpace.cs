@@ -14,7 +14,7 @@ public interface IItemStoreSpace
     bool CanPlaceItemAuto(InventoryItem item);
     bool TryPlaceItemAuto(InventoryItem item, out Vector2 itemSenterPosNormalized);
     void PlaceItem(InventoryItem item, Vector2 leftCornerPosNormalized, out Vector2 posNormalized, out InventoryItem replaced);
-    void RemoveItem(InventoryItem toRemove);
+    void ExtractItem(InventoryItem toExtract, out InventoryItem extracted);
     void RefreshHighlightInfo();
 
     // highlight related

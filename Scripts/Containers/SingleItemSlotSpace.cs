@@ -12,11 +12,8 @@ public class SingleItemSlotSpace : IItemStoreSpace
         => _fitRule = fitRule;
     
     public virtual bool CanPlaceItem(InventoryItem item, Vector2 normalizedRectPos)
-    {
-        if(_fitRule.CanFit(item.FitRule))
-            return true;
-        return false;
-    }
+        => _fitRule.CanFit(item.FitRule);
+
 
     public virtual bool CanPlaceItemAuto(InventoryItem item)
         => Empty() && _fitRule.CanFit(item.FitRule);
@@ -48,14 +45,19 @@ public class SingleItemSlotSpace : IItemStoreSpace
     public virtual void PlaceItem(InventoryItem item, Vector2 leftCornerPosNormalized, out Vector2 itemSenterPosNormalized, out InventoryItem replaced)
     {
         itemSenterPosNormalized = _centerNormalized;
-        replaced = Content;
+        ExtractItem(Content, out InventoryItem extracted);
+        replaced = extracted;
         Content = item;
     }
 
-    public void RemoveItem(InventoryItem toRemove)
+    public void ExtractItem(InventoryItem toExtract, out InventoryItem extracted)
     {
-        if(toRemove == Content) 
+        extracted = null;
+        if(toExtract == Content) 
+        {
+            extracted = Content;
             Content = null;
+        }
     }
 
     public virtual bool TryPlaceItemAuto(InventoryItem item, out Vector2 itemSenterPosNormalized)

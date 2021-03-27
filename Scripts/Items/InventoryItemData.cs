@@ -15,4 +15,5 @@ public class InventoryItemData : ScriptableObject
     public ItemFitRule FitRule => fitRule;
     public Vector2Int SizeInt => size.SizeInt;
     public float ImageScale => imageScale;
+    public bool TwoHanded => fitRule.TwoHanded;
 }

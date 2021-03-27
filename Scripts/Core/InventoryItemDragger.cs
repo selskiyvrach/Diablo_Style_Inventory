@@ -4,11 +4,9 @@ using UnityEngine;
 public class InventoryItemDragger
 {
     private Canvas _parentCanvas;
-    private Vector2 _posOffset;
-    private bool _withOffset;
 
     public InventoryItem DraggedItem { get; private set; }
-    public bool Empty { get; private set; } = true;
+    public bool Empty => DraggedItem == null;
     private Vector3 PointerPos => Input.mousePosition;
 
 // CONSTRUCTOR
@@ -18,17 +16,15 @@ public class InventoryItemDragger
 
 // PUBLIC
 
-    public void PickUp(InventoryItem toDrag, bool withOffset)
+    public void PickUp(InventoryItem toDrag)
     {
+        if(toDrag == null) return;
+
         if(!Empty)
             RemoveMouseFollower();
         
-        if(_withOffset = withOffset)
-            _posOffset = (Vector2)Input.mousePosition - DraggedItem.ScreenPos;
-            
         DraggedItem = toDrag;
         DraggedItem.MoveOnTopOfViewSorting();
-        Empty = false;
     } 
 
     public void Drop()
@@ -42,7 +38,7 @@ public class InventoryItemDragger
     private void MoveItemAlongCursor(Vector2 screenPos)
     {
         if (DraggedItem != null)
-            DraggedItem.ScreenPos = _withOffset ? screenPos - _posOffset : screenPos;
+            DraggedItem.ScreenPos = screenPos;
     }
 
     private void DropItemIntoWorld()
@@ -52,11 +48,17 @@ public class InventoryItemDragger
         RemoveMouseFollower();
     }
 
+    public InventoryItem ExtractItem()
+    {
+        var outt = DraggedItem;
+        DraggedItem = null;
+        return outt;   
+    }
+
     public void RemoveMouseFollower()
     {
         DraggedItem?.MoveInTheBackOfViewSorting();
         DraggedItem = null;
-        Empty = true;
     }
 
 }

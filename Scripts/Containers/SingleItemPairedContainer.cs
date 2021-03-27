@@ -15,31 +15,67 @@ public class SingleItemPairedContainer : SingleItemContainer
     public bool CanPair(ItemFitRule fitRule)
         => ((SingleItemPairedContainerSpace)_storeSpace).CanPair(fitRule);
 
+    public bool ContainsTwoHanded()
+        => !Empty() && ((ItemFitAndPairRule)Content.FitRule).PairType.TwoHanded;
+
     public override void PlaceItem(InventoryItem item, out InventoryItem replaced)
     {
-        base.PlaceItem(item, out replaced);
+        replaced = null;
+
+        // remove clone pictures if any of the paired contains two-handed
+        if(this.ContainsTwoHanded())
+            pair.RemoveCloneImage();
+        else if(pair.ContainsTwoHanded())
+        {
+            RemoveCloneImage();
+            replaced = pair.Content;
+        }
+
+        // place item here
+        base.PlaceItem(item, out InventoryItem replaced2);
+        replaced ??= replaced2;
+
+        // create clone image
         if(((ItemFitAndPairRule)item.FitRule).PairType.TwoHanded)
-        {
-            pair._twoHandedPlaceholder = item.GetClone();
-            pair._twoHandedPlaceholder.DesiredScreenPos = pair.ScreenRect.Rect.center;
-        }
+            pair.SetCloneImageForItem(item);
     }
 
-    public override void RemoveItem(InventoryItem toRemove)
+    private void SetCloneImageForItem(InventoryItem toClone)
     {
-        if(toRemove == Content)
-        {
-            base.RemoveItem(toRemove);
-            if(((ItemFitAndPairRule)toRemove.FitRule).PairType.TwoHanded)
-            {
-                InventoryItemVisuals.AbandonItemVisuals(pair._twoHandedPlaceholder);
-                pair._twoHandedPlaceholder = null;
-            }
-        }
-        else if(toRemove == pair.Content)
-            pair.RemoveItem(toRemove);
+        RemoveCloneImage();
+        _twoHandedPlaceholder = toClone.GetClone();
+        _twoHandedPlaceholder.DesiredScreenPos = ScreenRect.Rect.center;
     }
 
+    private void RemoveCloneImage()
+    {
+        if(_twoHandedPlaceholder != null)
+        {
+            InventoryItemVisuals.AbandonItemVisuals(_twoHandedPlaceholder);
+            _twoHandedPlaceholder = null;
+        }
+    }
+
+    public override void ExtractItem(InventoryItem toExtract, out InventoryItem extracted)
+    {
+        extracted = null;
+        if(toExtract == Content)
+        {
+            if(ContainsTwoHanded())
+                pair.RemoveCloneImage();
+            base.ExtractItem(toExtract, out InventoryItem extracted2);
+            extracted = extracted2;
+        }
+        else if(toExtract == pair.Content)
+        {
+            if(pair.ContainsTwoHanded())
+                RemoveCloneImage(); 
+            pair.ExtractItem(toExtract, out InventoryItem extracted2);
+            extracted = extracted2;
+        }
+    }
+
+    ///<summary>returns contnent or pair's content if equipped item is two-handed</summary>
     public override bool PeekItem(Vector3 screenPos, out InventoryItem peeked)
     {
         if(base.PeekItem(screenPos, out peeked))

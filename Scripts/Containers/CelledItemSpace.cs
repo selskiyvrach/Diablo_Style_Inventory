@@ -79,11 +79,17 @@ public class CelledItemSpace : IItemStoreSpace
         return new Vector2(x / (float)_size.x, y / (float)_size.y);
     }
 
-    public void RemoveItem(InventoryItem toRemove)
+    public void ExtractItem(InventoryItem toExtract, out InventoryItem extracted)
     {
-        _space.PeekItem(toRemove.TopLeftCornerPosInt, out IVector2IntItem peeked);
-        if((InventoryItem)peeked == toRemove)
-            _space.TryExtractItem(toRemove.TopLeftCornerPosInt, out IVector2IntItem extracted);
+        extracted = null;
+        if(toExtract == null) return;
+
+        _space.PeekItem(toExtract.TopLeftCornerPosInt, out IVector2IntItem peeked);
+        if(peeked != null && (InventoryItem)peeked == toExtract)
+        {
+            _space.TryExtractItem(toExtract.TopLeftCornerPosInt, out IVector2IntItem extractedIntItem);
+            extracted = (InventoryItem)extractedIntItem;
+        }
     }
 
     public bool NeedHighlightRecalculation(Vector2 posNormalized)

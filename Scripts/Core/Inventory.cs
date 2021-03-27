@@ -160,6 +160,8 @@ public class Inventory : MonoBehaviour
         else 
             if(!_overlapsBackground)
                 Drop(); 
+
+        _currContainer?.RefreshHighlightInfo();
     }
 
     // ELEMENTARY ACTIONS
@@ -167,30 +169,33 @@ public class Inventory : MonoBehaviour
     private void RetrieveItemFromContainer()
     {
         if (_currContainer != null && _currContainer.PeekItem(_cursorPos, out InventoryItem item))
-            UnequipItem(_currContainer, item);
+        {
+            _currContainer.ExtractItem(item, out InventoryItem extracted);
+            if(extracted != null)
+                UnequipItem(_currContainer, extracted);
+        }
     }
     
     private void UnequipItem(ScreenSpaceItemContainer container, InventoryItem replaced)
     {
-        container.RemoveItem(replaced);
         InventoryEventsManager.OnItemUnequipped.Invoke(this, new InventoryItemEventArgs(replaced, container, _cursorPos));
         PickUp(replaced);
     }
 
     private void PlaceItemToSlot(InventoryItem item, ScreenSpaceItemContainer container, InventoryItemEventArgs args)
     {
+        _dragger.RemoveMouseFollower();
         container.PlaceItem(item, out InventoryItem replaced);
         InventoryEventsManager.OnItemEquipped.Invoke(this, args); 
-        _dragger.RemoveMouseFollower();
         if(replaced != null)
-            UnequipItem(container, replaced); /////////////////////////////////////////////////////////////////////////////////////////////////
+            UnequipItem(container, replaced);
     }
 
     private void PickUp(InventoryItem item)
     {
         if(!_dragger.Empty)
             Drop();
-        _dragger.PickUp(item, false);
+        _dragger.PickUp(item);
         InventoryEventsManager.OnItemTakenByCursor.Invoke(this, GetDraggedItemEventArgs());
     }
 

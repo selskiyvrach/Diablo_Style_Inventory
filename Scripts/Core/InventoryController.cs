@@ -32,10 +32,10 @@ public class InventoryController : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.I))
             SwitchState();
 
-        if(Input.GetKeyDown(KeyCode.W))
+        else if(Input.GetKeyDown(KeyCode.W))
             SwitchWeapons();
         
-        if(Input.GetKeyDown(KeyCode.Mouse0))
+        else if(Input.GetKeyDown(KeyCode.Mouse0))
             PerformPrimaryInteraction();
     }
 

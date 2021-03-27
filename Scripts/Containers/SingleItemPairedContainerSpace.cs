@@ -35,6 +35,11 @@ public class SingleItemPairedContainerSpace : SingleItemSlotSpace
         replaced = null;
         if(!_fitRule.CanFit(item.FitRule)) return;
 
+        if(((ItemFitAndPairRule)Content.FitRule).PairType.TwoHanded)
+        {
+            
+        }
+
         // IF PAIRED SLOT EMPTY OR IT'S CONTENT CAN BE EQUIPPED WITH THE ITEM YOU ARE TRYING TO PUT - OK
         if(_pair.CanPair(item.FitRule))
         {
@@ -44,16 +49,22 @@ public class SingleItemPairedContainerSpace : SingleItemSlotSpace
         }
         else
         {
+            // replaced should be either this slot's content or pair two-handed content
             // TRY TO PUT PAIRED SLOTS'S CONTENT TO INVENTORY. IF THERE'S PLACE - OPERATION SUCCEDES
+            // peek returns two-handed or pair's one-handed content
             if(_pair.PeekItem(Vector2.zero, out InventoryItem peeked))
             {
+                // if peeked is single slot pair's content
                 if(_mainStorage.TryPlaceItemAuto(peeked))
                 {
                     base.PlaceItem(item, leftCornerPosNormalized, out Vector2 itemSenterPosNormalized2, out InventoryItem replaced2);
                     itemCenterPosNormalized = itemSenterPosNormalized2;
                     replaced = replaced2;
-                    _pair.RemoveItem(peeked);
+                    _pair.ExtractItem(peeked, out InventoryItem extracted);
                 }
+
+                // if peeked is two-handed
+                // 
             }
         }
     }

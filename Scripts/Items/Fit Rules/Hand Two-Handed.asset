@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   all: 0
   fitType: {fileID: 11400000, guid: 02031ec3f370b6f4499a91d60c9f2f90, type: 2}
+  twoHanded: 1
   pairType: {fileID: 11400000, guid: f6e851c77448b5c4f95782048c8652b8, type: 2}
   allowed: []

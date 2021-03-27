@@ -20,7 +20,7 @@ public class ScreenRect : MonoBehaviour
     public bool ContainsPoint(Vector3 screenPos)
         => Rect.Contains(screenPos);
 
-    public Vector2 ScreenToRectNormalized(Vector2 screenPos)
+    public Vector2 ScreenToNormalized(Vector2 screenPos)
         => (screenPos - Rect.position) / Rect.size;
 
     public Vector2 NormalizedRectPointToScreen(Vector2 normalizedRectPoint)
