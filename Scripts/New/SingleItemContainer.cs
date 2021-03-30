@@ -17,15 +17,18 @@ namespace D2Inventory
         }
 
         public override Projection GetProjection(InventoryItem item, Vector2 screenPos)
-            => lastProjection = screenRect.ContainsPoint(screenPos) ? 
-                new Projection(
-                    screenRect.Rect, 
-                    item == null ? 
-                        true : 
-                        fitRule.CanFit(item.FitRule),
-                    content,
-                    null) :
-                Projection.EmptyProjection;
+        {
+            if(!screenRect.ContainsPoint(screenPos))
+                return lastProjection = Projection.EmptyProjection;
+
+            var canPlace = item == null ? true : fitRule.CanFit(item.FitRule);
+
+            if(lastProjection.FieldsEqual(screenRect.Rect, canPlace, content, null))
+                return Projection.SameProjection;
+            else 
+                return lastProjection = new Projection(screenRect.Rect, canPlace, content, null);
+        }
+
 
         public override InventoryItem PlaceItem(InventoryItem item)
         {

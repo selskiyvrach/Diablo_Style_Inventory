@@ -4,13 +4,20 @@ using System.Linq;
 using UnityEngine;
 
 namespace D2Inventory
-{
+{   
+    [RequireComponent(typeof(ContainerManager))]
     public class Inventory : MonoBehaviour
     {
         [SerializeField] Canvas inventoryCanvas;
         [SerializeField] InventoryHighlighter highlighter;
+
+
+        [SerializeField] ContainerManager manager;
         [SerializeField] ContainerBase mainStorage;
         [SerializeField] ContainerBase[] containers;
+
+
+
         [SerializeField] InventoryItemData[] testItemData;
 
         private InventoryItemDragger _dragger;
@@ -33,18 +40,27 @@ namespace D2Inventory
         }
 
         private void Update() {
-            highlighter.HideHighlight();
-            _currContainer = null;
+            bool overlapsContainer = false;
             foreach(var c in containers)
             {
                 var proj = c.GetProjection(_dragger.DraggedItem, Input.mousePosition);
-                if(!proj.Empty)
+                if(proj != Projection.EmptyProjection)
                 {
-                    _currContainer = c;
-                    _proj = proj;
-                    highlighter.NewHighlight(_proj.ScreenRect.center, _proj.ScreenRect.size, !_proj.CanPlace);
+                    if(proj != Projection.SameProjection)
+                    {
+                        _currContainer = c;
+                        _proj = proj;
+                        highlighter.NewHighlight(_proj.ScreenRect.center, _proj.ScreenRect.size, !_proj.CanPlace);
+                        Debug.Log("new highlight");
+                    }
+                    overlapsContainer = true;
                     break;
                 }
+            }
+            if(!overlapsContainer)
+            {
+                highlighter.HideHighlight();
+                _currContainer = null;
             }
 
 

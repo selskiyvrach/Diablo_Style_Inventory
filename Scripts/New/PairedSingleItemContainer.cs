@@ -36,59 +36,71 @@ namespace D2Inventory
         public override InventoryItem PlaceItem(InventoryItem item)
         {
             if(item == null) return null;
-
             lastProjection ??= GetProjection(item, item.ScreenPos);
 
             var outt = lastProjection.Replacement;
-            if(outt == _content)
+            if (outt == _content)
                 ExtractContent();
-            else if(outt == pair._content)
+            else if (outt == pair._content)
                 pair.ExtractContent();
 
+            SetAsContent(item);
+            return outt;
+        }
+
+        private void SetAsContent(InventoryItem item)
+        {
             // put item to this slot
             _content = item;
             _content.ScreenPos = screenRect.Rect.center;
 
             // if two-handed - set clone image to paired slot
-            if(_content.FitRule.TwoHanded)
+            if (_content.FitRule.TwoHanded)
                 pair.SetCloneImage(_content);
-
-            return outt;
         }
 
         public override Projection GetProjection(InventoryItem item, Vector2 screenPos)
         {
-            if(screenRect.ContainsPoint(screenPos))
-            {
-                InventoryItem replacement = null;
-                InventoryItem refugee = null;
+            // guard clause - whether the cursor pos overlaps the slot rect
+            if(!screenRect.ContainsPoint(screenPos))
+                return lastProjection = Projection.EmptyProjection;
 
-                // if pair has two-handed - it's the replacement
-                if(pair._content != null && pair._content.FitRule.TwoHanded)
+            InventoryItem replacement = null;
+            InventoryItem refugee = null;
+
+            // if pair has two-handed - it's the replacement
+            if(pair._content != null && pair._content.FitRule.TwoHanded)
+                replacement = pair._content;
+            // else if trying to put item and pair content can't pair 
+            else if(item != null && pair._content != null && !pair._content.FitRule.CanPair(item.FitRule)) 
+                // if this.content is present - pair content goes as refugee
+                if(_content != null)
+                    refugee = pair._content;
+                // if this.content isn't present - pair content goes as replacement
+                else 
                     replacement = pair._content;
-                // else if trying to put item and pair content can't pair 
-                else if(item != null && pair._content != null && !pair._content.FitRule.CanPair(item.FitRule)) 
-                    // if this.content is present - pair content goes as refugee
-                    if(_content != null)
-                        refugee = pair._content;
-                    // if this.content isn't present - pair content goes as replacement
-                    else 
-                        replacement = pair._content;
-                // default replacement - this content
-                replacement ??= _content;                
-                
-                return lastProjection = new Projection(
-                    screenRect.Rect, 
-                    item == null ? true : fitRule.CanFit(item.FitRule), 
-                    replacement, 
-                    new InventoryItem[] { refugee });
-            }
-            return lastProjection = Projection.EmptyProjection;
+            // default replacement if still empty - this content
+            replacement ??= _content;  
+
+            bool canPlace = item == null ? true : fitRule.CanFit(item.FitRule); 
+            var refs = refugee == null ? null : new InventoryItem[] { refugee }; 
+            
+            if(lastProjection.FieldsEqual(screenRect.Rect, canPlace, replacement, refs))
+                return Projection.SameProjection;
+            else 
+                return lastProjection = new Projection(screenRect.Rect, canPlace, replacement, refs);
         }
 
         public override bool TryPlaceItemAuto(InventoryItem item)
         {
-            throw new System.NotImplementedException();
+            if(fitRule.CanFit(item.FitRule))
+                if(_content == null)
+                    if((pair._content == null || pair._content.FitRule.CanPair(item.FitRule)))
+                    {
+                        SetAsContent(item); 
+                        return true;
+                    }
+            return false;
         }
 
         private void SetCloneImage(InventoryItem item)

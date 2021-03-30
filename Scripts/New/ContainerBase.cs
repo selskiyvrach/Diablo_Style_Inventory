@@ -11,7 +11,7 @@ namespace D2Inventory
         [SerializeField] protected Vector2IntSpaceData sizeData; public Vector2IntSpaceData SizeData => sizeData;
         [SerializeField] protected ItemFitRule fitRule; 
 
-        protected Projection lastProjection = null;
+        protected Projection lastProjection = Projection.EmptyProjection;
 
         public abstract Projection GetProjection(InventoryItem item, Vector2 screenPos); 
 
@@ -22,6 +22,6 @@ namespace D2Inventory
         public abstract bool TryPlaceItemAuto(InventoryItem item);
 
         public virtual void ClearProjectionCash()
-            => lastProjection = null;
+            => lastProjection = Projection.EmptyProjection;
     }
 }
