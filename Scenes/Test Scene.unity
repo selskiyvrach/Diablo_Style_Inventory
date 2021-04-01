@@ -244,10 +244,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 211845245}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f8f167393a6b1f469e3617f1cced705, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a47d98a0e66ba54a9e93421d6029037, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: fbb8d3214b2721a479f930f763346ad7, type: 2}
+  controller: {fileID: 1768966723}
 --- !u!114 &265357757 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 110702789187248365, guid: f9e5f921c178cf44f936d874b63ac9f8, type: 3}
@@ -259,6 +260,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1ebd0e2244f0314fbb71ab8bfd92801, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &307787045
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 307787046}
+  m_Layer: 0
+  m_Name: Controls
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &307787046
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307787045}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &391944907
 GameObject:
   m_ObjectHideFlags: 0
@@ -897,22 +928,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1768966721}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b644b7f95bec9a04c91e6af8c50f9362, type: 3}
+  m_Script: {fileID: 11500000, guid: e094b024ad201e34a9f80df1404fb0fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryCanvas: {fileID: 1903666737}
-  highlighter: {fileID: 211845247}
-  manager: {fileID: 1768966725}
-  mainStorage: {fileID: 543650462}
-  containers:
-  - {fileID: 543650462}
-  - {fileID: 733573159}
-  - {fileID: 2061960717}
-  - {fileID: 182008364}
-  testItemData:
-  - {fileID: 11400000, guid: 98bb11a1397cb3347bb6a3d541de285a, type: 2}
-  - {fileID: 11400000, guid: 321ecaa88e4142f4d9cc2b98e21bfcac, type: 2}
-  - {fileID: 11400000, guid: 979e12058f0969c47834bf1b01c66f40, type: 2}
+  openClose: {fileID: 11400000, guid: d3df38071d6f5774d838123bd73a159c, type: 2}
+  switchWeapons: {fileID: 11400000, guid: d84f9294639762244b95b0626de9bec0, type: 2}
+  leftClick: {fileID: 11400000, guid: 4ea5c37d5219d7a41a3b716aa1d4dcaf, type: 2}
+  mousePos: {fileID: 11400000, guid: 85f03072ee3eca44c9fc65434eef1c92, type: 2}
 --- !u!114 &1768966724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -940,6 +963,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62d982bf6a851274a8b1157c8b7ae25f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 1768966723}
+  mainStorage: {fileID: 543650462}
   allContainers:
   - {fileID: 543650462}
   - {fileID: 733573159}

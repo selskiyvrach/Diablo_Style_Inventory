@@ -32,7 +32,7 @@ public class InventoryItemDragger
 
 // PRIVATE
 
-    public void UpdateDraggersCursor(Vector2 screenPos)
+    public void UpdateDraggerCursor(Vector2 screenPos)
         => MoveItemAlongCursor(screenPos);
 
     private void MoveItemAlongCursor(Vector2 screenPos)

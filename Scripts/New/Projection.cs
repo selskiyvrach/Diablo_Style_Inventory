@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace D2Inventory
 {
+    ///<summary>
+    ///Contains all information about cursor overlapping an item slot<br/>
+    ///Screen rect, whether currenty carried by cursor item can be placed at current pos, which item's will be replaced and so on</summary>
     public class Projection
     {
         public Rect ScreenRect { get; private set; } = new Rect();

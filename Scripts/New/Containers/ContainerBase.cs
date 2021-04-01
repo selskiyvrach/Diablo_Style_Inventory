@@ -13,6 +13,8 @@ namespace D2Inventory
 
         protected Projection lastProjection = Projection.EmptyProjection;
 
+        public bool ActiveOnScreen => screenRect.Active;
+
         public abstract Projection GetProjection(InventoryItem item, Vector2 screenPos); 
 
         public abstract InventoryItem PlaceItem(InventoryItem item);
@@ -21,7 +23,7 @@ namespace D2Inventory
 
         public abstract bool TryPlaceItemAuto(InventoryItem item);
 
-        public virtual void ClearProjectionCash()
-            => lastProjection = Projection.EmptyProjection;
+        public void SetActive(bool value) 
+            => screenRect?.SetActive(value);
     }
 }

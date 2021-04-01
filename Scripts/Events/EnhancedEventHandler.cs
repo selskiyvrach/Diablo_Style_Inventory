@@ -7,6 +7,10 @@ public class EnhancedEventHandler
     private object _lastSender;
     private EventArgs _lastArgs;
 
+    public EnhancedEventHandler(){}
+    public EnhancedEventHandler(EventArgs initialArgs)  
+        => _lastArgs = initialArgs;
+    
     public void AddListener(EventHandler listener, bool getLastUpdate)
     {
         _handler += listener;

@@ -25,50 +25,74 @@ namespace D2Inventory
         public override Projection GetProjection(InventoryItem item, Vector2 screenPos)
         {
             // return empty projection if carried item/cursor doesn't overlap screen rect of the slot
-            if(!HasProjection(item, screenPos))
+            if(!ActiveOnScreen || !HasProjection(item, screenPos))
                 return lastProjection = Projection.EmptyProjection;
 
+            if(item != null)
+                return GetCarriedItemProjection(item);
+            else 
+                return GetEmptyCursorProjection(screenPos);
+        }
+
+        private Projection GetEmptyCursorProjection(Vector2 screenPos)
+        {
             // declare placeholders for the future projection fields
             Rect rect = new Rect(); bool canPlace = true; InventoryItem replacement = null; InventoryItem[] refugees = null;
-            // define projection fields for currently dragged item
-            if(item != null)
+
+            var normPos = screenRect.ScreenToNormalized(screenPos);
+            var cellCoord = NormPosToCellPos(normPos);
+
+            if (_space.PeekItem(cellCoord, out IVector2IntItem peeked))
             {
-                var cornerPosScreen = item.GetCornerCenterInScreen(0, screenRect.Rect.size.x / sizeData.SizeInt.x);
-                var cornerPosCell = NormPosToCellPos(screenRect.ScreenToNormalized(cornerPosScreen));
-
-                rect = GetNormRectForItem(cornerPosCell, item.SizeInt);
-
-                var overlaps = _space.GetOverlaps(cornerPosCell, item.SizeInt).Select(n => (InventoryItem)n);
-                var overlapsCount = overlaps.Count();
-
-                if(overlapsCount < 2)
-                    replacement = overlaps.FirstOrDefault();
-                else 
-                    refugees = overlaps.ToArray();
-
-                canPlace = fitRule.CanFit(item.FitRule) && overlapsCount < 2;
+                rect = GetNormRectForItem(peeked.TopLeftCornerPosInt, peeked.SizeInt);
+                replacement = (InventoryItem)peeked;
             }
-            // define projection fields for empty cursor
             else
-            {
-                var normPos = screenRect.ScreenToNormalized(screenPos);
-                var cellCoord = NormPosToCellPos(normPos);
+                rect = new Rect(CellPosToNormPos(NormPosToCellPos(normPos)), new Vector2(1, 1) / (Vector2)sizeData.SizeInt);
 
-                if (_space.PeekItem(cellCoord, out IVector2IntItem peeked))
-                {
-                    rect = GetNormRectForItem(peeked.TopLeftCornerPosInt, peeked.SizeInt);
-                    replacement = (InventoryItem)peeked;
-                }
-                else
-                    rect = new Rect(CellPosToNormPos(NormPosToCellPos(normPos)), new Vector2(1, 1) / (Vector2)sizeData.SizeInt);
+            return GetSameOrNewProjection(rect, canPlace, replacement, refugees);
+        }
+
+        private Projection GetCarriedItemProjection(InventoryItem item)
+        {
+            // declare placeholders for the future projection fields
+            Rect rect = new Rect(); bool canPlace = true; InventoryItem replacement = null; InventoryItem[] refugees = null;
+
+            var cornerPosScreen = item.GetCornerCenterInScreen(0, screenRect.Rect.size.x / sizeData.SizeInt.x);
+            var cornerPosCell = NormPosToCellPos(screenRect.ScreenToNormalized(cornerPosScreen));
+
+            var overlaps = _space.GetOverlaps(cornerPosCell, item.SizeInt).Select(n => (InventoryItem)n);
+            var overlapsCount = overlaps.Count();
+
+            // if overlapped only one item - it can be replaced; it's rect will be highlighted
+            if(overlapsCount == 1)
+            {
+                replacement = overlaps.First();
+                // rect will be potential raplacement's rect
+                rect = GetNormRectForItem(replacement.TopLeftCornerPosInt, replacement.SizeInt);
             }
-            // convert normalized rect to screen rect
-            var scrRect = screenRect.NormalizedRectToScreenRect(rect);
-            // return "same" if nothing changed from previous request
-            if(lastProjection.FieldsEqual(scrRect, canPlace, replacement, refugees))
-                return Projection.SameProjection;
-            // construct projection from previously defined fields
-            return lastProjection = new Projection(scrRect, canPlace, replacement, refugees);
+            else 
+            {
+                // if overlaps are empty - no refugees, otherwise refugees are overlaps
+                refugees = overlapsCount > 1 ? overlaps.ToArray() : null;
+                // rect will be of carried item
+                rect = GetNormRectForItem(cornerPosCell, item.SizeInt);
+            }
+            canPlace = fitRule.CanFit(item.FitRule) && overlapsCount < 2;
+
+            return GetSameOrNewProjection(rect, canPlace, replacement, refugees);
+        }
+
+        private Projection GetSameOrNewProjection(Rect normRect, bool canPlace, InventoryItem replacement, InventoryItem[] refugees)
+        {
+            // getting screen rect from normalized used internally
+            var scrRect = screenRect.NormalizedRectToScreenRect(normRect);
+            return
+                lastProjection.FieldsEqual(scrRect, canPlace, replacement, refugees) ? 
+                    // return "same" if fields haven't changed
+                    Projection.SameProjection : 
+                    // return new one otherwise and set it as "lastProjection"
+                    lastProjection = new Projection(scrRect, canPlace, replacement, refugees);
         }
 
         ///<summary>
@@ -119,7 +143,7 @@ namespace D2Inventory
         }
 
         private void AnchorItemImage(InventoryItem item)
-            => item.ScreenPos = lastProjection.ScreenRect.center;
+            => item.ScreenPos = screenRect.NormalizedRectPointToScreen(GetNormRectForItem(item.TopLeftCornerPosInt, item.SizeInt).center);
         
         private Rect GetNormRectForItem(Vector2Int posInt, Vector2Int itemSizeInt)
         {

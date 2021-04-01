@@ -11,6 +11,8 @@ public class ScreenRect : MonoBehaviour
 
     public Vector2 Size => Rect.size;
 
+    public bool Active => _panel.isActiveAndEnabled;
+
     public void SetSizeDelta(Vector2 newSize)
         => _panel.rectTransform.sizeDelta = newSize;
     

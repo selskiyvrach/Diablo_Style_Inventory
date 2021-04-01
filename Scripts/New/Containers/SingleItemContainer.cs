@@ -18,7 +18,7 @@ namespace D2Inventory
 
         public override Projection GetProjection(InventoryItem item, Vector2 screenPos)
         {
-            if(!screenRect.ContainsPoint(screenPos))
+            if(!ActiveOnScreen || !screenRect.ContainsPoint(screenPos))
                 return lastProjection = Projection.EmptyProjection;
 
             var canPlace = item == null ? true : fitRule.CanFit(item.FitRule);
@@ -28,7 +28,6 @@ namespace D2Inventory
             else 
                 return lastProjection = new Projection(screenRect.Rect, canPlace, content, null);
         }
-
 
         public override InventoryItem PlaceItem(InventoryItem item)
         {
@@ -40,7 +39,7 @@ namespace D2Inventory
 
         public override bool TryPlaceItemAuto(InventoryItem item)
         {
-            if(content != null) return false;
+            if(content != null || !fitRule.CanFit(item.FitRule)) return false;
             content = item;
             return true;
         }

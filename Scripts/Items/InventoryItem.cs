@@ -8,10 +8,11 @@ public class InventoryItem : IVector2IntItem
 
     private static Transform _parent;
 
-    public static void Init(Canvas parent)
+    public static void Init(Canvas parent, float unitSize)
     {
         _parent ??= new GameObject("Inventory Items' Storage").transform;
         _parent.transform.SetParent(parent.transform);
+        _unitSize = unitSize;
     }
 
     public static void SetInventoryItemsActive(bool value)
@@ -23,33 +24,39 @@ public class InventoryItem : IVector2IntItem
 
     // IVector2IntItem:
     public Vector2Int SizeInt { get; set; }
+
     public Vector2Int TopLeftCornerPosInt { get; set; }
+
     public bool OneCellItem { get; private set; }
 
     // InventoryItem:
     public InventoryItemData ItemData { get; private set; }
+
     public ItemFitRule FitRule { get; private set; }
+
     public Vector2 ScreenPos { get 
         => _image.transform.position; set 
         => _image.DesiredScreenPos = value; }
+
     public Vector2 ScreenSize { get 
         => _image.RectTransform.sizeDelta; set 
         => _image.RectTransform.sizeDelta = value; }
+
     public Transform Parent { get 
         => _image.transform.parent; set 
         => _image.transform.SetParent(value); }
 
     // VISUAL REPRESENTATION OF ITEM IN UI SPACE
     private InventoryItemVisuals _image;
-    private float _unitSize;
 
-    public InventoryItem(InventoryItemData data, float unitSize)
+    private static float _unitSize;
+
+    public InventoryItem(InventoryItemData data)
     {
         ItemData = data;
         FitRule = ItemData.FitRule;
         SizeInt = ItemData.SizeInt;
         OneCellItem = ItemData.SizeInt.magnitude < 2;
-        _unitSize = unitSize;
     }
 
     public void MoveOnTopOfViewSorting()

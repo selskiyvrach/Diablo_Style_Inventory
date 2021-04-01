@@ -27,7 +27,7 @@ public class Inventory : MonoBehaviour
 
     public void ExternalUpdate()
     {
-        _dragger.UpdateDraggersCursor(_cursorPos);
+        _dragger.UpdateDraggerCursor(_cursorPos);
         _overlapsBackground = background.ContainsPoint(_cursorPos);
 
         if(_overlapsBackground)
@@ -105,7 +105,7 @@ public class Inventory : MonoBehaviour
 
         _unitSize = _mainStorage.UnitSize;
         _dragger = new InventoryItemDragger(inventoryCanvas);
-        InventoryItem.Init(inventoryCanvas);
+        InventoryItem.Init(inventoryCanvas, 10);
         highlighter.Initialize(inventoryCanvas);
 
     }
