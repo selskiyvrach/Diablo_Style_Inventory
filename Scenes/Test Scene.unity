@@ -358,7 +358,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -24.8931, y: -37.04979}
-  m_SizeDelta: {x: 746.9004, y: 298.76016}
+  m_SizeDelta: {x: 647.7001, y: 259.08002}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &490691124
 MonoBehaviour:
@@ -676,7 +676,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 149.38008, y: 224.07013}
+  m_SizeDelta: {x: 129.54001, y: 194.31001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &762353032
 MonoBehaviour:
@@ -845,7 +845,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 149.38008, y: 224.07013}
+  m_SizeDelta: {x: 129.54001, y: 194.31001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1313033552
 MonoBehaviour:
@@ -936,6 +936,7 @@ MonoBehaviour:
   switchWeapons: {fileID: 11400000, guid: d84f9294639762244b95b0626de9bec0, type: 2}
   leftClick: {fileID: 11400000, guid: 4ea5c37d5219d7a41a3b716aa1d4dcaf, type: 2}
   mousePos: {fileID: 11400000, guid: 85f03072ee3eca44c9fc65434eef1c92, type: 2}
+  openCloseHandler: {fileID: 11400000, guid: 02cdb6d526cf25a498cd9a15e9f67cf1, type: 2}
 --- !u!114 &1768966724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -964,6 +965,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 1768966723}
+  openCloseHandler: {fileID: 11400000, guid: 02cdb6d526cf25a498cd9a15e9f67cf1, type: 2}
   mainStorage: {fileID: 543650462}
   allContainers:
   - {fileID: 543650462}
@@ -1005,7 +1007,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 149.38008, y: 224.07013}
+  m_SizeDelta: {x: 129.54001, y: 194.31001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1816661072
 MonoBehaviour:

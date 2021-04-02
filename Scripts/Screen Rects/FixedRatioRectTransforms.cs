@@ -23,8 +23,8 @@ public class FixedRatioRectTransforms : MonoBehaviour
         firstCont = itemContainers[0];
 
         _unitSize = matchSide == Match.Width ? 
-            firstCont.ScreenRect.GetSizeDelta().x / firstCont.SizeData.SizeInt.x : 
-            firstCont.ScreenRect.GetSizeDelta().y / firstCont.SizeData.SizeInt.y;
+            firstCont.ScreenRect.Rect.size.x / firstCont.SizeData.SizeInt.x : 
+            firstCont.ScreenRect.Rect.size.y / firstCont.SizeData.SizeInt.y;
 
         foreach(var i in itemContainers)
             i.ScreenRect.SetSizeDelta(new Vector2(_unitSize * i.SizeData.SizeInt.x, _unitSize * i.SizeData.SizeInt.y));

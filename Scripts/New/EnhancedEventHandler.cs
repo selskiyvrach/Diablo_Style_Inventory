@@ -5,13 +5,13 @@ using UnityEngine;
 namespace D2Inventory.Utils
 {
 
-    public class EnhancedEventHandler<T> where T : EventArgs
+    public class EnhancedEventHandler<T> 
     {
         public event EventHandler<T> Handler = delegate { };
 
         private object _lastSender;
         private T _lastArgs;
-
+        
         public void AddWithInvoke(EventHandler<T> listener)
         {
             if(listener != null)

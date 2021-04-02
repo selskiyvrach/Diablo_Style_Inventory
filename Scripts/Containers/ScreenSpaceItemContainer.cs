@@ -17,7 +17,7 @@ public abstract class ScreenSpaceItemContainer : MonoBehaviour
 
     protected IItemStoreSpace _storeSpace;
 
-    public float UnitSize => screenRect.Size.x / sizeData.SizeInt.x;
+    public float UnitSize => screenRect.Rect.size.x / sizeData.SizeInt.x;
 
     private void Awake() 
         => Init();

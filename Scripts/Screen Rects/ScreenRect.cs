@@ -7,17 +7,10 @@ public class ScreenRect : MonoBehaviour
 
     public Rect Rect => _panel.rectTransform.RectTransformToScreenSpace();
 
-    public Transform PanelTransform => _panel.transform;
-
-    public Vector2 Size => Rect.size;
-
     public bool Active => _panel.isActiveAndEnabled;
 
     public void SetSizeDelta(Vector2 newSize)
         => _panel.rectTransform.sizeDelta = newSize;
-    
-    public Vector2 GetSizeDelta()
-        => _panel.rectTransform.sizeDelta;
 
     public bool ContainsPoint(Vector3 screenPos)
         => Rect.Contains(screenPos);

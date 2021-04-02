@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using D2Inventory.Control;
 using D2Inventory.Utils;
-using System;
+using MNS.Utils.Values;
 
 namespace D2Inventory
 {   
@@ -16,6 +13,8 @@ namespace D2Inventory
         [SerializeField] ControlUnit switchWeapons;
         [SerializeField] ControlUnit leftClick;
         [SerializeField] Vector2ControlUnit mousePos;
+        [Header("Output")]
+        [SerializeField] HandlerSource openCloseHandler;
 
         private ContainerBase _mainStorage;
         private ContainerBase[] _allContainers; 
@@ -24,6 +23,7 @@ namespace D2Inventory
         private ContainerBase _currContainer;
         private Projection _proj;
 
+        //TODO: figure out what domain does it belong to as well as Item initialization
         private float? _unitSize;
 
         private Vector2 _lastCursorPos;
@@ -31,20 +31,21 @@ namespace D2Inventory
         public bool Opened { get; private set; }
         public bool WeaponsSwitchedToFirstOpt { get; private set; }
 
-        public EnhancedEventHandler<ProjectionEventArgs> OnProjectionChanged = new EnhancedEventHandler<ProjectionEventArgs>();
-        public EnhancedEventHandler<BoolEventArgs> OnInventoryOpened = new EnhancedEventHandler<BoolEventArgs>();
-        public EnhancedEventHandler<BoolEventArgs> OnWeaponsSwitchedToFirstOption = new EnhancedEventHandler<BoolEventArgs>();
-        public EnhancedEventHandler<InventoryItemEventArgs> OnItemPickedUp = new EnhancedEventHandler<InventoryItemEventArgs>();
-        public EnhancedEventHandler<InventoryItemEventArgs> OnCursorMoved = new EnhancedEventHandler<InventoryItemEventArgs>();
 
+        // TODO: not sure how events should work regarding require-event and callback-event. Whether it should be just diff naming or a substitution to events 
+        // e.g. OnProjectionChanged indicates that it has been changed in Controller, but not yet changed in highlighter. maybe - OnProjectionChanged -> OnHighlightChanged and so on... 
+        public EnhancedEventHandler<ProjectionEventArgs> OnProjectionChanged = new EnhancedEventHandler<ProjectionEventArgs>();
+        public EnhancedEventHandler<BoolEventArgs> OnSwitchWeaponsToFirstOptionPressed = new EnhancedEventHandler<BoolEventArgs>();
+        public EnhancedEventHandler<InventoryItemEventArgs> OnItemPickUpRequest = new EnhancedEventHandler<InventoryItemEventArgs>();
+        public EnhancedEventHandler<InventoryItemEventArgs> OnCursorMoved = new EnhancedEventHandler<InventoryItemEventArgs>();
 
         private void Awake()
         {
             _dragger = new InventoryItemDragger(inventoryCanvas);
 
             OnProjectionChanged.Invoke(this, ProjectionEventArgs.EmptyProjection);
-            OnInventoryOpened.Invoke(this, BoolEventArgs.False);
-            OnWeaponsSwitchedToFirstOption.Invoke(this, BoolEventArgs.True);
+            openCloseHandler.Value.Invoke(this, BoolEventArgs.False);
+            OnSwitchWeaponsToFirstOptionPressed.Invoke(this, BoolEventArgs.True);
         }
 
         public void SetUnitSize(float value)
@@ -63,7 +64,7 @@ namespace D2Inventory
         {
             var item = InventoryItemFactory.GetInventoryItem(itemData, (float)_unitSize);
             item.EnableInventoryViewOfItem();
-            OnItemPickedUp.Invoke(this, new InventoryItemEventArgs(item, null, mousePos.Vector2));
+            OnItemPickUpRequest.Invoke(this, new InventoryItemEventArgs(item, null, mousePos.Vector2));
         }
 
         private void Update() {
@@ -116,10 +117,11 @@ namespace D2Inventory
             => OnCursorMoved.Invoke(this, new InventoryItemEventArgs(null, null, _lastCursorPos = mousePos.Vector2));
 
         private void HandleWeaponsSwitching()
-            => OnWeaponsSwitchedToFirstOption.Invoke(this, BoolEventArgs.GetArgs(WeaponsSwitchedToFirstOpt = !WeaponsSwitchedToFirstOpt));
+            => OnSwitchWeaponsToFirstOptionPressed.Invoke(this, BoolEventArgs.GetArgs(WeaponsSwitchedToFirstOpt = !WeaponsSwitchedToFirstOpt));
 
         private void HandleOpeningClosing()
-            => OnInventoryOpened.Invoke(this, BoolEventArgs.GetArgs(Opened = !Opened));
+            => openCloseHandler.Value.Invoke(this, BoolEventArgs.GetArgs(Opened = !Opened));
+
 
         private bool TryHandleRefugees()
         {
