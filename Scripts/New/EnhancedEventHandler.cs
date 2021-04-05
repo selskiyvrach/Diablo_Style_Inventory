@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace D2Inventory.Utils
 {
 
     public class EnhancedEventHandler<T> 
     {
+        
         public event EventHandler<T> Handler = delegate { };
 
         private object _lastSender;
@@ -17,7 +16,7 @@ namespace D2Inventory.Utils
             if(listener != null)
             {
                 Handler += listener;
-                if(_lastSender != null && _lastArgs != null)
+                if(_lastArgs != null && _lastSender != null)
                     listener.Invoke(_lastSender, _lastArgs);
             }
         }

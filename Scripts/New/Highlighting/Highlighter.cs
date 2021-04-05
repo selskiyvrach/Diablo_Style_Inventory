@@ -1,3 +1,5 @@
+using System;
+using MNS.Utils.Values;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +9,7 @@ namespace D2Inventory
     public class Highlighter : MonoBehaviour
     {
         [SerializeField] InventoryHighlightSettings settings;
-        [SerializeField] InventoryController controller;
+        [SerializeField] CommonHandlerSource projectionChangedSource;
 
         private Image _image;
         private bool _imageActive;
@@ -20,14 +22,17 @@ namespace D2Inventory
         }
 
         private void OnEnable() 
-            => controller.OnProjectionChanged.AddWithInvoke(NewHighlight);
+            => projectionChangedSource.Value.AddWithInvoke(NewHighlight);
 
         private void OnDisable() 
-            => controller.OnProjectionChanged.Handler -= NewHighlight;
+            => projectionChangedSource.Value.Handler -= NewHighlight;
 
-        public void NewHighlight(object sender, ProjectionEventArgs args)
+        public void NewHighlight(object sender, EventArgs args)
         {
-            var proj = args.Projection;
+            var projArgs = args as ProjectionEventArgs;
+            if(projArgs == null) return;
+
+            var proj = projArgs.Projection;
 
             if(proj.Empty && _imageActive)
                 HideHighlight();

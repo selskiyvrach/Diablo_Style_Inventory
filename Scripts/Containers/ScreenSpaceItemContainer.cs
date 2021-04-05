@@ -37,7 +37,7 @@ public abstract class ScreenSpaceItemContainer : MonoBehaviour
 
     public virtual bool PeekItem(Vector3 screenPos, out InventoryItem peeked)
     {
-        bool success = _storeSpace.PeekItem(screenRect.ScreenToNormalized(screenPos), out InventoryItem peeked2);
+        bool success = _storeSpace.PeekItem(screenRect.ScreenPointToNormalized(screenPos), out InventoryItem peeked2);
         peeked = peeked2;
         return success;
     }
@@ -46,31 +46,31 @@ public abstract class ScreenSpaceItemContainer : MonoBehaviour
     {
         var rect = screenRect.NormalizedRectToScreenRect(
             _storeSpace.GetHighlightRectNormalized(
-                item, screenRect.ScreenToNormalized(item.GetCornerCenterInScreen(0, UnitSize)), out InventoryItem overlapped));
+                item, screenRect.ScreenPointToNormalized(item.GetCornerCenterInScreen(0, UnitSize)), out InventoryItem overlapped));
         overlappedItem = overlapped;
         return rect;
     }
 
     public Rect GetHighlightRect(Vector2 screenPos, out InventoryItem overlappedItem)
     {
-        var pos = screenRect.ScreenToNormalized(screenPos);
+        var pos = screenRect.ScreenPointToNormalized(screenPos);
         var rect = _storeSpace.GetHighlightRectNormalized(pos, out InventoryItem overlapped);
         overlappedItem = overlapped;
         return screenRect.NormalizedRectToScreenRect(rect);
     } 
 
     public bool NeedHighlightRecalculation(Vector2 screenPos)
-        => _storeSpace.NeedHighlightRecalculation(screenRect.ScreenToNormalized(screenPos));
+        => _storeSpace.NeedHighlightRecalculation(screenRect.ScreenPointToNormalized(screenPos));
 
     public bool NeedHighlightRecalculation(InventoryItem item)
-        => _storeSpace.NeedHighlightRecalculation(item, screenRect.ScreenToNormalized(item.GetCornerCenterInScreen(0, UnitSize)));
+        => _storeSpace.NeedHighlightRecalculation(item, screenRect.ScreenPointToNormalized(item.GetCornerCenterInScreen(0, UnitSize)));
 
     public bool CanPlaceItem(InventoryItem item)
-        => _storeSpace.CanPlaceItem(item, screenRect.ScreenToNormalized(item.GetCornerCenterInScreen(0, UnitSize)));
+        => _storeSpace.CanPlaceItem(item, screenRect.ScreenPointToNormalized(item.GetCornerCenterInScreen(0, UnitSize)));
 
     public virtual void PlaceItem(InventoryItem item, out InventoryItem replaced)
     {
-        _storeSpace.PlaceItem(item, screenRect.ScreenToNormalized(item.GetCornerCenterInScreen(0, UnitSize)), out Vector2 itemCenterPosNormalized, out InventoryItem replaced2);
+        _storeSpace.PlaceItem(item, screenRect.ScreenPointToNormalized(item.GetCornerCenterInScreen(0, UnitSize)), out Vector2 itemCenterPosNormalized, out InventoryItem replaced2);
         replaced = replaced2;
         item.ScreenPos = screenRect.NormalizedRectPointToScreen(itemCenterPosNormalized);
     }

@@ -108,7 +108,7 @@ namespace D2Inventory
 
         private void SetCloneImage(InventoryItem item)
         {
-            _cloneImage = item.GetClone();
+            Debug.Log("Cloning hasn't been reimplemented");
             _cloneImage.DesiredScreenPos = screenRect.Rect.center;
         }
 

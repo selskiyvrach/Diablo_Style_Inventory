@@ -58,13 +58,13 @@ public class Inventory : MonoBehaviour
 
     public void AddItemAuto(InventoryItemData itemData)
     {
-        InventoryItem item = InventoryItemFactory.GetInventoryItem(itemData, _unitSize);
-        item.EnableInventoryViewOfItem();
+        // InventoryItem item = InventoryItemFactory.GetInventoryItem(itemData, _unitSize);
+        // item.EnableInventoryViewOfItem();
 
-        if(IsOn)
-            PickUp(item);
-        else
-            TryPlaceToContainersAuto(item);
+        // if(IsOn)
+        //     PickUp(item);
+        // else
+        //     TryPlaceToContainersAuto(item);
     }
 
     public void SetCursorPos(Vector2 screenPos)

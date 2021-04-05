@@ -8,33 +8,23 @@ namespace D2Inventory
     public class ContainerManager : MonoBehaviour
     {
         [SerializeField] InventoryController controller;
-        [SerializeField] HandlerSource openCloseHandler;
+        [SerializeField] BoolHandlerSource openCloseHandler;
         [SerializeField] ContainerBase mainStorage;
         [SerializeField] ContainerBase[] allContainers = new ContainerBase[0];
 
-        // cashed clean version of the above
-        private ContainerBase[] _allNotNullUnique;
-
-        private float _unitSize;
-
-        private void OnEnable() 
-            => openCloseHandler.Value.AddWithInvoke((o, args) => SetContainersActive(((BoolEventArgs)args).Value));
-            
-        private void OnDisable() 
-            => openCloseHandler.Value.Handler -= ((o, args) => SetContainersActive(((BoolEventArgs)args).Value));
-
+        private ContainerBase[] _allFixed;
 
         private void Awake()
-        {
-            controller.SetUnitSize(_unitSize);
-            controller.SetUpContainers(GetAllContainers(), mainStorage);
-        }
+            => _allFixed = GetAllContainers();
 
-        public void SetUnitSize(float value)
-            => _unitSize = value;
+        private void OnEnable() 
+            => openCloseHandler.Value.AddWithInvoke((o, args) => SetContainersActive(args));
+            
+        private void OnDisable() 
+            => openCloseHandler.Value.Handler -= ((o, args) => SetContainersActive(args));
 
         public ContainerBase[] GetAllContainers()
-            => _allNotNullUnique ??= allContainers.Where(n => n != null).Distinct().ToArray();
+            => allContainers.Concat(new ContainerBase[]{ mainStorage }).Where(n => n != null).Distinct().ToArray();
 
         private void SetContainersActive(bool value)
             => allContainers.ForEach((ContainerBase c) => c.SetActive(value));

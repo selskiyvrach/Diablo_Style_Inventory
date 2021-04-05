@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using MNS.Utils.Values;
 using UnityEngine;
 
 namespace D2Inventory
@@ -8,42 +10,26 @@ namespace D2Inventory
     public class FixedRatioRectTransforms : MonoBehaviour
     {
         [SerializeField] bool execute = true;
-        [SerializeField] Match matchSide;
+        [SerializeField] float unitSize = 100;
         [SerializeField] ContainerManager manager;
+        [Header("Output")]
+        [SerializeField] FloatHandlerSource unitSizeHandler;
 
-        private float _unitSize;
-        private ContainerBase _firstCont;
-        private ContainerBase[] _all;
-        
+        #if UNITY_EDITOR
+
         private void Update()
-            => CalculateRect();
-
-        private void CalculateRect()
         {
-            _all ??= manager.GetAllContainers();
+            if(!execute) return;
 
-            if(!execute || manager == null || _all.Length == 0) return;
+            // getting new array each update so no exceptions thrown when editing serialized array on manager
+            var _all = manager.GetAllContainers();
+                
+            foreach(var i in _all)
+                i.ScreenRect.SetSizeDelta((Vector2)i.SizeData.SizeInt * unitSize);
 
-            _firstCont = _all[0];
-
-            var newUnitSize = matchSide == Match.Width ? 
-                _firstCont.ScreenRect.Rect.size.x / _firstCont.SizeData.SizeInt.x : 
-                _firstCont.ScreenRect.Rect.size.y / _firstCont.SizeData.SizeInt.y;
-            
-            if(newUnitSize != _unitSize)
-            {
-                foreach(var i in _all)
-                    i.ScreenRect.SetSizeDelta(new Vector2(_unitSize * i.SizeData.SizeInt.x, _unitSize * i.SizeData.SizeInt.y));
-
-                manager.SetUnitSize(_unitSize);
-            }
-            _unitSize = newUnitSize;
+            unitSizeHandler.Value.Invoke(this, unitSize);
         }
-    }
 
-    public enum Match
-    {
-        Width,
-        Height
+        #endif
     }
 }

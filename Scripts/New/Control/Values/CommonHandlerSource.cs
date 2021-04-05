@@ -6,7 +6,7 @@ namespace MNS.Utils.Values
 {
 
     [CreateAssetMenu(menuName="Scriptable Objects/Values/Handler Source")]
-    public class HandlerSource : ValueSource<EnhancedEventHandler<EventArgs>>
+    public class CommonHandlerSource : ValueSource<EnhancedEventHandler<EventArgs>>
     {
         public override EnhancedEventHandler<EventArgs> Value { get; protected set; } = new EnhancedEventHandler<EventArgs>();
     }

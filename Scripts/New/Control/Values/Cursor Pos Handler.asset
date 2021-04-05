@@ -9,8 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2eb2ed6363e55d94e85fab6d4d8e06a0, type: 3}
-  m_Name: Switch Weapons
+  m_Script: {fileID: 11500000, guid: 436afb6555811da43bf167c6c097e038, type: 3}
+  m_Name: Cursor Pos Handler
   m_EditorClassIdentifier: 
-  Name: Switch Weapons
-  KeyCode: 119

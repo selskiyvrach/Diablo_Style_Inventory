@@ -15,9 +15,7 @@ namespace D2Inventory
 
         public override InventoryItem ExtractItem(InventoryItem item)
         {
-            // try to extract required item from underlying space
             if(item != null && _space.TryExtractItem(item.TopLeftCornerPosInt, out IVector2IntItem extracted))
-                // cast the result to return type
                 return (InventoryItem)extracted;
             return null;
         }
@@ -39,7 +37,7 @@ namespace D2Inventory
             // declare placeholders for the future projection fields
             Rect rect = new Rect(); bool canPlace = true; InventoryItem replacement = null; InventoryItem[] refugees = null;
 
-            var normPos = screenRect.ScreenToNormalized(screenPos);
+            var normPos = screenRect.ScreenPointToNormalized(screenPos);
             var cellCoord = NormPosToCellPos(normPos);
 
             if (_space.PeekItem(cellCoord, out IVector2IntItem peeked))
@@ -59,7 +57,7 @@ namespace D2Inventory
             Rect rect = new Rect(); bool canPlace = true; InventoryItem replacement = null; InventoryItem[] refugees = null;
 
             var cornerPosScreen = item.GetCornerCenterInScreen(0, screenRect.Rect.size.x / sizeData.SizeInt.x);
-            var cornerPosCell = NormPosToCellPos(screenRect.ScreenToNormalized(cornerPosScreen));
+            var cornerPosCell = NormPosToCellPos(screenRect.ScreenPointToNormalized(cornerPosScreen));
 
             var overlaps = _space.GetOverlaps(cornerPosCell, item.SizeInt).Select(n => (InventoryItem)n);
             var overlapsCount = overlaps.Count();
@@ -121,7 +119,7 @@ namespace D2Inventory
                     _space.TryExtractItem(lastProjection.Replacement.TopLeftCornerPosInt, out IVector2IntItem extracted);
                     replaced = (InventoryItem)extracted;
                 }
-                var topLeftCornerCell = NormPosToCellPos(screenRect.ScreenToNormalized(item.GetCornerCenterInScreen(0, screenRect.Rect.size.x / sizeData.SizeInt.x)));
+                var topLeftCornerCell = NormPosToCellPos(screenRect.ScreenPointToNormalized(item.GetCornerCenterInScreen(0, screenRect.Rect.size.x / sizeData.SizeInt.x)));
                 _space.PlaceItemAtPos(item, topLeftCornerCell);
                 AnchorItemImage(item);
                 return replaced;

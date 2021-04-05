@@ -1,3 +1,4 @@
+using MNS.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,36 +6,29 @@ public class ScreenRect : MonoBehaviour
 {
     [SerializeField] Image _panel;
 
-    public Rect Rect => _panel.rectTransform.RectTransformToScreenSpace();
+    public bool Active { get; private set; }
+    
+    public Rect Rect { get; private set; }
 
-    public bool Active => _panel.isActiveAndEnabled;
+    private void Awake() 
+        => Rect = _panel.rectTransform.ScreenRectFromRectTransform();
 
     public void SetSizeDelta(Vector2 newSize)
         => _panel.rectTransform.sizeDelta = newSize;
 
-    public bool ContainsPoint(Vector3 screenPos)
-        => Rect.Contains(screenPos);
+    public void SetActive(bool value)
+        => _panel.gameObject.SetActive(Active = value);
 
-    public Vector2 ScreenToNormalized(Vector2 screenPos)
-        => (screenPos - Rect.position) / Rect.size;
+    public bool ContainsPoint(Vector2 screenPoint)
+        => Rect.Contains(screenPoint);
 
-    public Vector2 NormalizedRectPointToScreen(Vector2 normalizedRectPoint)
-    {
-        float xPos = Rect.position.x + Rect.size.x * normalizedRectPoint.x;
-        float yPos = Rect.position.y + Rect.size.y - Rect.size.y * normalizedRectPoint.y;
-        Vector2 pos = new Vector2(xPos, yPos);
-        return pos;
-    }
+    public Vector2 ScreenPointToNormalized(Vector2 screenPos)
+        => Rect.ScreenPointToNormalized(screenPos);
 
     public Rect NormalizedRectToScreenRect(Rect normalized)
-    {
-        Vector2 size = Rect.size * normalized.size;
-        float xPos = Rect.position.x + Rect.size.x * normalized.position.x;
-        float yPos = Rect.position.y + Rect.size.y - size.y - Rect.size.y * normalized.position.y;
-        Vector2 pos = new Vector2(xPos, yPos);
-        return new Rect(pos, size);
-    }
+        => Rect.NormalizedRectToScreenRect(normalized);
 
-    public void SetActive(bool value)
-        => _panel.gameObject.SetActive(value);
+    public Vector2 NormalizedRectPointToScreen(Vector2 normalizedRectPoint)
+        => Rect.NormalizedRectPointToScreen(normalizedRectPoint);
+
 }
