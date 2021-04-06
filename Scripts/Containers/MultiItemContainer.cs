@@ -90,7 +90,7 @@ namespace D2Inventory
                     // return "same" if fields haven't changed
                     Projection.SameProjection : 
                     // return new one otherwise and set it as "lastProjection"
-                    lastProjection = new Projection(scrRect, canPlace, replacement, refugees);
+                    lastProjection = new Projection(this, scrRect, canPlace, replacement, refugees);
         }
 
         ///<summary>

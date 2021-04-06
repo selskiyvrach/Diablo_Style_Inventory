@@ -26,7 +26,7 @@ namespace D2Inventory
             if(lastProjection.FieldsEqual(screenRect.Rect, canPlace, content, null))
                 return Projection.SameProjection;
             else 
-                return lastProjection = new Projection(screenRect.Rect, canPlace, content, null);
+                return lastProjection = new Projection(this, screenRect.Rect, canPlace, content, null);
         }
 
         public override InventoryItem PlaceItem(InventoryItem item)

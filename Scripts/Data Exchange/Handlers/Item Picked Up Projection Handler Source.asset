@@ -10,5 +10,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bdd51a3322a26b34db8d87f737516c30, type: 3}
-  m_Name: Item Equipped Handler Source
+  m_Name: Item Picked Up Projection Handler Source
   m_EditorClassIdentifier: 

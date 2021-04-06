@@ -9,7 +9,7 @@ namespace D2Inventory
     public class Highlighter : MonoBehaviour
     {
         [SerializeField] InventoryHighlightSettings settings;
-        [SerializeField] CommonHandlerSource projectionChangedSource;
+        [SerializeField] ProjectionHandlerSource projectionChangedSource;
 
         private Image _image;
         private bool _imageActive;
@@ -27,13 +27,8 @@ namespace D2Inventory
         private void OnDisable() 
             => projectionChangedSource.Value.Handler -= NewHighlight;
 
-        public void NewHighlight(object sender, EventArgs args)
+        public void NewHighlight(object sender, Projection proj)
         {
-            var projArgs = args as ProjectionEventArgs;
-            if(projArgs == null) return;
-
-            var proj = projArgs.Projection;
-
             if(proj.Empty && _imageActive)
                 HideHighlight();
             else if(!proj.Same)

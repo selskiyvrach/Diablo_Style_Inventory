@@ -9,6 +9,7 @@ namespace D2Inventory
     ///Screen rect, whether currenty carried by cursor item can be placed at current pos, which item's will be replaced and so on</summary>
     public class Projection
     {
+        public ContainerBase Container { get; private set; }
         public Rect ScreenRect { get; private set; } = new Rect();
         public bool CanPlace { get; private set; } = false;
         public InventoryItem Replacement { get; private set; } = null;
@@ -18,7 +19,7 @@ namespace D2Inventory
 
         ///<summary>
         ///If projection says CanPlace that means you need to place all refugees somewhere first</summary>
-        public Projection(Rect screenRect, bool canPlace, InventoryItem replacement, InventoryItem[] refugees)
+        public Projection(ContainerBase container, Rect screenRect, bool canPlace, InventoryItem replacement, InventoryItem[] refugees)
         {
             ScreenRect = screenRect;
             CanPlace = canPlace;
