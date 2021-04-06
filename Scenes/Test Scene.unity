@@ -695,11 +695,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 795357799}
-  - component: {fileID: 795357797}
-  - component: {fileID: 795357798}
   - component: {fileID: 795357796}
   - component: {fileID: 795357800}
-  - component: {fileID: 795357801}
   m_Layer: 0
   m_Name: Test
   m_TagString: Untagged
@@ -728,38 +725,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &795357797
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 795357795}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2ccf03b9e35ac14abfc5dd39d46d94d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemManager: {fileID: 795357798}
-  unitSize: 40
-  itemPickedUp: {fileID: 11400000, guid: 6268c98b787b27f46b2cc4ddb58cc407, type: 2}
-  draggedItemChanged: {fileID: 11400000, guid: 25a5e2c371defaf4d9df442a409bcf11, type: 2}
-  itemDroppedToWorld: {fileID: 11400000, guid: aac0afdd88bc3804e8e57796c30a79e3, type: 2}
-  itemEquipped: {fileID: 11400000, guid: 1ce6d66ac6d3e404c964b32bb989afc4, type: 2}
-  inventoryOpenClose: {fileID: 11400000, guid: 02cdb6d526cf25a498cd9a15e9f67cf1, type: 2}
---- !u!114 &795357798
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 795357795}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16854dea82a2e504d8f0ded656ef82fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxCapacity: 60
 --- !u!224 &795357799
 RectTransform:
   m_ObjectHideFlags: 0
@@ -802,32 +767,6 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
---- !u!114 &795357801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 795357795}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1543901410515d54881146583c427c7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemsData: []
-  controller: {fileID: 0}
-  newItemButton: {fileID: 0}
-  switchWeaponsButton: {fileID: 0}
-  openCloseButton: {fileID: 0}
-  eventLogger: {fileID: 0}
-  minorEventLogger: {fileID: 0}
-  cursorPosChanged: {fileID: 11400000, guid: 817d125d43697d048b7d70bbf195c3b7, type: 2}
-  itemPickedUp: {fileID: 11400000, guid: 6268c98b787b27f46b2cc4ddb58cc407, type: 2}
-  draggedItemChanged: {fileID: 11400000, guid: 25a5e2c371defaf4d9df442a409bcf11, type: 2}
-  itemDroppedToWorld: {fileID: 11400000, guid: aac0afdd88bc3804e8e57796c30a79e3, type: 2}
-  inventoryOpenClose: {fileID: 11400000, guid: 02cdb6d526cf25a498cd9a15e9f67cf1, type: 2}
-  itemManager: {fileID: 795357798}
-  itemData: {fileID: 11400000, guid: 979e12058f0969c47834bf1b01c66f40, type: 2}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1006,6 +945,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1768966722}
+  - component: {fileID: 1768966723}
+  - component: {fileID: 1768966726}
   - component: {fileID: 1768966725}
   - component: {fileID: 1768966724}
   m_Layer: 0
@@ -1030,6 +971,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1768966723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768966721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3d9430c03a8594408b0032137e41465, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cursorPos: {fileID: 11400000, guid: 7ce6caf3b4d06114a9810e720d92e5ac, type: 2}
 --- !u!114 &1768966724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1058,7 +1012,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62d982bf6a851274a8b1157c8b7ae25f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 0}
   openCloseHandler: {fileID: 11400000, guid: 02cdb6d526cf25a498cd9a15e9f67cf1, type: 2}
   mainStorage: {fileID: 543650462}
   allContainers:
@@ -1066,6 +1019,25 @@ MonoBehaviour:
   - {fileID: 733573159}
   - {fileID: 2061960717}
   - {fileID: 182008364}
+--- !u!114 &1768966726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768966721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2ccf03b9e35ac14abfc5dd39d46d94d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cursorPos: {fileID: 11400000, guid: 7ce6caf3b4d06114a9810e720d92e5ac, type: 2}
+  unitSize: {fileID: 0}
+  itemPickedUpFromWorld: {fileID: 0}
+  itemDroppedToWorld: {fileID: 0}
+  cursorItemChanged: {fileID: 0}
+  itemEquipped: {fileID: 0}
+  inventoryOpenClose: {fileID: 0}
 --- !u!1 &1816661070
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,9 +1,18 @@
 using UnityEngine;
 
-public interface IVector2IntItem
+namespace D2Inventory
 {
-    Vector2Int SizeInt { get; }
-    Vector2Int TopLeftCornerPosInt { get; set; }
-    bool OneCellItem { get; }
+
+    public interface IVector2IntItem
+    {
+
+        Vector2Int SizeInt { get; }
+
+        Vector2Int TopLeftCornerPosInt { get; set; }
+
+        bool OneCellItem { get; }
+
+    }
+    
 }
 

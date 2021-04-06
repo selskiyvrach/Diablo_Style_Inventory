@@ -1,12 +1,46 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
-public class SingleItemContainer : ScreenSpaceItemContainer
+namespace D2Inventory
 {
-    public override void Init()
-        => _storeSpace = new SingleItemSlotSpace(_fitRule);
+    public class SingleItemContainer : ContainerBase
+    {
+        protected InventoryItem content;
 
-    public void SetContentVisualsActive(bool value)
-        => ((SingleItemSlotSpace)_storeSpace)?.Content?.SetVisualsActive(value);
+        public override InventoryItem ExtractItem(InventoryItem item)
+        {
+            var outt = content;
+            content = null;
+            return outt;
+        }
 
-    public InventoryItem Content => ((SingleItemSlotSpace)_storeSpace).Content;
+        public override Projection GetProjection(InventoryItem item, Vector2 screenPos)
+        {
+            if(!ActiveOnScreen || !screenRect.ContainsPoint(screenPos))
+                return lastProjection = Projection.EmptyProjection;
 
+            var canPlace = item == null ? true : fitRule.CanFit(item.ItemData.FitRule);
+
+            if(lastProjection.FieldsEqual(screenRect.Rect, canPlace, content, null))
+                return Projection.SameProjection;
+            else 
+                return lastProjection = new Projection(screenRect.Rect, canPlace, content, null);
+        }
+
+        public override InventoryItem PlaceItem(InventoryItem item)
+        {
+            var outt = content;
+            content = item;
+            return outt;
+        }
+
+        public override bool TryPlaceItemAuto(InventoryItem item)
+        {
+            if(content != null || !fitRule.CanFit(item.ItemData.FitRule)) return false;
+            content = item;
+            return true;
+        }
+    }
 }
