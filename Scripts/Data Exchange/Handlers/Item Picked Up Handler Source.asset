@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdd51a3322a26b34db8d87f737516c30, type: 3}
-  m_Name: Item Picked Up Projection Handler Source
+  m_Script: {fileID: 11500000, guid: b6fc7def064e66245982b697fd45d920, type: 3}
+  m_Name: Item Picked Up Handler Source
   m_EditorClassIdentifier: 

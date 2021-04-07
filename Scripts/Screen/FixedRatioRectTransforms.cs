@@ -15,6 +15,10 @@ namespace D2Inventory
         [Header("Output")]
         [SerializeField] FloatHandlerSource unitSizeHandler;
 
+        private void Awake() {
+            unitSizeHandler.Value.Invoke(this, unitSize);
+        }
+
         #if UNITY_EDITOR
 
         private void Update()

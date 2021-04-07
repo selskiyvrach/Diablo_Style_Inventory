@@ -11,7 +11,7 @@ public class Test : MonoBehaviour
     [SerializeField] InventoryController controller;
 
     private void Start() {
-        
+        controller.PickUpItem(data);
     } 
 
 }

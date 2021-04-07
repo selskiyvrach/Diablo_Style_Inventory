@@ -19,6 +19,7 @@ namespace D2Inventory
         public Image Icon { get; set; }
         public Sprite Sprite { get; private set; }
         public bool Visible { get; set; }
+        public float Scale { get; private set; }
 
         public InventoryItem(InventoryItemData data)
         {
@@ -26,6 +27,7 @@ namespace D2Inventory
             SizeInt = ItemData.SizeInt;
             OneCellItem = ItemData.OneCellItem;
             Sprite = ItemData.Sprite;
+            Scale = ItemData.ImageScale;
         }
     }
 }

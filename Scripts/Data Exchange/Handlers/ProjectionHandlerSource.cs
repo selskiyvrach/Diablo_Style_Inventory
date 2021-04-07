@@ -1,5 +1,5 @@
 using D2Inventory;
-using D2Inventory.Utils;
+using MNS.Events;
 using UnityEngine;
 
 namespace MNS.Utils.Values

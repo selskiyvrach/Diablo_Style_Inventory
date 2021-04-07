@@ -9,6 +9,7 @@ namespace MNS.Utils.Values
         public Func<T> Getter;
 
         public override T Value => Getter.Invoke();
+        
     }
 
 }

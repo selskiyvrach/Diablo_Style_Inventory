@@ -12,6 +12,7 @@ namespace D2Inventory
         public ContainerBase Container { get; private set; }
         public Rect ScreenRect { get; private set; } = new Rect();
         public bool CanPlace { get; private set; } = false;
+        public Vector2 PotentialPlacedPos { get; private set; }
         public InventoryItem Replacement { get; private set; } = null;
         ///<summary>
         ///If projection says CanPlace that means you need to place all refugees somewhere first</summary>
@@ -19,20 +20,22 @@ namespace D2Inventory
 
         ///<summary>
         ///If projection says CanPlace that means you need to place all refugees somewhere first</summary>
-        public Projection(ContainerBase container, Rect screenRect, bool canPlace, InventoryItem replacement, InventoryItem[] refugees)
+        public Projection(ContainerBase container, Rect screenRect, bool canPlace, Vector2 potentialPlacePos, InventoryItem replacement, InventoryItem[] refugees)
         {
+            Container = container;
             ScreenRect = screenRect;
             CanPlace = canPlace;
+            PotentialPlacedPos = potentialPlacePos;
             Replacement = replacement;
             Refugees = (refugees == null) ? 
                 new InventoryItem[0] : 
                 refugees.Where(n => n != null).Distinct().ToArray();            
         }
 
-        public bool FieldsEqual(Rect rect, bool canPlace, InventoryItem replacement, InventoryItem[] refugees)
+        public bool FieldsEqual(Rect rect, bool canPlace, Vector2 potentialPlacePos, InventoryItem replacement, InventoryItem[] refugees)
         {
             // guard clause for all params exc for refugees 
-            if(!(rect == ScreenRect && CanPlace == canPlace && Replacement == replacement))
+            if(!(rect == ScreenRect && CanPlace == canPlace && potentialPlacePos == PotentialPlacedPos && Replacement == replacement))
                 return false;
             // if refugees are not empty return false if Refugees are empty or whether their sequences are equal
             if(refugees != null && refugees.Length != 0)

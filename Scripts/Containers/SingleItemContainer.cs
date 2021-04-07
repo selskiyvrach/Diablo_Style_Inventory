@@ -23,10 +23,10 @@ namespace D2Inventory
 
             var canPlace = item == null ? true : fitRule.CanFit(item.ItemData.FitRule);
 
-            if(lastProjection.FieldsEqual(screenRect.Rect, canPlace, content, null))
+            if(lastProjection.FieldsEqual(screenRect.Rect, canPlace, screenRect.Rect.center, content, null))
                 return Projection.SameProjection;
             else 
-                return lastProjection = new Projection(this, screenRect.Rect, canPlace, content, null);
+                return lastProjection = new Projection(this, screenRect.Rect, canPlace, screenRect.Rect.center, content, null);
         }
 
         public override InventoryItem PlaceItem(InventoryItem item)

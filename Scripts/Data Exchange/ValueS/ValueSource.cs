@@ -1,5 +1,4 @@
 
-using D2Inventory.Utils;
 using UnityEngine;
 
 namespace MNS.Utils.Values

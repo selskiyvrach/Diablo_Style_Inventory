@@ -8,8 +8,9 @@ namespace D2Inventory
 
     public class Highlighter : MonoBehaviour
     {
+        [SerializeField] InventoryController controller;
         [SerializeField] InventoryHighlightSettings settings;
-        [SerializeField] ProjectionHandlerSource projectionChangedSource;
+        [SerializeField] Transform parentInHierarchy;
 
         private Image _image;
         private bool _imageActive;
@@ -17,15 +18,15 @@ namespace D2Inventory
         private void Awake()
         {
             _image = new GameObject("Highlight Area").AddComponent<Image>();
-            _image.transform.SetParent(transform);
+            _image.transform.SetParent(parentInHierarchy);
             _image.gameObject.SetActive(_imageActive = false);
         }
 
         private void OnEnable() 
-            => projectionChangedSource.Value.AddWithInvoke(NewHighlight);
+            => controller.OnProjectionChanged.AddWithInvoke(NewHighlight);
 
         private void OnDisable() 
-            => projectionChangedSource.Value.Handler -= NewHighlight;
+            => controller.OnProjectionChanged.RemoveListener(NewHighlight);
 
         public void NewHighlight(object sender, Projection proj)
         {

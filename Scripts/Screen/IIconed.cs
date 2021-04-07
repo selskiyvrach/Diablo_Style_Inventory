@@ -7,11 +7,13 @@ namespace D2Inventory
     public interface IIconed : IVisibleOnScreen 
     {
 
-        Image Icon { get; }
+        Image Icon { get; set; }
 
         Sprite Sprite { get; }
 
         Vector2Int SizeInt { get; }
+
+        float Scale { get; }
 
     }
     

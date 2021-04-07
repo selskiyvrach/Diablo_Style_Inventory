@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using MNS.Events;
 using MNS.Utils.Values;
 using UnityEngine;
 
@@ -10,20 +9,39 @@ namespace D2Inventory
 
     public class InventoryController : MonoBehaviour
     {
-        [Header("Containers")]
-        [SerializeField] ContainerArrayHandlerSource containers;
-        [Header("Controls")]
+        [Header("Input")]
         [SerializeField] ChainVector2ValueSource cursorPos;
-        [Header("Inventory Events")]
-        [SerializeField] BoolHandlerSource openCloseInventory;
-        [SerializeField] BoolHandlerSource weaponsSwithcedToFirstOption;
-        [Header("Item Manipulations")]
-        [SerializeField] ProjectionHandlerSource projectionChanged;
-        [SerializeField] ProjectionHandlerSource itemPickedUp;
-        [SerializeField] ProjectionHandlerSource itemDropped;
-        [SerializeField] ProjectionHandlerSource itemEquipped;
-        [SerializeField] ProjectionHandlerSource itemUneqipped;
-        [SerializeField] ProjectionHandlerSource cursorItemChanged;
+        [SerializeField] ChainBoolValueSource interactButtonPressed;
+        [SerializeField] FloatHandlerSource unitSize;
+
+        public Vector2 CursorPos => cursorPos.Value;
+
+        private EnhancedEventHandler<Projection> _onProjectionChanged = new EnhancedEventHandler<Projection>();
+        public IReadOnlyEnhancedHandler<Projection> OnProjectionChanged => _onProjectionChanged;
+
+        private EnhancedEventHandler<bool> _onInventoryOpened = new EnhancedEventHandler<bool>();
+        public IReadOnlyEnhancedHandler<bool> OnInventoryOpened => _onInventoryOpened;
+
+        private EnhancedEventHandler<bool> _onWeaponsSwitchedToFirstOption = new EnhancedEventHandler<bool>();
+        public IReadOnlyEnhancedHandler<bool> OnWeaponsSwitchedToFirstOption => _onWeaponsSwitchedToFirstOption;
+        
+        private EnhancedEventHandler<InventoryItem> _onItemPickedUp = new EnhancedEventHandler<InventoryItem>();
+        public IReadOnlyEnhancedHandler<InventoryItem> OnItemPickedUp => _onItemPickedUp;
+
+        private EnhancedEventHandler<InventoryItem> _onItemDropped = new EnhancedEventHandler<InventoryItem>();
+        public IReadOnlyEnhancedHandler<InventoryItem> OnItemDropped => _onItemDropped;
+
+        private EnhancedEventHandler<Projection> _onItemEquipped = new EnhancedEventHandler<Projection>();
+        public IReadOnlyEnhancedHandler<Projection> OnItemEquipped => _onItemEquipped;
+        
+        private EnhancedEventHandler<InventoryItem> _onItemUnequipped = new EnhancedEventHandler<InventoryItem>();
+        public IReadOnlyEnhancedHandler<InventoryItem> OnItemUnequipped => _onItemUnequipped;
+                
+        private EnhancedEventHandler<InventoryItem> _onCursorItemChanged = new EnhancedEventHandler<InventoryItem>();
+        public IReadOnlyEnhancedHandler<InventoryItem> OnCursorItemChanged => _onCursorItemChanged;
+        
+        private EnhancedEventHandler<float> _onUnitSizeChanged = new EnhancedEventHandler<float>();
+        public IReadOnlyEnhancedHandler<float> OnUnitSizeChanged => _onUnitSizeChanged;
 
         private ContainerBase[] _containers;
 
@@ -32,48 +50,72 @@ namespace D2Inventory
         private Projection _lastProjection = Projection.EmptyProjection;
 
         private void Awake() {
+            _onInventoryOpened.Invoke(this, true);
+            _onWeaponsSwitchedToFirstOption.Invoke(this, true);
+            _onCursorItemChanged.Invoke(this, null);
+            _onProjectionChanged.Invoke(this, Projection.EmptyProjection);
+            unitSize.Value.AddWithInvoke((o, args) => _onUnitSizeChanged.Invoke(this, args));
+
+            // TODO: create inputManager
             cursorPos.Getter = () => Input.mousePosition;
+            interactButtonPressed.Getter = () => Input.GetKeyDown(KeyCode.Mouse0);
         }
 
         private void OnEnable() {
-            containers.Value.AddWithInvoke((o, args) => UpdateContainers(args));   
+            unitSize.Value.AddWithInvoke((o, args) => _onUnitSizeChanged.Invoke(this, args));
         }
 
         private void OnDisable() {
-            containers.Value.Handler -= (o, args) => UpdateContainers(args);
+            unitSize.Value.RemoveListener((o, args) => _onUnitSizeChanged.Invoke(this, args));
         }
 
         private void Update() {
-            CheckProjection();
+            CheckProjection(cursorPos.Value);
+            CheckForAction();
         }
 
-        public void AddItem(InventoryItemData data)
+        private void CheckForAction()
         {
-            // itemPickedUp.Value.Invoke(this, new Projection(null, new Rect(), false, ));
+            if(interactButtonPressed.Value)
+                if(_cursorItem != null)
+                    if(_lastProjection.CanPlace)
+                    {
+                        _onItemEquipped.Invoke(this, _lastProjection);
+                        _cursorItem = _lastProjection.Container.PlaceItem(_cursorItem);
+                    }
         }
 
-        private void CheckProjection()
+        private void CheckProjection(Vector2 screenPos)
         {
             if(_containers == null || _containers.Length == 0) return;
 
-            bool overlapsContainer = false;
-
+            bool overlapsAnything = false;
             foreach(var container in _containers)
             {
-                var proj = container.GetProjection(_cursorItem, cursorPos.Value);
+                var proj = container.GetProjection(_cursorItem, screenPos);
                 if(!proj.Empty)
                 {   
+                    overlapsAnything = true;
                     if(!proj.Same)
-                        projectionChanged.Value.Invoke(this, _lastProjection = proj);
-                    overlapsContainer = true;
+                        _onProjectionChanged.Invoke(this, _lastProjection = proj);
                 }
             }
-            if(!_lastProjection.Empty && !overlapsContainer)
-                projectionChanged.Value.Invoke(this, _lastProjection = Projection.EmptyProjection);
+            if(!_lastProjection.Empty && !overlapsAnything)
+                _onProjectionChanged.Invoke(this, _lastProjection = Projection.EmptyProjection);
         }
 
-        private void UpdateContainers(ContainerBase[] newContainers)
+        public void SetContainers(ContainerBase[] newContainers)
             => _containers = newContainers;
+
+        public void PickUpItem(InventoryItemData data)
+        {
+            var item = Factory.GetItem(data);
+
+            if(_cursorItem != null)
+                _onItemDropped.Invoke(this, item);
+
+            _onItemPickedUp.Invoke(this, _cursorItem = item);
+        }
 
     }
     
