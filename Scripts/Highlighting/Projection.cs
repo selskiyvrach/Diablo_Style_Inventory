@@ -10,13 +10,13 @@ namespace D2Inventory
     public class Projection
     {
         public ContainerBase Container { get; private set; }
-        public Rect ScreenRect { get; private set; } = new Rect();
-        public bool CanPlace { get; private set; } = false;
+        public Rect ScreenRect { get; private set; }
+        public bool CanPlace { get; private set; }
         public Vector2 PotentialPlacedPos { get; private set; }
-        public InventoryItem Replacement { get; private set; } = null;
+        public InventoryItem Replacement { get; private set; }
         ///<summary>
         ///If projection says CanPlace that means you need to place all refugees somewhere first</summary>
-        public IReadOnlyCollection<InventoryItem> Refugees { get; private set; } = new InventoryItem[0];
+        public InventoryItem[] Refugees { get; private set; } = new InventoryItem[0];
 
         ///<summary>
         ///If projection says CanPlace that means you need to place all refugees somewhere first</summary>
@@ -39,10 +39,17 @@ namespace D2Inventory
                 return false;
             // if refugees are not empty return false if Refugees are empty or whether their sequences are equal
             if(refugees != null && refugees.Length != 0)
-                return (Refugees.Count == 0) ? false : Refugees.SequenceEqual(refugees.Where(n => n != null).Distinct().ToArray());
+                return (Refugees.Length == 0) ? false : Refugees.SequenceEqual(refugees.Where(n => n != null).Distinct().ToArray());
             // if refugees are empty - return whether Refugees are empty too
-            return Refugees.Count == 0;
+            return Refugees.Length == 0;
         }
+
+        public Projection SetCanPlace(bool value)
+        {
+            CanPlace = value;
+            return this;
+        }
+        
 
         // EMPTY AND SAME
         // first being sent if no projection on sender, second - if projection doesn't differ from the previous one(so caller should use cashed version)

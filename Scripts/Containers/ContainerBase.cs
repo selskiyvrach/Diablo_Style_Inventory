@@ -20,6 +20,10 @@ namespace D2Inventory
 
         public abstract bool TryPlaceItemAuto(InventoryItem item);
 
+        public abstract bool TryPlaceItemsAuto(InventoryItem[] items);
+
+        public abstract bool CanPlaceItemsAuto(InventoryItem[] items);
+
         public void SetActive(bool value) 
             => screenRect?.SetActive(value);
     }

@@ -57,7 +57,7 @@ namespace D2Inventory
         public override InventoryItem PlaceItem(InventoryItem item)
         {
             if(item == null) return null;
-            lastProjection ??= GetProjection(item, item.Icon.transform.position);
+            lastProjection ??= GetProjection(item, item.DesiredScreenPos);
 
             var outt = lastProjection.Replacement;
             if (outt == content)
@@ -80,6 +80,13 @@ namespace D2Inventory
                     }
             return false;
         }
+                
+        public override bool CanPlaceItemsAuto(InventoryItem[] items)
+            => 
+            items.Length == 1 && 
+            content == null && 
+            fitRule.CanFit(items[0].ItemData.FitRule) && 
+            (pair.content == null || pair.content.ItemData.FitRule.CanPair(items[0].ItemData.FitRule));
 
 // PRIVATE
 
@@ -94,6 +101,8 @@ namespace D2Inventory
         private void SetAsContent(InventoryItem item)
         {
             content = item;
+            item.DesiredScreenPos = screenRect.Rect.center;
+            content.Container = this;
 
             if(content.ItemData.FitRule.TwoHanded)
                 pair.SetCloneImage(content);

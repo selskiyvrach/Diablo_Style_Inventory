@@ -4,30 +4,29 @@ using UnityEngine.UI;
 namespace D2Inventory
 {
     
-    public class InventoryItem : IVector2IntItem, IIconed
+    public class InventoryItem : Vector2IntItem
     {
+        public int ID { get; private set; }
+
         public InventoryItemData ItemData { get; private set; }
 
-        // IVector2IntItem:
-        public Vector2Int TopLeftCornerPosInt { get; set; }
-        public bool OneCellItem {get; private set; }
+        public Vector2 DesiredScreenPos { get; set; }
 
-        // IIconed & IVector2IntItem:
-        public Vector2Int SizeInt { get; private set; }
+        // TODO: set offset (sizeIint, unitSize) OR get corners in sontroller, substracting quarter of a square from the corners
+        public Vector2 TopLeftCornerOffset { get; set; }
 
-        // IIconed:
-        public Image Icon { get; set; }
-        public Sprite Sprite { get; private set; }
-        public bool Visible { get; set; }
-        public float Scale { get; private set; }
+        public ContainerBase Container { get; set; }
 
         public InventoryItem(InventoryItemData data)
         {
             ItemData = data;
             SizeInt = ItemData.SizeInt;
-            OneCellItem = ItemData.OneCellItem;
-            Sprite = ItemData.Sprite;
-            Scale = ItemData.ImageScale;
+            OneCellItem = SizeInt.magnitude < 2;
+        }
+
+        public void SetID(int value)
+        {
+            ID = value;
         }
     }
 }

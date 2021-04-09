@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -15,8 +13,13 @@ namespace D2Inventory
 
         public override InventoryItem ExtractItem(InventoryItem item)
         {
-            if(item != null && _space.TryExtractItem(item.TopLeftCornerPosInt, out IVector2IntItem extracted))
-                return (InventoryItem)extracted;
+            if(item != null && _space.TryExtractItem(item.TopLeftCornerPosInt, out Vector2IntItem extracted))
+            {
+                var outt = (InventoryItem)extracted;
+                if(outt != null)
+                    outt.Container = null;
+                return outt;
+            }
             return null;
         }
 
@@ -40,7 +43,7 @@ namespace D2Inventory
             var normPos = screenRect.ScreenPointToNormalized(screenPos);
             var cellCoord = NormPosToCellPos(normPos);
 
-            if (_space.PeekItem(cellCoord, out IVector2IntItem peeked))
+            if (_space.PeekItem(cellCoord, out Vector2IntItem peeked))
             {
                 rect = GetNormRectForItem(peeked.TopLeftCornerPosInt, peeked.SizeInt);
                 replacement = (InventoryItem)peeked;
@@ -56,7 +59,7 @@ namespace D2Inventory
             // declare placeholders for the future projection fields
             Rect rect = new Rect(); bool canPlace = true; Vector2 potentialPlacedPos = new Vector2(); InventoryItem replacement = null; InventoryItem[] refugees = null;
 
-            var cornerPosScreen = item.GetCornerCenterInScreen(0, screenRect.Rect.size.x / sizeData.SizeInt.x);
+            var cornerPosScreen = GetItemCornerCenter(item, 0);
             var cornerPosCell = NormPosToCellPos(screenRect.ScreenPointToNormalized(cornerPosScreen));
 
             var overlaps = _space.GetOverlaps(cornerPosCell, item.ItemData.SizeInt).Select(n => (InventoryItem)n);
@@ -77,9 +80,15 @@ namespace D2Inventory
                 rect = GetNormRectForItem(cornerPosCell, item.ItemData.SizeInt);
             }
             canPlace = fitRule.CanFit(item.ItemData.FitRule) && overlapsCount < 2;
-            potentialPlacedPos = GetNormRectForItem(
-                NormPosToCellPos(screenRect.ScreenPointToNormalized(item.GetCornerCenterInScreen(0, screenRect.Rect.size.x / sizeData.SizeInt.x))), 
-                item.SizeInt).center;
+
+            potentialPlacedPos = 
+                screenRect.NormalizedRectPointToScreen(
+                GetNormRectForItem(
+                NormPosToCellPos(
+                screenRect.ScreenPointToNormalized(
+                GetItemCornerCenter(item, 0))), 
+                item.SizeInt).
+                center);
 
             return GetSameOrNewProjection(rect, canPlace, potentialPlacedPos, replacement, refugees);
         }
@@ -102,8 +111,8 @@ namespace D2Inventory
         {
             if(item != null)
             {
-                var corn1 = item.GetCornerCenterInScreen(0, screenRect.Rect.size.x / sizeData.SizeInt.x);
-                var corn2 = item.GetCornerCenterInScreen(1, screenRect.Rect.size.x / sizeData.SizeInt.x);
+                var corn1 = GetItemCornerCenter(item, 0);
+                var corn2 = GetItemCornerCenter(item, 1);
                 return screenRect.ContainsPoint(corn1) && screenRect.ContainsPoint(corn2);
             }
             return screenRect.ContainsPoint(screenPos);
@@ -111,18 +120,22 @@ namespace D2Inventory
 
         public override InventoryItem PlaceItem(InventoryItem item)
         {
-            lastProjection ??= GetProjection(item, item.Icon.transform.position);
+            lastProjection ??= GetProjection(item, item.DesiredScreenPos);
             if(lastProjection.CanPlace)
             {
                 // placeholder for return value
                 InventoryItem replaced = null;
                 if(lastProjection.Replacement != null)
                 {
-                    _space.TryExtractItem(lastProjection.Replacement.TopLeftCornerPosInt, out IVector2IntItem extracted);
+                    _space.TryExtractItem(lastProjection.Replacement.TopLeftCornerPosInt, out Vector2IntItem extracted);
                     replaced = (InventoryItem)extracted;
                 }
-                var topLeftCornerCell = NormPosToCellPos(screenRect.ScreenPointToNormalized(item.GetCornerCenterInScreen(0, screenRect.Rect.size.x / sizeData.SizeInt.x)));
+                var itemCornerScreen = GetItemCornerCenter(item, 0);
+                var topLeftCornerCell = NormPosToCellPos(screenRect.ScreenPointToNormalized(itemCornerScreen));
+
                 _space.PlaceItemAtPos(item, topLeftCornerCell);
+                item.DesiredScreenPos = lastProjection.PotentialPlacedPos;
+                item.Container = this;
                 return replaced;
             }
             Debug.LogError("Tried to put item when projection had CanPlace with false value");
@@ -133,13 +146,33 @@ namespace D2Inventory
         {
             if(_space.TryPlaceItemAuto(item))
             {
-                var itemRect = GetNormRectForItem(item.TopLeftCornerPosInt, item.SizeInt);
+                item.DesiredScreenPos = screenRect.NormalizedRectPointToScreen(GetNormRectForItem(item.TopLeftCornerPosInt, item.SizeInt).center);
+                item.Container = this;
                 return true; 
             }
             Debug.LogError("Could't place item auto to Vector2IntSpace");
             return false;
         }
         
+        public override bool TryPlaceItemsAuto(InventoryItem[] items)
+        {
+            if(_space.TryPlaceItemsAuto(items))
+            {
+                foreach(var i in items)
+                {
+                    i.DesiredScreenPos = screenRect.NormalizedRectPointToScreen(GetNormRectForItem(i.TopLeftCornerPosInt, i.SizeInt).center);
+                    i.Container = this;
+                }
+                return true;
+            }
+            return false;
+        }
+        
+        public override bool CanPlaceItemsAuto(InventoryItem[] items)
+            =>  _space.CanPlaceItemsAuto(items.Select(n => n as Vector2IntItem).ToArray());
+        
+// PRIVATE    
+
         private Rect GetNormRectForItem(Vector2Int posInt, Vector2Int itemSizeInt)
         {
             var sizeNorm = (Vector2)itemSizeInt / (Vector2)sizeData.SizeInt;
@@ -154,7 +187,23 @@ namespace D2Inventory
         {
             float x = normPos.x / ( 1f / sizeData.SizeInt.x);
             float y = sizeData.SizeInt.y - normPos.y / ( 1f / sizeData.SizeInt.y);
-            return new Vector2Int(Mathf.FloorToInt(x), Mathf.FloorToInt(y));
+            var cellPos = new Vector2Int(Mathf.FloorToInt(x), Mathf.FloorToInt(y));
+            return cellPos;
         }
+        
+        ///<param name="cornerNumber"> 
+        ///0 = top-left corner of item, 1 = bottom-right corner of item</param>
+        private Vector2 GetItemCornerCenter(InventoryItem item, int cornerNumber)
+        {
+            if(item.OneCellItem)
+                return item.DesiredScreenPos;
+
+            var unitSize = screenRect.Rect.size.x / sizeData.SizeInt.x;
+            if(cornerNumber == 0)
+                return item.DesiredScreenPos - new Vector2((unitSize * item.SizeInt.x) / 2, - (unitSize * item.SizeInt.y) / 2) + new Vector2(unitSize / 2, - unitSize / 2);
+            else // if 1
+                return item.DesiredScreenPos + new Vector2((unitSize * item.SizeInt.x) / 2, - (unitSize * item.SizeInt.y) / 2) - new Vector2(unitSize / 2, - unitSize / 2);
+        }
+
     }
 }

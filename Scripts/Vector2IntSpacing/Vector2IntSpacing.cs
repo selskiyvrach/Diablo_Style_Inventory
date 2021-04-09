@@ -1,28 +1,28 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace D2Inventory
 {
     
-
     public class Vector2IntSpacing 
     {
         private Vector2Int _size;
-        private IVector2IntItem[,] _space;
+        private Vector2IntItem[,] _space;
 
     // TRACKERS
 
-        private List<IVector2IntItem> _overlaps = new List<IVector2IntItem>();
+        private List<Vector2IntItem> _overlaps = new List<Vector2IntItem>();
 
     // CONSTRUCTOR
 
         public Vector2IntSpacing(Vector2Int size)
-            =>  _space = new IVector2IntItem[(_size = size).x, _size.y];
+            =>  _space = new Vector2IntItem[(_size = size).x, _size.y];
 
     // PUBLIC
 
-        public bool TryPlaceItemAtPos(IVector2IntItem newItem, Vector2Int leftCornerPos)
+        public bool TryPlaceItemAtPos(Vector2IntItem newItem, Vector2Int leftCornerPos)
         {
             if(!Exceeds(leftCornerPos, newItem.SizeInt))
             {
@@ -37,21 +37,20 @@ namespace D2Inventory
             return false;
         }
 
-        public bool TryPlaceItemAuto(IVector2IntItem newItem)
+        public bool TryPlaceItemAuto(Vector2IntItem newItem)
         {
             if(TrySearchPlace(newItem.SizeInt, out Vector2Int pos))
             {
                 PutItemInSpace(newItem, pos);
                 return true;
             }
-            Debug.Log($"Failed to put item in inventory. No place found");
             return false;
         }
 
-        public void PlaceItemAtPos(IVector2IntItem newItem, Vector2Int leftCornerPos)
+        public void PlaceItemAtPos(Vector2IntItem newItem, Vector2Int leftCornerPos)
             => PutItemInSpace(newItem, leftCornerPos);
 
-        public bool TryExtractItem(Vector2Int itemCornerSquare, out IVector2IntItem extracted)
+        public bool TryExtractItem(Vector2Int itemCornerSquare, out Vector2IntItem extracted)
         {
             extracted = _space[itemCornerSquare.x, itemCornerSquare.y];
             if(extracted != null)
@@ -59,10 +58,10 @@ namespace D2Inventory
             return extracted != null;
         }
 
-        public bool PeekItem(Vector2Int pos, out IVector2IntItem item)
+        public bool PeekItem(Vector2Int pos, out Vector2IntItem item)
             => (item = _space[pos.x, pos.y]) != null;
 
-        public IVector2IntItem[] GetOverlaps(Vector2Int topLeftCornerPos, Vector2Int size)
+        public Vector2IntItem[] GetOverlaps(Vector2Int topLeftCornerPos, Vector2Int size)
         {
             _overlaps.Clear();
             ApplyActionToAreaIn2DSpace(topLeftCornerPos, size, (int x, int y) => 
@@ -112,10 +111,39 @@ namespace D2Inventory
                     }
             return false;
         }
+        
+        internal bool CanPlaceItemsAuto(Vector2IntItem[] items)
+        {
+            Vector2IntItem[] temp = new Vector2IntItem[items.Length]; 
+            for(int n = 0; n < temp.Length; n++)
+                temp[n] = new Vector2IntItem(items[n].SizeInt, items[n].TopLeftCornerPosInt);
+
+            for(int i = 0; i < temp.Length; i++)
+                if(!TryPlaceItemAuto(temp[i]))
+                {
+                    for(int j = 0; j < i; j++)
+                        TryExtractItem(temp[j].TopLeftCornerPosInt, out Vector2IntItem extracted);
+                    return false;
+                }
+            foreach (var item in temp)
+                TryExtractItem(item.TopLeftCornerPosInt, out Vector2IntItem extracted);
+            return true;
+        }
+
+        public bool TryPlaceItemsAuto(Vector2IntItem[] items)
+        {
+            if(CanPlaceItemsAuto(items))
+            {
+                foreach (var item in items)
+                    TryPlaceItemAuto(item);
+                return true;
+            }
+            return false;
+        }
 
     // PRIVATE  
 
-        private void PutItemInSpace(IVector2IntItem newItem, Vector2Int leftCornerPos)
+        private void PutItemInSpace(Vector2IntItem newItem, Vector2Int leftCornerPos)
         {
             ApplyActionToAreaIn2DSpace(leftCornerPos, newItem.SizeInt, (int x, int y) => _space[x, y] = newItem );
             newItem.TopLeftCornerPosInt = leftCornerPos;
@@ -147,5 +175,6 @@ namespace D2Inventory
 
         private bool CellOccupied(int xPos, int yPos)
             => _space[xPos, yPos] != null;
-}
+    
+    }
 }

@@ -22,6 +22,4 @@ public class InventoryItemData : ScriptableObject
 
     public bool TwoHanded => fitRule.TwoHanded;
 
-    public bool OneCellItem => size.SizeInt.magnitude < 2;
-
 }
