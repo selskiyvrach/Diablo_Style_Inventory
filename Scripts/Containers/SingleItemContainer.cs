@@ -13,6 +13,9 @@ namespace D2Inventory
             if(Input.GetKeyDown(KeyCode.T))
                 Debug.Log(content != null ? content.ItemData.Name : "nothing");
         }
+        
+        public override InventoryItem[] GetContent()
+            => new InventoryItem[]{ content };  
 
         public override InventoryItem ExtractItem(InventoryItem item)
         {

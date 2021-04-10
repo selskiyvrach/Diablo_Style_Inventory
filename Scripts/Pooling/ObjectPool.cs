@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+///<summary>
+///Creates a pool of requested GameObject clones</summary>
 public class ObjectPool<T> where T: Component
 {
     private Stack<T> _pool = new Stack<T>();
@@ -15,26 +17,31 @@ public class ObjectPool<T> where T: Component
     {
         // VALIDATION
         if(sample == null) { Debug.LogError("Cannot create pool of a null object"); return; }
+
+        quantity = Mathf.Max(quantity, 0); 
+
         try 
         { 
-            // this call will throw an exception itself when trying to access gameObject field
+            // this call will throw an exception itself when trying to access "gameObject" field
             // of a MonoBehaviour that was created via constructor. if gO is null - throw too for double-check
             if(((Component)sample).gameObject == null)
                 throw new Exception();
         }
         catch (Exception) 
         { 
-            Debug.LogError("You shouldn't create MonobeHaviour subtypes via contructor! Use gameObject.AddComponent instead");
+            Debug.LogError("You shouldn't create MonoBehaviour subtypes via contructor! Use gameObject.AddComponent instead");
             return;
         }
-        quantity = Mathf.Max(quantity, 0); 
         // ENDVAL
 
         string number = _poolsCreated++ == 0 ? "" : $"({_poolsCreated++})";
+        // TODO: figure out why Image's ReflectedType call throws null reference exc
         string specialName = specName == null ? $"of {sample.GetType().ToString()}'s" : specName;
         _poolParent = new GameObject($"Pool {number} {specialName}").transform;
         _poolParent.SetParent(PoolingMasterObject.PoolingParent.transform);
+
         _sample = GetNewItem(sample);
+        
         Prewarm(quantity);
     }
 
@@ -47,7 +54,7 @@ public class ObjectPool<T> where T: Component
         i.gameObject.SetActive(true);
         return i;
     }
-
+    
     public void Prewarm(int quantity)
     {
         for(int i = 0; i < quantity; i++)
@@ -56,6 +63,8 @@ public class ObjectPool<T> where T: Component
 
     public void ReturnItem(T item)
         => PutIntoPool(item);
+
+// CLEARING
 
     public void ClearPool()
     {
@@ -69,6 +78,8 @@ public class ObjectPool<T> where T: Component
         ClearPool();
         GameObject.Destroy(_poolParent);
     }
+
+// PRIVATE
 
     private T GetNewItem(T sample)
     {

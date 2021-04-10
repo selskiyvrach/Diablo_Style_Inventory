@@ -22,6 +22,10 @@ namespace D2Inventory
             }
             return null;
         }
+        
+        public override InventoryItem[] GetContent()
+            // select all cells content 
+            => _space.GetOverlaps(new Vector2Int(0, 0), SizeData.SizeInt).Select(n => (InventoryItem)n).ToArray();
 
         public override Projection GetProjection(InventoryItem item, Vector2 screenPos)
         {
@@ -204,6 +208,5 @@ namespace D2Inventory
             else // if 1
                 return item.DesiredScreenPos + new Vector2((unitSize * item.SizeInt.x) / 2, - (unitSize * item.SizeInt.y) / 2) - new Vector2(unitSize / 2, - unitSize / 2);
         }
-
     }
 }

@@ -4,13 +4,19 @@ namespace D2Inventory
 {
     public abstract class ContainerBase : MonoBehaviour
     {
-        [SerializeField] protected ScreenRect screenRect; public ScreenRect ScreenRect => screenRect;
-        [SerializeField] protected Vector2IntSpaceData sizeData; public Vector2IntSpaceData SizeData => sizeData;
+        [SerializeField] protected ScreenRect screenRect; 
+        [SerializeField] protected Vector2IntSpaceData sizeData; 
         [SerializeField] protected ItemFitRule fitRule; 
 
         protected Projection lastProjection = Projection.EmptyProjection;
 
+        public Vector2IntSpaceData SizeData => sizeData;
+
+        public ScreenRect ScreenRect => screenRect;
+
         public bool ActiveOnScreen => screenRect.Active;
+
+        public abstract InventoryItem[] GetContent();
 
         public abstract Projection GetProjection(InventoryItem item, Vector2 screenPos); 
 

@@ -929,6 +929,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cursorPos: {fileID: 11400000, guid: 7ce6caf3b4d06114a9810e720d92e5ac, type: 2}
   interactButtonPressed: {fileID: 11400000, guid: 41442fe7297b6f4469f0856de2104e7a, type: 2}
+  openCloseButtonPressed: {fileID: 11400000, guid: c1c03795273a73b43bc19be77ea3ad28, type: 2}
   unitSize: {fileID: 11400000, guid: e2a4260a8f776d241bff7f3ae8d7573a, type: 2}
   itemIconsParent: {fileID: 2107319213}
 --- !u!114 &1768966724
@@ -940,7 +941,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1768966721}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cd64284013a3b24393ddde70c4cd211, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d7f0e5fc819a5d4ea643d166ad73412, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   execute: 1
@@ -983,7 +984,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 321ecaa88e4142f4d9cc2b98e21bfcac, type: 2}
   - {fileID: 11400000, guid: 979e12058f0969c47834bf1b01c66f40, type: 2}
   controller: {fileID: 1768966723}
-  container: {fileID: 0}
 --- !u!114 &1768966728
 MonoBehaviour:
   m_ObjectHideFlags: 0

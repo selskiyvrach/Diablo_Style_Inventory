@@ -16,14 +16,24 @@ namespace D2Inventory
 
         public Color Color;
 
-        public IconInfo(Sprite sprite, Vector2 screenSize, Vector2 screenPos, Color color)
+        public Transform Parent;
+
+        public IconInfo(Sprite sprite, Vector2 screenSize, Vector2 screenPos, Color color, Transform parent)
         {
             Sprite = sprite;
             ScreenSize = screenSize;
             ScreenPos = screenPos;
             Color = color;
+            Parent = parent;
         }
-        
+
+        // EMPTY static argument to return instead of null
+
+        public bool IsEmpty { get; private set; }
+
+        private IconInfo() => IsEmpty = true;
+
+        public static readonly IconInfo Empty = new IconInfo();
     }
 
 }

@@ -2,7 +2,8 @@ using System;
 
 namespace MNS.Events
 {
-
+    ///<summary>
+    ///Exposes EnhancedEventHandler with subscribe/unsubcsribe functional only</summary>
     public interface IReadOnlyEnhancedHandler<T>
     {
 
