@@ -6,6 +6,9 @@ namespace MNS.Events
     ///Exposes EnhancedEventHandler with subscribe/unsubcsribe functional only</summary>
     public interface IReadOnlyEnhancedHandler<T>
     {
+        object LastSender { get; }
+
+        T LastArgs { get; } 
 
         void AddListener(EventHandler<T> listener); 
 

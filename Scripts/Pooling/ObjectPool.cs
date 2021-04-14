@@ -17,9 +17,7 @@ public class ObjectPool<T> where T: Component
     {
         // VALIDATION
         if(sample == null) { Debug.LogError("Cannot create pool of a null object"); return; }
-
         quantity = Mathf.Max(quantity, 0); 
-
         try 
         { 
             // this call will throw an exception itself when trying to access "gameObject" field
@@ -34,7 +32,7 @@ public class ObjectPool<T> where T: Component
         }
         // ENDVAL
 
-        string number = _poolsCreated++ == 0 ? "" : $"({_poolsCreated++})";
+        string number = _poolsCreated++ == 0 ? "" : $"({_poolsCreated})";
         // TODO: figure out why Image's ReflectedType call throws null reference exc
         string specialName = specName == null ? $"of {sample.GetType().ToString()}'s" : specName;
         _poolParent = new GameObject($"Pool {number} {specialName}").transform;

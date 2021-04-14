@@ -114,17 +114,20 @@ namespace D2Inventory
         
         internal bool CanPlaceItemsAuto(Vector2IntItem[] items)
         {
+            // create copy of arguments to preserve their fields unchanged yet
             Vector2IntItem[] temp = new Vector2IntItem[items.Length]; 
             for(int n = 0; n < temp.Length; n++)
                 temp[n] = new Vector2IntItem(items[n].SizeInt, items[n].TopLeftCornerPosInt);
 
             for(int i = 0; i < temp.Length; i++)
+            {
                 if(!TryPlaceItemAuto(temp[i]))
                 {
                     for(int j = 0; j < i; j++)
                         TryExtractItem(temp[j].TopLeftCornerPosInt, out Vector2IntItem extracted);
                     return false;
                 }
+            }
             foreach (var item in temp)
                 TryExtractItem(item.TopLeftCornerPosInt, out Vector2IntItem extracted);
             return true;

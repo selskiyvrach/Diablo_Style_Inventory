@@ -11,8 +11,8 @@ namespace MNS.Events
         private EventHandler<T> _handler = delegate { };
 
         // stored last call parameters
-        private object _lastSender;
-        private T _lastArgs;
+        public object LastSender { get; private set; }
+        public T LastArgs { get; private set; }
         
         public void AddListener(EventHandler<T> listener)
             => _handler += listener;
@@ -24,8 +24,8 @@ namespace MNS.Events
             if(listener != null)
             {
                 _handler += listener;
-                if(_lastArgs != null && _lastSender != null)
-                    listener.Invoke(_lastSender, _lastArgs);
+                if(LastArgs != null && LastSender != null)
+                    listener.Invoke(LastSender, LastArgs);
             }
         }
 
@@ -36,7 +36,7 @@ namespace MNS.Events
             => _handler = null;
 
         public void Invoke(object sender, T args)
-            => _handler.Invoke(_lastSender = sender, _lastArgs = args);
+            => _handler.Invoke(LastSender = sender, LastArgs = args);
             
     }
 }

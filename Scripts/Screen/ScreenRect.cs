@@ -10,10 +10,13 @@ public class ScreenRect : MonoBehaviour
     
     public Rect Rect { get; private set; }
 
+    public Transform Transform { get; private set; }
+
     private void Awake() 
     {
         Rect = _panel.rectTransform.ScreenRectFromRectTransform();
         Active = _panel.gameObject.activeInHierarchy;
+        Transform = _panel.transform;
     }
 
     public void SetSizeDelta(Vector2 newSize)

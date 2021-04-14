@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace D2Inventory
@@ -12,10 +10,6 @@ namespace D2Inventory
         [SerializeField] ContainerBase[] secondOption;
 
         private bool _firstOptionIsActive = true;
-
-        private void Awake() {
-            SetActiveOptionActive();
-        }
 
         public void GetChange(out ContainerBase[] active, out ContainerBase[] inactive)
         {
@@ -31,7 +25,7 @@ namespace D2Inventory
             SetActiveOptionActive();
         }
 
-        private void SetActiveOptionActive()
+        public void SetActiveOptionActive()
         {
             foreach (var item in firstOption)
                 item.SetActive(_firstOptionIsActive);

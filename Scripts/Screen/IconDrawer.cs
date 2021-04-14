@@ -30,41 +30,86 @@ namespace D2Inventory
             return iD;
         }
 
+        public void ApplyIconChange(int iD, IconInfo changeInfo)
+        {
+                if(changeInfo.Mode == IconMode.
+            Delete) RemoveIcon(iD);
+
+                else if(changeInfo.Mode == IconMode.
+            MoveOnly) MoveIcon(iD, changeInfo.ScreenPos);
+
+                else if(changeInfo.Mode == IconMode.
+            UpdateAllFields) UpdateAllFields(changeInfo, iD);
+
+                else if(changeInfo.Mode == IconMode.
+            Hide) HideIcon(iD); 
+
+                else if(changeInfo.Mode == IconMode.
+            Reveal) RevealIcon(iD);
+
+                else if(changeInfo.Mode == IconMode.
+            ChangeParent) ChangeParent(iD, changeInfo.Parent);
+        }
+
         public void UpdateAllFields(IconInfo info, int iD)
         {   
-            var icon = GetIcon(iD);
-           
-            icon.sprite = info.Sprite;
-            icon.color = info.Color;
-            icon.transform.SetParent(info.Parent);
-            icon.transform.SetAsFirstSibling();
-            icon.rectTransform.sizeDelta = info.ScreenSize;
-            icon.transform.position = info.ScreenPos;
+            if(TryGetIcon(iD, out Image icon))
+            {
+                icon.sprite = info.Sprite;
+                icon.color = info.Color;
+                icon.transform.SetParent(info.Parent);
+                icon.transform.SetAsFirstSibling();
+                icon.rectTransform.sizeDelta = info.ScreenSize;
+                icon.transform.position = info.ScreenPos;
+            }
         }
 
         public void MoveIcon(int iD, Vector2 screenPos)
         {
-            var icon = GetIcon(iD);
+            if(TryGetIcon(iD, out Image icon))
+            {
+                icon.transform.position = screenPos;
+                icon.transform.SetAsLastSibling();
+            }
+        }
 
-            icon.transform.position = screenPos;
-            icon.transform.SetAsLastSibling();
+        public void ChangeParent(int iD, Transform parent)
+        {
+            if(TryGetIcon(iD, out Image icon))
+                icon.transform.SetParent(parent);
+        }
+
+        public void HideIcon(int iD)
+        {
+            if(TryGetIcon(iD, out Image icon))
+                icon.gameObject.SetActive(false);
+        }
+
+        public void RevealIcon(int iD)
+        {
+            if(TryGetIcon(iD, out Image icon))
+                icon.gameObject.SetActive(true);
         }
 
         public void RemoveIcon(int iD)
         {
-            var icon = GetIcon(iD);
-
-            _icons.Remove(iD);
-            _iconsPool.ReturnItem(icon);
+            if(TryGetIcon(iD, out Image icon))
+            {
+                _icons.Remove(iD);
+                _iconsPool.ReturnItem(icon);
+            }
         }
 
-        private Image GetIcon(int iD)
+        private bool TryGetIcon(int iD, out Image icon)
         {
-            if(_icons.TryGetValue(iD, out Image icon))
-                return icon;
+            icon = null;
 
-            Debug.LogError($"Icon with id {iD} has not been found");
-            return null;
+            if(_icons.TryGetValue(iD, out Image icon2))
+                icon = icon2;
+            else
+                Debug.LogError($"Icon with id {iD} has not been found");
+
+            return icon != null;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace D2Inventory
@@ -6,17 +7,13 @@ namespace D2Inventory
     {
         [SerializeField] PairedSingleItemContainer pair;
 
-// PUBLIC
-
         public override InventoryItem ExtractItem(InventoryItem item)
         {
             if(item != null)
             {
                 if(item == content)
                     return ExtractContent();
-                else if(
-                    pair.content == item && 
-                    pair.content.ItemData.FitRule.TwoHanded)
+                else if(item == pair.content)
                     return pair.ExtractContent();
             }
             return null;
@@ -32,7 +29,7 @@ namespace D2Inventory
             InventoryItem refugee = null;
 
             // if pair has two-handed - it's the replacement
-            if(pair.content != null && pair.content.ItemData.FitRule.TwoHanded)
+            if(pair.content != null && pair.content.ItemData.TwoHanded)
                 replacement = pair.content;
             // else if trying to put item and pair content can't pair 
             else if(item != null && pair.content != null && !pair.content.ItemData.FitRule.CanPair(item.ItemData.FitRule)) 
@@ -60,12 +57,11 @@ namespace D2Inventory
             lastProjection ??= GetProjection(item, item.DesiredScreenPos);
 
             var outt = lastProjection.Replacement;
-            if (outt == content)
-                ExtractContent();
-            else if (outt == pair.content)
-                pair.ExtractContent();
+            ExtractItem(outt);
 
-            SetAsContent(item);
+            content = item;
+
+            AnchorNewContent();
             return outt;
         }
 
@@ -75,7 +71,7 @@ namespace D2Inventory
                 if(content == null)
                     if((pair.content == null || pair.content.ItemData.FitRule.CanPair(item.ItemData.FitRule)))
                     {
-                        SetAsContent(item); 
+                        AnchorNewContent();
                         return true;
                     }
             return false;
@@ -92,33 +88,38 @@ namespace D2Inventory
 
         private InventoryItem ExtractContent()
         {
-            if(content != null && content.ItemData.FitRule.TwoHanded)
-                pair.RemoveCloneImage();
+            if(content == null) return null;
 
+            if(content.ItemData.FitRule.TwoHanded)
+            {
+                change.Add((content.IconIDs[1], IconInfo.Hide));
+                content.SecondTakenContainer = null;
+            }
             return base.ExtractItem(base.content);
         }
 
-        private void SetAsContent(InventoryItem item)
+        protected override void AnchorNewContent()
         {
-            content = item;
-            item.DesiredScreenPos = screenRect.Rect.center;
-            content.Container = this;
+            if(content == null) return;
 
-            if(content.ItemData.FitRule.TwoHanded)
-                pair.SetCloneImage(content);
+            base.AnchorNewContent();
+
+            if(content.ItemData.TwoHanded)
+            {
+                content.SecondTakenContainer = pair;
+                change.Add((content.IconIDs[1], IconInfo.Reveal));
+                change.Add((content.IconIDs[1], IconInfo.GetMoveOnly(pair.screenRect.Rect.center)));
+                change.Add((content.IconIDs[1], IconInfo.GetChangeParent(pair.screenRect.Transform)));
+            }
         }
 
-// CLONE IMAGE FOR TWO-HANDED
+        public override (int, IconInfo)[] GetIconChange()
+            => change.Concat(pair.change).ToArray();
 
-        private void SetCloneImage(InventoryItem item)
+        public override void RefreshIconCnange()
         {
-            Debug.LogError("Cloning hasn't been reimplemented");
+            change.Clear();
+            pair.change.Clear();
         }
-
-        private void RemoveCloneImage()
-        {
-            Debug.LogError("Cloning hasn't been reimplemented");
-        }
-    
     }
 }

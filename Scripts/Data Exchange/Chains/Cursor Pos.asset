@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 495938a5e383ce4418478ec387163fba, type: 3}
-  m_Name: Open Close Pressed
+  m_Script: {fileID: 11500000, guid: 32d0f8e775b2a1a458f19ef3b587204a, type: 3}
+  m_Name: Cursor Pos
   m_EditorClassIdentifier: 

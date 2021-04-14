@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,8 +7,7 @@ namespace D2Inventory
     
     public class InventoryItem : Vector2IntItem
     {
-        public int ID { get; set; }
-
+        
         public InventoryItemData ItemData { get; private set; }
 
         ///<summary>
@@ -16,17 +16,28 @@ namespace D2Inventory
 
         public ContainerBase Container { get; set; }
 
-        public int MainIconID { get; set; }
+// TODO: separate two-handed logic somehow...
+// Two-handed related 
 
         ///<summary>
         ///Only used for two-handed items since they take both hands' slots when equipped</summary>
-        public int SecondIconID { get; set; }
+
+        public ContainerBase SecondTakenContainer { get; set; }
+
+        public int[] IconIDs { get; private set; } // [0] - default icoon [1] - for two-handed
+
+        public void InitIcons(int[] iDs)
+        {
+            for(int i = 0; i < IconIDs.Length; i++)
+                IconIDs[i] = iDs[i];
+        }
 
         public InventoryItem(InventoryItemData data)
         {
             ItemData = data;
             SizeInt = ItemData.SizeInt;
             OneCellItem = SizeInt.magnitude < 2;
+            IconIDs = new int[data.TwoHanded ? 2 : 1];
         }
     }
 }

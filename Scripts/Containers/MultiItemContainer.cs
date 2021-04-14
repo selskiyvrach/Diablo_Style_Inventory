@@ -138,8 +138,7 @@ namespace D2Inventory
                 var topLeftCornerCell = NormPosToCellPos(screenRect.ScreenPointToNormalized(itemCornerScreen));
 
                 _space.PlaceItemAtPos(item, topLeftCornerCell);
-                item.DesiredScreenPos = lastProjection.PotentialPlacedPos;
-                item.Container = this;
+                AnchorItem(item);
                 return replaced;
             }
             Debug.LogError("Tried to put item when projection had CanPlace with false value");
@@ -150,30 +149,22 @@ namespace D2Inventory
         {
             if(_space.TryPlaceItemAuto(item))
             {
-                item.DesiredScreenPos = screenRect.NormalizedRectPointToScreen(GetNormRectForItem(item.TopLeftCornerPosInt, item.SizeInt).center);
-                item.Container = this;
-                return true; 
+                AnchorItem(item);
+                return true;
             }
             Debug.LogError("Could't place item auto to Vector2IntSpace");
             return false;
         }
-        
-        public override bool TryPlaceItemsAuto(InventoryItem[] items)
+
+        private void AnchorItem(InventoryItem item)
         {
-            if(_space.TryPlaceItemsAuto(items))
-            {
-                foreach(var i in items)
-                {
-                    i.DesiredScreenPos = screenRect.NormalizedRectPointToScreen(GetNormRectForItem(i.TopLeftCornerPosInt, i.SizeInt).center);
-                    i.Container = this;
-                }
-                return true;
-            }
-            return false;
+            change.Add((item.IconIDs[0], IconInfo.GetMoveOnly(screenRect.NormalizedRectPointToScreen(GetNormRectForItem(item.TopLeftCornerPosInt, item.SizeInt).center))));
+            change.Add((item.IconIDs[0], IconInfo.GetChangeParent(screenRect.Transform)));
+            item.Container = this;
         }
-        
+
         public override bool CanPlaceItemsAuto(InventoryItem[] items)
-            =>  _space.CanPlaceItemsAuto(items.Select(n => n as Vector2IntItem).ToArray());
+            =>  _space.CanPlaceItemsAuto(items);
         
 // PRIVATE    
 

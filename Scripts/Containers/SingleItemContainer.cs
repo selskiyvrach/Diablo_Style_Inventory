@@ -19,10 +19,10 @@ namespace D2Inventory
 
         public override InventoryItem ExtractItem(InventoryItem item)
         {
+            if(item != content) return null;
+            UnanchorCurrentContent();
             var outt = content;
             content = null;
-            if(outt != null)
-                outt.Container = null;
             return outt;
         }
 
@@ -42,10 +42,9 @@ namespace D2Inventory
         public override InventoryItem PlaceItem(InventoryItem item)
         {
             item.DesiredScreenPos = screenRect.Rect.center;
-            var outt = content;
-            outt.Container = null;
+            var outt = ExtractItem(content);
             content = item;
-            content.Container = this;
+            AnchorNewContent();
             return outt;
         }
         
@@ -61,7 +60,20 @@ namespace D2Inventory
             return true;
         }
 
-        public override bool TryPlaceItemsAuto(InventoryItem[] items)
-            => items.Length > 1 ? false : TryPlaceItemAuto(items[0]);
+        protected virtual void UnanchorCurrentContent()
+        {
+            if(content != null)
+                content.Container = null;
+        }
+
+        protected virtual void AnchorNewContent()
+        {
+            if(content == null) return;
+
+            content.Container = this;
+
+            change.Add((content.IconIDs[0], IconInfo.GetMoveOnly(screenRect.Rect.center)));
+            change.Add((content.IconIDs[0], IconInfo.GetChangeParent(screenRect.Transform)));
+        }
     }
 }

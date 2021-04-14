@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace D2Inventory
@@ -8,17 +9,26 @@ namespace D2Inventory
         [SerializeField] protected Vector2IntSpaceData sizeData; 
         [SerializeField] protected ItemFitRule fitRule; 
 
-        protected Projection lastProjection = Projection.EmptyProjection;
+        public void SetActive(bool value) 
+            => screenRect?.SetActive(value);
+
+// TODO: split the below on classes by features
+
+// Screen/Projection
 
         public Vector2IntSpaceData SizeData => sizeData;
+
+        protected Projection lastProjection = Projection.EmptyProjection;
 
         public ScreenRect ScreenRect => screenRect;
 
         public bool ActiveOnScreen => screenRect.Active;
 
-        public abstract InventoryItem[] GetContent();
-
         public abstract Projection GetProjection(InventoryItem item, Vector2 screenPos); 
+
+// Placing
+
+        public abstract InventoryItem[] GetContent();
 
         public abstract InventoryItem PlaceItem(InventoryItem item);
 
@@ -26,11 +36,17 @@ namespace D2Inventory
 
         public abstract bool TryPlaceItemAuto(InventoryItem item);
 
-        public abstract bool TryPlaceItemsAuto(InventoryItem[] items);
-
         public abstract bool CanPlaceItemsAuto(InventoryItem[] items);
 
-        public void SetActive(bool value) 
-            => screenRect?.SetActive(value);
+// Icon change
+
+        protected List<(int, IconInfo)> change = new List<(int, IconInfo)>();
+
+        public virtual (int, IconInfo)[] GetIconChange()
+            => change.ToArray();
+
+        public virtual void RefreshIconCnange()
+            => change.Clear();
+
     }
 }

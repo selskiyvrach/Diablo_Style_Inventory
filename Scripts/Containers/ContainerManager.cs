@@ -6,6 +6,7 @@ namespace D2Inventory
     public class ContainerManager : MonoBehaviour
     {
         [SerializeField] InventoryController controller;
+        [Header("First goes main storage!")]
         ///<summary>
         ///Main storage should go first in this array</summary>
         [SerializeField] ContainerBase[] allContainers = new ContainerBase[0];
@@ -14,8 +15,16 @@ namespace D2Inventory
         // not null and unique cashed (in case serializedField got messy in editor)
         private ContainerBase[] _allFixed;
 
-        private void Awake()
-            => controller.SetContainers(_allFixed = GetAllContainers());
+        private void Awake() {
+            _allFixed = GetAllContainers();
+        }
+
+        private void Start()
+        {
+            controller.SetContainers(_allFixed);
+            SetContainersActive(controller.OnInventoryOpened.LastArgs);
+            SetSwitchesState(controller.OnWeaponsSwitchedToFirstOption.LastArgs);
+        }
 
         private void OnEnable() 
         {
@@ -33,7 +42,10 @@ namespace D2Inventory
             => allContainers.Where(n => n != null).Distinct().ToArray();
 
         private void SetContainersActive(bool value)
-            => allContainers.ForEach((ContainerBase c) => c.SetActive(value));
+        {
+            _allFixed.ForEach((c) => c.SetActive(value));
+            switchers.ForEach((s) => s.SetActiveOptionActive());
+        }
 
         private void SetSwitchesState(bool value)
         {
@@ -41,9 +53,9 @@ namespace D2Inventory
             {
                 item.SetSwitchState(value);
                 item.GetChange(out ContainerBase[] active, out ContainerBase[] inactive);
-                // if anything changed, basically
+                // if anything has changed, basically
                 if((active != null && active.Length != 0) || (inactive != null && inactive.Length != 0) )
-                    controller.HandleSwitchedWeapons(active, inactive);
+                    controller.HandleSwitchedWeapons(active.Where(n => n != null).ToArray(), inactive.Where(n => n != null).ToArray());
             }
         }
     }
