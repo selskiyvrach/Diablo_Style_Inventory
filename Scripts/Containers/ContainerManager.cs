@@ -15,21 +15,16 @@ namespace D2Inventory
         // not null and unique cashed (in case serializedField got messy in editor)
         private ContainerBase[] _allFixed;
 
-        private void Awake() {
-            _allFixed = GetAllContainers();
-        }
+        private void Awake() 
+            => _allFixed = GetAllContainers();
 
         private void Start()
-        {
-            controller.SetContainers(_allFixed);
-            SetContainersActive(controller.OnInventoryOpened.LastArgs);
-            SetSwitchesState(controller.OnWeaponsSwitchedToFirstOption.LastArgs);
-        }
+            => controller.SetContainers(_allFixed);
 
         private void OnEnable() 
         {
-            controller.OnInventoryOpened.AddWithInvoke((o, args) => SetContainersActive(args));
             controller.OnWeaponsSwitchedToFirstOption.AddWithInvoke((o, args) => SetSwitchesState(args));
+            controller.OnInventoryOpened.AddWithInvoke((o, args) => SetContainersActive(args));
         }
             
         private void OnDisable() 
@@ -43,16 +38,20 @@ namespace D2Inventory
 
         private void SetContainersActive(bool value)
         {
-            _allFixed.ForEach((c) => c.SetActive(value));
-            switchers.ForEach((s) => s.SetActiveOptionActive());
+            Debug.Log(value);
+            _allFixed.ForEach((c) => c.SetActiveOnScreen(value && c.ActiveInInventory));
         }
 
         private void SetSwitchesState(bool value)
         {
-            foreach (var item in switchers)
+            foreach (var switcher in switchers)
             {
-                item.SetSwitchState(value);
-                item.GetChange(out ContainerBase[] active, out ContainerBase[] inactive);
+                switcher.SetSwitchState(value);
+
+                switcher.GetChange(out ContainerBase[] active, out ContainerBase[] inactive);
+                
+                if(controller.OnInventoryOpened.LastArgs) 
+                    SetContainersActive(true);
                 // if anything has changed, basically
                 if((active != null && active.Length != 0) || (inactive != null && inactive.Length != 0) )
                     controller.HandleSwitchedWeapons(active.Where(n => n != null).ToArray(), inactive.Where(n => n != null).ToArray());

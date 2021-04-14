@@ -9,8 +9,13 @@ namespace D2Inventory
         [SerializeField] protected Vector2IntSpaceData sizeData; 
         [SerializeField] protected ItemFitRule fitRule; 
 
-        public void SetActive(bool value) 
-            => screenRect?.SetActive(value);
+        public bool ActiveInInventory { get; private set; } = true;
+
+        public void SetActiveInInventory(bool value)
+            => ActiveInInventory = value;
+
+        public void SetActiveOnScreen(bool value) 
+            => screenRect?.SetActive(ActiveOnScreen = value);
 
 // TODO: split the below on classes by features
 
@@ -22,7 +27,7 @@ namespace D2Inventory
 
         public ScreenRect ScreenRect => screenRect;
 
-        public bool ActiveOnScreen => screenRect.Active;
+        public bool ActiveOnScreen { get; private set; }
 
         public abstract Projection GetProjection(InventoryItem item, Vector2 screenPos); 
 

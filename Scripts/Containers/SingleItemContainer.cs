@@ -71,9 +71,7 @@ namespace D2Inventory
             if(content == null) return;
 
             content.Container = this;
-
             change.Add((content.IconIDs[0], IconInfo.GetMoveOnly(screenRect.Rect.center)));
-            change.Add((content.IconIDs[0], IconInfo.GetChangeParent(screenRect.Transform)));
         }
     }
 }

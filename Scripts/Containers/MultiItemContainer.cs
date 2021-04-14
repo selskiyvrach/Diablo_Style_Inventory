@@ -159,7 +159,6 @@ namespace D2Inventory
         private void AnchorItem(InventoryItem item)
         {
             change.Add((item.IconIDs[0], IconInfo.GetMoveOnly(screenRect.NormalizedRectPointToScreen(GetNormRectForItem(item.TopLeftCornerPosInt, item.SizeInt).center))));
-            change.Add((item.IconIDs[0], IconInfo.GetChangeParent(screenRect.Transform)));
             item.Container = this;
         }
 

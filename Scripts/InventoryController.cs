@@ -1,4 +1,3 @@
-using System;
 using MNS.Events;
 using MNS.Utils.Values;
 using UnityEngine;
@@ -18,50 +17,36 @@ namespace D2Inventory
 
         private IconDrawer _iconDrawer;
 
+// Trackers
         private bool _isOpen;
-
-        public IReadOnlyEnhancedHandler<Projection> OnProjectionChanged => _onProjectionChanged;
-        private EnhancedEventHandler<Projection> _onProjectionChanged = new EnhancedEventHandler<Projection>();
-
-        public IReadOnlyEnhancedHandler<bool> OnInventoryOpened => _onInventoryOpened;
-        private EnhancedEventHandler<bool> _onInventoryOpened = new EnhancedEventHandler<bool>();
-
-        public IReadOnlyEnhancedHandler<bool> OnWeaponsSwitchedToFirstOption => _onWeaponsSwitchedToFirstOption;
-        private EnhancedEventHandler<bool> _onWeaponsSwitchedToFirstOption = new EnhancedEventHandler<bool>();
-        
-        public IReadOnlyEnhancedHandler<InventoryItem> OnItemPickedUp => _onItemPickedUp;
-        private EnhancedEventHandler<InventoryItem> _onItemPickedUp = new EnhancedEventHandler<InventoryItem>();
-
-        public IReadOnlyEnhancedHandler<InventoryItem> OnItemDropped => _onItemDropped;
-        private EnhancedEventHandler<InventoryItem> _onItemDropped = new EnhancedEventHandler<InventoryItem>();
-
-        public IReadOnlyEnhancedHandler<InventoryItem> OnItemEquipped => _onItemEquipped;
-        private EnhancedEventHandler<InventoryItem> _onItemEquipped = new EnhancedEventHandler<InventoryItem>();
-        
-        public IReadOnlyEnhancedHandler<InventoryItem> OnItemUnequipped => _onItemUnequipped;
-        private EnhancedEventHandler<InventoryItem> _onItemUnequipped = new EnhancedEventHandler<InventoryItem>();
-                
-        public IReadOnlyEnhancedHandler<InventoryItem> OnCursorItemChanged => _onCursorItemChanged;
-        private EnhancedEventHandler<InventoryItem> _onCursorItemChanged = new EnhancedEventHandler<InventoryItem>();
-        
-        public IReadOnlyEnhancedHandler<float> OnUnitSizeChanged => _onUnitSizeChanged;
-        private EnhancedEventHandler<float> _onUnitSizeChanged = new EnhancedEventHandler<float>();
-
-        private ContainerBase[] _containers;
-
-        // this one is required to put replaced items to when placing to paired containers. See CheckForAction method.
-        // can be used implicitly, but added as a variable for clarity
-        private ContainerBase _mainStorage => _containers != null ? _containers[0] : null;
-
-        private InventoryItem _cursorItem;
-
         private float _unitSize;
-
+        private ContainerBase[] _containers;
+        // this one is required to put replaced items to when placing to paired containers. See CheckForAction method.
+        private ContainerBase _mainStorage => _containers != null ? _containers[0] : null;
+        private InventoryItem _cursorItem;
         private Projection _lastProjection = Projection.EmptyProjection;
+// Behaviour descriptive events
+        private EnhancedEventHandler<Projection> _onProjectionChanged = new EnhancedEventHandler<Projection>();
+        private EnhancedEventHandler<bool> _onInventoryOpened = new EnhancedEventHandler<bool>();
+        private EnhancedEventHandler<bool> _onWeaponsSwitchedToFirstOption = new EnhancedEventHandler<bool>();
+        private EnhancedEventHandler<InventoryItem> _onItemPickedUp = new EnhancedEventHandler<InventoryItem>();
+        private EnhancedEventHandler<InventoryItem> _onItemDropped = new EnhancedEventHandler<InventoryItem>();
+        private EnhancedEventHandler<InventoryItem> _onItemEquipped = new EnhancedEventHandler<InventoryItem>();
+        private EnhancedEventHandler<InventoryItem> _onItemUnequipped = new EnhancedEventHandler<InventoryItem>();
+        private EnhancedEventHandler<InventoryItem> _onCursorItemChanged = new EnhancedEventHandler<InventoryItem>();
+// Their public interfaces
+        public IReadOnlyEnhancedHandler<Projection> OnProjectionChanged => _onProjectionChanged;
+        public IReadOnlyEnhancedHandler<bool> OnInventoryOpened => _onInventoryOpened;
+        public IReadOnlyEnhancedHandler<bool> OnWeaponsSwitchedToFirstOption => _onWeaponsSwitchedToFirstOption;
+        public IReadOnlyEnhancedHandler<InventoryItem> OnItemPickedUp => _onItemPickedUp;
+        public IReadOnlyEnhancedHandler<InventoryItem> OnItemDropped => _onItemDropped;
+        public IReadOnlyEnhancedHandler<InventoryItem> OnItemEquipped => _onItemEquipped;
+        public IReadOnlyEnhancedHandler<InventoryItem> OnItemUnequipped => _onItemUnequipped;
+        public IReadOnlyEnhancedHandler<InventoryItem> OnCursorItemChanged => _onCursorItemChanged;
 
         private void Awake() {
             _iconDrawer = new IconDrawer();
-
+// setting default start values
             _onInventoryOpened.Invoke(this, true);
             _onWeaponsSwitchedToFirstOption.Invoke(this, true);
             _onCursorItemChanged.Invoke(this, null);
@@ -74,13 +59,8 @@ namespace D2Inventory
             switchWeaponsButonPressed.Getter = () => Input.GetKeyDown(KeyCode.W);
         }
 
-        private void OnEnable() {
-            unitSize.Value.AddWithInvoke((o, args) => { _onUnitSizeChanged.Invoke(this, args); _unitSize = args; });
-        }
-
-        private void OnDisable() {
-            unitSize.Value.RemoveListener((o, args) => { _onUnitSizeChanged.Invoke(this, args); _unitSize = args; });
-        }
+        private void Start() 
+            => _unitSize = unitSize.Value.LastArgs;
 
         private void Update()
         {
@@ -100,32 +80,22 @@ namespace D2Inventory
         public void HandleSwitchedWeapons(ContainerBase[] active, ContainerBase[] inactive)
         {            
             foreach(var n in inactive)
-            {
                 foreach(var m in n.GetContent())
-                {
                     if(m != null) 
                     {
                         _onItemUnequipped.Invoke(this, m);
-                        // _iconDrawer.HideIcon(m.MainIconID);
-                        // if(m.SecondTakenContainer != null)
-                        //     _iconDrawer.HideIcon(m.SecondIconID);
+                        foreach(var iconID in m.IconIDs)
+                            _iconDrawer.ApplyIconChange(iconID, IconInfo.Hide);
                     }
-                }
-            }
             foreach(var i in active)
-            {
                 foreach(var j in i.GetContent())
-                {
                     if(j != null) 
                     {
                         _onItemEquipped.Invoke(this, j);
-                        // _iconDrawer.RevealIcon(j.MainIconID);
-                        // if(j.SecondTakenContainer != null)
-                        //     _iconDrawer.RevealIcon(j.SecondIconID);
+                        if(i.ActiveInInventory)
+                            foreach(var iconID in j.IconIDs)
+                                _iconDrawer.ApplyIconChange(iconID, IconInfo.Reveal);
                     }
-                }
-
-            }
         }
         
         private void MoveCursorItem()
@@ -243,8 +213,8 @@ namespace D2Inventory
             var item = Factory.GetItem(data);
             for(int i = 0; i < item.IconIDs.Length; i++)
             {
-                item.IconIDs[i] = 
-                    _iconDrawer.CreateIcon(IconInfo.GetAllFieldsUpdated(item.ItemData.Sprite, GetItemScreenRect(item.ItemData), cursorPos.Value, Color.white, itemIconsParent));
+                item.IconIDs[i] = _iconDrawer.CreateIcon(IconInfo.GetAllFieldsUpdated(item.ItemData.Sprite, GetItemScreenRect(item.ItemData), cursorPos.Value, itemIconsParent));
+                _iconDrawer.ApplyIconChange(item.IconIDs[i], IconInfo.GetChangeParent(itemIconsParent));
                 if(i > 0)
                     _iconDrawer.ApplyIconChange(item.IconIDs[i], IconInfo.Hide);
             }
@@ -254,18 +224,15 @@ namespace D2Inventory
             _onItemPickedUp.Invoke(this, _cursorItem = item);
 
             if(!_onInventoryOpened.LastArgs)
-            {
                 foreach (var i in _containers)
-                {
                     if(i.TryPlaceItemAuto(item))
                     {
+                        i.RefreshIconCnange();
                         _onItemEquipped.Invoke(this, item);
                         foreach (var iconChange in i.GetIconChange())
                             _iconDrawer.ApplyIconChange(iconChange.Item1, iconChange.Item2);
                         return;
                     }
-                }
-            }
         }
 
         private void ApplyIconChanges((int iD, IconInfo info)[] args)
@@ -287,6 +254,5 @@ namespace D2Inventory
             
             return spriteSize * scale * data.ImageScale;
         }
-
     }
 }
