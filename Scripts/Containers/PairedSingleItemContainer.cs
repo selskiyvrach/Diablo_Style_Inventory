@@ -110,6 +110,7 @@ namespace D2Inventory
                 change.Add((content.IconIDs[1], IconInfo.Reveal));
                 change.Add((content.IconIDs[1], IconInfo.GetMoveOnly(pair.screenRect.Rect.center)));
                 change.Add((content.IconIDs[1], IconInfo.GetChangeParent(pair.screenRect.Transform)));
+                change.Add((content.IconIDs[1], IconInfo.SetHalfOpacity));
             }
         }
 

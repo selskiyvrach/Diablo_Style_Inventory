@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using MNS.Utils;
 using UnityEngine;
@@ -11,6 +12,10 @@ namespace D2Inventory
         private Dictionary<int, Image> _icons = new Dictionary<int, Image>();
 
         private ObjectPool<Image> _iconsPool;
+
+        public Color HalfOpacity { get; set; } = new Color(1, 1, 1, .5f);
+
+        public Color FullOpacity { get; set; } = new Color(1, 1, 1, 1);
 
         public IconDrawer()
         {
@@ -36,80 +41,64 @@ namespace D2Inventory
             Delete) RemoveIcon(iD);
 
                 else if(changeInfo.Mode == IconMode.
-            MoveOnly) MoveIcon(iD, changeInfo.ScreenPos);
+            Move) MoveIcon(iD, changeInfo.ScreenPos);
 
                 else if(changeInfo.Mode == IconMode.
             UpdateAllFields) UpdateAllFields(changeInfo, iD);
 
                 else if(changeInfo.Mode == IconMode.
-            Hide) HideIcon(iD); 
+            Hide) HideIcon(iD, true); 
 
                 else if(changeInfo.Mode == IconMode.
-            Reveal) RevealIcon(iD);
+            Reveal) HideIcon(iD, false); 
 
                 else if(changeInfo.Mode == IconMode.
-            ChangeParent) ChangeParent(iD, changeInfo.Parent);
+            SetParent) ChangeParent(iD, changeInfo.Parent);
+            
+                else if(changeInfo.Mode == IconMode.
+            SetHalfOpacity) SetHalfOpacity(iD, true);
+
+                else if(changeInfo.Mode == IconMode.
+            SetFullOpacity) SetHalfOpacity(iD, false);
         }
 
         public void UpdateAllFields(IconInfo info, int iD)
-        {   
-            if(TryGetIcon(iD, out Image icon))
-            {
+            => ApplyAction(iD, (icon) => { 
                 icon.sprite = info.Sprite;
                 icon.color = info.Color;
                 icon.transform.SetParent(info.Parent);
                 icon.transform.SetAsFirstSibling();
                 icon.rectTransform.sizeDelta = info.ScreenSize;
-                icon.transform.position = info.ScreenPos;
-            }
-        }
+                icon.transform.position = info.ScreenPos; });
 
         public void MoveIcon(int iD, Vector2 screenPos)
-        {
-            if(TryGetIcon(iD, out Image icon))
-            {
-                icon.transform.position = screenPos;
-                icon.transform.SetAsLastSibling();
-            }
-        }
+            => ApplyAction(iD, (icon) => { 
+                icon.transform.position = screenPos; 
+                icon.transform.SetAsLastSibling();});
 
         public void ChangeParent(int iD, Transform parent)
-        {
-            if(TryGetIcon(iD, out Image icon))
-                icon.transform.SetParent(parent);
-        }
+            => ApplyAction(iD, (icon) => 
+                icon.transform.SetParent(parent));
 
-        public void HideIcon(int iD)
-        {
-            if(TryGetIcon(iD, out Image icon))
-                icon.gameObject.SetActive(false);
-        }
-
-        public void RevealIcon(int iD)
-        {
-            if(TryGetIcon(iD, out Image icon))
-                icon.gameObject.SetActive(true);
-        }
+        public void HideIcon(int iD, bool value)
+            => ApplyAction(iD, (icon) => 
+                icon.gameObject.SetActive(!value));
 
         public void RemoveIcon(int iD)
-        {
-            if(TryGetIcon(iD, out Image icon))
-            {
-                _icons.Remove(iD);
-                _iconsPool.ReturnItem(icon);
-            }
-        }
+            => ApplyAction(iD, (icon) => { 
+                _icons.Remove(iD); 
+                _iconsPool.ReturnItem(icon);});
 
-        private bool TryGetIcon(int iD, out Image icon)
-        {
-            icon = null;
+        private void SetHalfOpacity(int iD, bool value)
+            => ApplyAction(iD, (icon) => 
+                icon.color = value ? HalfOpacity : FullOpacity);
 
-            if(_icons.TryGetValue(iD, out Image icon2))
-                icon = icon2;
-            else
+        private void ApplyAction(int iD, Action<Image> toApply)
+        {
+            if(_icons.TryGetValue(iD, out Image icon))
+                toApply(icon);
+            else 
                 Debug.LogError($"Icon with id {iD} has not been found");
-
-            return icon != null;
         }
     }
 }

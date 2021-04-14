@@ -1279,6 +1279,7 @@ GameObject:
   - component: {fileID: 1768966724}
   - component: {fileID: 1768966727}
   - component: {fileID: 1768966728}
+  - component: {fileID: 1768966726}
   m_Layer: 0
   m_Name: New Inventory
   m_TagString: Untagged
@@ -1357,6 +1358,21 @@ MonoBehaviour:
   - {fileID: 1308687016}
   switchers:
   - {fileID: 461506125}
+--- !u!114 &1768966726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768966721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1526146b4d032141bf223c98068f83a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fullOpacity: {r: 1, g: 1, b: 1, a: 1}
+  halfOpacity: {r: 1, g: 1, b: 1, a: 0.49019608}
+  controller: {fileID: 1768966723}
 --- !u!114 &1768966727
 MonoBehaviour:
   m_ObjectHideFlags: 0

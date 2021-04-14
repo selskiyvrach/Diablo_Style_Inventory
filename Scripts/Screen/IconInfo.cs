@@ -37,9 +37,13 @@ namespace D2Inventory
 
         public static readonly IconInfo Reveal = new IconInfo(action: IconMode.Reveal);
 
-        public static IconInfo GetMoveOnly(Vector2 pos) => new IconInfo(screenPos: pos, action: IconMode.MoveOnly);
+        public static readonly IconInfo SetHalfOpacity = new IconInfo(action: IconMode.SetHalfOpacity);
 
-        public static IconInfo GetChangeParent(Transform parent) => new IconInfo(parent: parent, action: IconMode.ChangeParent);
+        public static readonly IconInfo SetFullOpacity = new IconInfo(action: IconMode.SetFullOpacity);
+
+        public static IconInfo GetMoveOnly(Vector2 pos) => new IconInfo(screenPos: pos, action: IconMode.Move);
+
+        public static IconInfo GetChangeParent(Transform parent) => new IconInfo(parent: parent, action: IconMode.SetParent);
 
         public static IconInfo GetAllFieldsUpdated(Sprite sprite, Vector2 screenSize, Vector2 screenPos, Color color, Transform parent)
              => new IconInfo(sprite, screenSize, screenPos, color, parent, IconMode.UpdateAllFields);
@@ -49,10 +53,12 @@ namespace D2Inventory
     public enum IconMode
     {
         UpdateAllFields,
-        MoveOnly,
-        ChangeParent,
+        Move,
+        SetParent,
         Hide,
         Reveal,
+        SetHalfOpacity,
+        SetFullOpacity,
         Delete
     }
 }
