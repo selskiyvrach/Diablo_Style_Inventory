@@ -67,10 +67,11 @@ namespace D2Inventory
 
         public override bool TryPlaceItemAuto(InventoryItem item)
         {
-            if(fitRule.CanFit(item.ItemData.FitRule))
+            if(item != null && fitRule.CanFit(item.ItemData.FitRule))
                 if(content == null)
                     if((pair.content == null || pair.content.ItemData.FitRule.CanPair(item.ItemData.FitRule)))
                     {
+                        content = item;
                         AnchorNewContent();
                         return true;
                     }

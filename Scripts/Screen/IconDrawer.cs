@@ -27,6 +27,7 @@ namespace D2Inventory
         public int CreateIcon(IconInfo info)
         {
             var newIcon = _iconsPool.Pop();
+            newIcon.raycastTarget = false;
             int iD = SimpleID.GetNewID();
             _icons.Add(iD, newIcon);
 
@@ -69,7 +70,8 @@ namespace D2Inventory
                 icon.transform.SetParent(info.Parent);
                 icon.transform.SetAsFirstSibling();
                 icon.rectTransform.sizeDelta = info.ScreenSize;
-                icon.transform.position = info.ScreenPos; });
+                icon.transform.position = info.ScreenPos;
+                HideIcon(iD, info.Hidden); });
 
         public void MoveIcon(int iD, Vector2 screenPos)
             => ApplyAction(iD, (icon) => { 
@@ -85,9 +87,11 @@ namespace D2Inventory
                 icon.gameObject.SetActive(!value));
 
         public void RemoveIcon(int iD)
-            => ApplyAction(iD, (icon) => { 
+        {
+            ApplyAction(iD, (icon) => { 
                 _icons.Remove(iD); 
                 _iconsPool.ReturnItem(icon);});
+        }
 
         private void SetHalfOpacity(int iD, bool value)
             => ApplyAction(iD, (icon) => 

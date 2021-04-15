@@ -13,7 +13,9 @@ namespace D2Inventory
         [SerializeField] ChainBoolValueSource openCloseButtonPressed;
         [SerializeField] ChainBoolValueSource switchWeaponsButonPressed;
         [SerializeField] FloatHandlerSource unitSize;
+        [Header("Other")]
         [SerializeField] Transform itemIconsParent;
+        [SerializeField] ScreenRect backgroundRect;
 
         private IconDrawer _iconDrawer;
 
@@ -33,7 +35,6 @@ namespace D2Inventory
         private EnhancedEventHandler<InventoryItem> _onItemDropped = new EnhancedEventHandler<InventoryItem>();
         private EnhancedEventHandler<InventoryItem> _onItemEquipped = new EnhancedEventHandler<InventoryItem>();
         private EnhancedEventHandler<InventoryItem> _onItemUnequipped = new EnhancedEventHandler<InventoryItem>();
-        private EnhancedEventHandler<InventoryItem> _onCursorItemChanged = new EnhancedEventHandler<InventoryItem>();
 // Their public interfaces
         public IReadOnlyEnhancedHandler<Projection> OnProjectionChanged => _onProjectionChanged;
         public IReadOnlyEnhancedHandler<bool> OnInventoryOpened => _onInventoryOpened;
@@ -42,14 +43,13 @@ namespace D2Inventory
         public IReadOnlyEnhancedHandler<InventoryItem> OnItemDropped => _onItemDropped;
         public IReadOnlyEnhancedHandler<InventoryItem> OnItemEquipped => _onItemEquipped;
         public IReadOnlyEnhancedHandler<InventoryItem> OnItemUnequipped => _onItemUnequipped;
-        public IReadOnlyEnhancedHandler<InventoryItem> OnCursorItemChanged => _onCursorItemChanged;
 
         private void Awake() {
             _iconDrawer = new IconDrawer();
 // setting default start values
-            _onInventoryOpened.Invoke(this, true);
+            _onInventoryOpened.Invoke(this, _isOpen = true);
             _onWeaponsSwitchedToFirstOption.Invoke(this, true);
-            _onCursorItemChanged.Invoke(this, null);
+            // _onCursorItemChanged.Invoke(this, null);
             _onProjectionChanged.Invoke(this, Projection.EmptyProjection);
 
             // TODO: create inputManager
@@ -64,18 +64,22 @@ namespace D2Inventory
 
         private void Update()
         {
-            CheckOpenClose();
-            MoveCursorItem();
-            CheckWeaponsSwitch();
+            if(openCloseButtonPressed.Value)
+                OpenCloseInventory();
+            if(switchWeaponsButonPressed.Value)
+                SwitchWeapons(); 
+
             CheckProjection(cursorPos.Value);
-            CheckAction();
+            if(_isOpen)
+            {
+                MoveCursorItem();
+                if(interactButtonPressed.Value) 
+                    PerformAction();
+            }
         }
 
-        private void CheckWeaponsSwitch()
-        {
-            if(switchWeaponsButonPressed.Value)
-                _onWeaponsSwitchedToFirstOption.Invoke(this, !_onWeaponsSwitchedToFirstOption.LastArgs);
-        }
+        public void SwitchWeapons()
+            => _onWeaponsSwitchedToFirstOption.Invoke(this, !_onWeaponsSwitchedToFirstOption.LastArgs);
 
         public void HandleSwitchedWeapons(ContainerBase[] active, ContainerBase[] inactive)
         {            
@@ -100,82 +104,75 @@ namespace D2Inventory
         
         private void MoveCursorItem()
         {
-            if (_cursorItem != null)
-            {
-                _cursorItem.DesiredScreenPos = cursorPos.Value;
-                _iconDrawer.ApplyIconChange(_cursorItem.IconIDs[0], IconInfo.GetMoveOnly(_cursorItem.DesiredScreenPos));
-            }
+            if (_cursorItem == null) return;
+
+            _cursorItem.DesiredScreenPos = cursorPos.Value;
+            _iconDrawer.ApplyIconChange(_cursorItem.IconIDs[0], IconInfo.GetMoveOnly(_cursorItem.DesiredScreenPos));
         }
 
-        private void CheckOpenClose()
+        public void OpenCloseInventory()
         {
-            if(openCloseButtonPressed.Value)
-            {
-                _onInventoryOpened.Invoke(this, _isOpen = !_isOpen);
-                itemIconsParent.gameObject.SetActive(_isOpen);
-                if(!_isOpen)
-                    DropCurrentlyCarriedItem(); 
-            }
+            _onInventoryOpened.Invoke(this, _isOpen = !_isOpen);
+            itemIconsParent.gameObject.SetActive(_isOpen);
+            backgroundRect.SetActive(_isOpen);
+            if(!_isOpen)
+                DropCurrentlyCarriedItem(); 
         }
         
         private void CheckProjection(Vector2 screenPos)
         {
-            if(_containers == null || _containers.Length == 0) return;
-
             bool overlapsAnything = false;
-            foreach(var container in _containers)
-            {
-                var proj = container.GetProjection(_cursorItem, screenPos);
-                if(!proj.Empty)
-                {   
-                    overlapsAnything = true;
-                    if(!proj.Same)
-                    {
-                        if(proj.CanPlace && _mainStorage.CanPlaceItemsAuto(proj.Refugees))
-                            _onProjectionChanged.Invoke(this, _lastProjection = proj);
-                        else   
-                            _onProjectionChanged.Invoke(this, _lastProjection = proj.SetCanPlace(false));
+
+            if(_isOpen && _containers != null || _containers.Length > 0) 
+                foreach(var container in _containers)
+                {
+                    var proj = container.GetProjection(_cursorItem, screenPos);
+                    if(!proj.Empty)
+                    {   
+                        overlapsAnything = true;
+                        if(!proj.Same)
+                        {
+                            if(proj.CanPlace && _mainStorage.CanPlaceItemsAuto(proj.Refugees))
+                                _onProjectionChanged.Invoke(this, _lastProjection = proj);
+                            else   
+                                _onProjectionChanged.Invoke(this, _lastProjection = proj.SetCanPlace(false));
+                        }
                     }
                 }
-            }
             if(!_lastProjection.Empty && !overlapsAnything)
                 _onProjectionChanged.Invoke(this, _lastProjection = Projection.EmptyProjection);
         }
 
-        private void CheckAction()
+        private void PerformAction()
         {
-            if(interactButtonPressed.Value)
+            if(_lastProjection.CanPlace)
             {
-                if(_lastProjection.CanPlace)
+                _lastProjection.Container.RefreshIconCnange();
+                _mainStorage.RefreshIconCnange();
+                InventoryItem replaced = null;
+                if(_cursorItem != null)
                 {
-                    _lastProjection.Container.RefreshIconCnange();
-                    _mainStorage.RefreshIconCnange();
-                    InventoryItem replaced = null;
-                    if(_cursorItem != null)
+                    if(TryHandleRefugees())
                     {
-                        if(TryHandleRefugees())
-                        {
-                            // applies any changes from handling refugees
-                            ApplyIconChanges(_mainStorage.GetIconChange());
-                            replaced = _lastProjection.Container.PlaceItem(_cursorItem);
-                            _onCursorItemChanged.Invoke(this, null);
-                            _onItemEquipped.Invoke(this, _cursorItem);
-                        }
-                        else 
-                            Debug.LogError("Couldn't place refugees. Check InventoryController Projection reevaluation on receiving one with refugees");
+                        // applies any changes from handling refugees
+                        ApplyIconChanges(_mainStorage.GetIconChange());
+                        replaced = _lastProjection.Container.PlaceItem(_cursorItem);
+                        _onItemEquipped.Invoke(this, _cursorItem);
                     }
-                    else
-                        replaced = _lastProjection.Container.ExtractItem(_lastProjection.Replacement);
-
-                    if(replaced != null)
-                        _onItemUnequipped.Invoke(this, _lastProjection.Replacement);
-                    _onCursorItemChanged.Invoke(this, _cursorItem = replaced);
-
-                    ApplyIconChanges(_lastProjection.Container.GetIconChange());
+                    else 
+                        Debug.LogError("Couldn't place refugees. Check InventoryController Projection reevaluation on receiving one with refugees");
                 }
-                else if(_lastProjection.Empty)
-                    DropCurrentlyCarriedItem();
+                else
+                    replaced = _lastProjection.Container.ExtractItem(_lastProjection.Replacement);
+
+                if(replaced != null)
+                    _onItemUnequipped.Invoke(this, _lastProjection.Replacement);
+                _cursorItem = replaced;
+
+                ApplyIconChanges(_lastProjection.Container.GetIconChange());
             }
+            else if(_lastProjection.Empty && !backgroundRect.ContainsPoint(cursorPos.Value))
+                DropCurrentlyCarriedItem();
         }
 
         private void DropCurrentlyCarriedItem()
@@ -210,29 +207,42 @@ namespace D2Inventory
 
         public void PickUpItem(InventoryItemData data)
         {
-            var item = Factory.GetItem(data);
-            for(int i = 0; i < item.IconIDs.Length; i++)
-            {
-                item.IconIDs[i] = _iconDrawer.CreateIcon(IconInfo.GetAllFieldsUpdated(item.ItemData.Sprite, GetItemScreenRect(item.ItemData), cursorPos.Value, itemIconsParent));
-                _iconDrawer.ApplyIconChange(item.IconIDs[i], IconInfo.GetChangeParent(itemIconsParent));
-                if(i > 0)
-                    _iconDrawer.ApplyIconChange(item.IconIDs[i], IconInfo.Hide);
-            }
-
             DropCurrentlyCarriedItem();
 
-            _onItemPickedUp.Invoke(this, _cursorItem = item);
+            _cursorItem = Factory.GetItem(data);
 
-            if(!_onInventoryOpened.LastArgs)
-                foreach (var i in _containers)
-                    if(i.TryPlaceItemAuto(item))
-                    {
-                        i.RefreshIconCnange();
-                        _onItemEquipped.Invoke(this, item);
-                        foreach (var iconChange in i.GetIconChange())
-                            _iconDrawer.ApplyIconChange(iconChange.Item1, iconChange.Item2);
-                        return;
-                    }
+            InitItemIcons();
+
+            _onItemPickedUp.Invoke(this, _cursorItem);
+
+            if (!_onInventoryOpened.LastArgs)
+                AutoEquip();
+        }
+
+        private void InitItemIcons()
+        {
+            for (int i = 0; i < _cursorItem.IconIDs.Length; i++)
+                _cursorItem.IconIDs[i] = _iconDrawer.CreateIcon(IconInfo.GetAllFieldsUpdated(
+                    _cursorItem.ItemData.Sprite, GetItemScreenRect(_cursorItem.ItemData), cursorPos.Value, itemIconsParent, i == 0 ? false : true));
+        }
+
+        private void AutoEquip()
+        {
+            for(int i = _containers.Length - 1; i >= 0; i--)
+            {
+                var c = _containers[i];
+                if(!c.ActiveInInventory) continue;
+
+                c.RefreshIconCnange();
+                if(c.TryPlaceItemAuto(_cursorItem))
+                {
+                    _onItemEquipped.Invoke(this, _cursorItem);
+                    ApplyIconChanges(c.GetIconChange());
+                    _cursorItem = null;
+                    return;
+                }
+            }
+            DropCurrentlyCarriedItem();
         }
 
         private void ApplyIconChanges((int iD, IconInfo info)[] args)

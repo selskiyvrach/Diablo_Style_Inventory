@@ -29,7 +29,9 @@ namespace MNS.Utils
         public static Rect ScreenRectFromRectTransform(this RectTransform rectTransform)
         {
             Vector2 size = Vector2.Scale(rectTransform.rect.size, rectTransform.lossyScale);
-            return new Rect((Vector2)rectTransform.position - (size * 0.5f), size);
+            var corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
+            return new Rect(corners[0], size);
         }
 
     }

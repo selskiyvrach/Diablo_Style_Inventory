@@ -53,10 +53,9 @@ namespace D2Inventory
 
         public override bool TryPlaceItemAuto(InventoryItem item)
         {
-            item.DesiredScreenPos = screenRect.Rect.center;
-            if(content != null || !fitRule.CanFit(item.ItemData.FitRule)) return false;
+            if(item == null || content != null || !fitRule.CanFit(item.ItemData.FitRule)) return false;
             content = item;
-            content.Container = this;
+            AnchorNewContent();
             return true;
         }
 

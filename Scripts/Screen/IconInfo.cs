@@ -20,7 +20,9 @@ namespace D2Inventory
 
         public Transform Parent { get; private set; }
 
-        private IconInfo(Sprite sprite = null, Vector2 screenSize = new Vector2(), Vector2 screenPos = new Vector2(), Transform parent = null, IconMode action = 0)
+        public bool Hidden { get; private set; }
+
+        private IconInfo(Sprite sprite = null, Vector2 screenSize = new Vector2(), Vector2 screenPos = new Vector2(), Transform parent = null, bool hidden = false, IconMode action = 0)
         {
             Mode = action;
             Sprite = sprite;
@@ -28,6 +30,7 @@ namespace D2Inventory
             ScreenPos = screenPos;
             Parent = parent;
             Color = Color.white;
+            Hidden = hidden;
         }
 
         public static readonly IconInfo Delete = new IconInfo(action: IconMode.Delete);
@@ -44,8 +47,8 @@ namespace D2Inventory
 
         public static IconInfo GetChangeParent(Transform parent) => new IconInfo(parent: parent, action: IconMode.SetParent);
 
-        public static IconInfo GetAllFieldsUpdated(Sprite sprite, Vector2 screenSize, Vector2 screenPos, Transform parent)
-             => new IconInfo(sprite, screenSize, screenPos, parent, IconMode.UpdateAllFields);
+        public static IconInfo GetAllFieldsUpdated(Sprite sprite, Vector2 screenSize, Vector2 screenPos, Transform parent, bool hidden)
+             => new IconInfo(sprite, screenSize, screenPos, parent, hidden, IconMode.UpdateAllFields);
 
     }
 

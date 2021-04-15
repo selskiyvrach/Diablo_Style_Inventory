@@ -37,10 +37,7 @@ namespace D2Inventory
             => allContainers.Where(n => n != null).Distinct().ToArray();
 
         private void SetContainersActive(bool value)
-        {
-            Debug.Log(value);
-            _allFixed.ForEach((c) => c.SetActiveOnScreen(value && c.ActiveInInventory));
-        }
+            => _allFixed.ForEach((c) => c.SetActiveOnScreen(value && c.ActiveInInventory));
 
         private void SetSwitchesState(bool value)
         {
