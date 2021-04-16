@@ -48,8 +48,8 @@ namespace D2Inventory
             _iconDrawer = new IconDrawer();
 // setting default start values
             _onInventoryOpened.Invoke(this, _isOpen = true);
+            OpenCloseInventory();
             _onWeaponsSwitchedToFirstOption.Invoke(this, true);
-            // _onCursorItemChanged.Invoke(this, null);
             _onProjectionChanged.Invoke(this, Projection.EmptyProjection);
 
             // TODO: create inputManager
@@ -255,12 +255,18 @@ namespace D2Inventory
         {
             Vector2 spriteSize = data.Sprite.rect.size;
             float scale;
+            Debug.Log(spriteSize);
+            Debug.Log(unitSize.Value.LastArgs);
 
             // comparing texture and sizeInt aspect ratios to decide along which side to scale 
-            if(spriteSize.x / spriteSize.y >= data.SizeInt.x / data.SizeInt.y)
-                scale = (_unitSize * data.SizeInt.y) / spriteSize.y;
-            else
+            if(spriteSize.x / spriteSize.y >= (float)data.SizeInt.x / (float)data.SizeInt.y)
+            {
+                Debug.Log("Count by x");
                 scale = (_unitSize * data.SizeInt.x) / spriteSize.x;
+            }
+            else
+                scale = (_unitSize * data.SizeInt.y) / spriteSize.y;
+            Debug.Log(scale);
             
             return spriteSize * scale * data.ImageScale;
         }

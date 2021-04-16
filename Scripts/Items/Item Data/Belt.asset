@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb03e264fa7ada94baee30596d2e248d, type: 3}
+  m_Name: Belt
+  m_EditorClassIdentifier: 
+  itemName: Belt
+  sprite: {fileID: 8940726673560684646, guid: 163bf2089f70d7d4182cafd13c560903, type: 3}
+  fitRule: {fileID: 11400000, guid: 63b204860aa28304498b253405e8978e, type: 2}
+  size: {fileID: 11400000, guid: 77cf2635e09f51543ae4fd12588fb0fe, type: 2}
+  imageScale: 0.85

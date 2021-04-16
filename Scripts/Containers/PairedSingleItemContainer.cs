@@ -32,7 +32,7 @@ namespace D2Inventory
             if(pair.content != null && pair.content.ItemData.TwoHanded)
                 replacement = pair.content;
             // else if trying to put item and pair content can't pair 
-            else if(item != null && pair.content != null && !pair.content.ItemData.FitRule.CanPair(item.ItemData.FitRule)) 
+            else if(item != null && fitRule.CanFit(item.ItemData.FitRule) && pair.content != null && !pair.content.ItemData.FitRule.CanPair(item.ItemData.FitRule)) 
                 // if this.content is present - pair content goes as refugee
                 if(content != null)
                     refugee = pair.content;
