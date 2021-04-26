@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Jewelery
   sprite: {fileID: 5193254494179744613, guid: 163bf2089f70d7d4182cafd13c560903, type: 3}
+  visuals: []
   fitRule: {fileID: 11400000, guid: 621baf27fac097247a919b610e09d488, type: 2}
   size: {fileID: 11400000, guid: 88ead192dbe8ace4fa072ff1b7f651dd, type: 2}
   imageScale: 0.85

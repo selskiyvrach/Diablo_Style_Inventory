@@ -12,7 +12,7 @@ public class ScreenRect : MonoBehaviour
 
     public Transform Transform { get; private set; }
 
-    private void Awake() 
+    private void Start() 
     {
         Rect = _panel.rectTransform.ScreenRectFromRectTransform();
         Active = _panel.gameObject.activeInHierarchy;

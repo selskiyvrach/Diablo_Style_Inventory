@@ -45,10 +45,10 @@ namespace D2Inventory
             bool canPlace = item == null ? true : fitRule.CanFit(item.ItemData.FitRule); 
             var refs = refugee == null ? null : new InventoryItem[] { refugee }; 
             
-            if(lastProjection.FieldsEqual(screenRect.Rect, canPlace, screenRect.Rect.center, replacement, refs))
+            if(lastProjection.FieldsEqual(screenRect.NormalizedRectToScreenRect(new Rect(0,0,1,1)), canPlace, screenRect.Rect.center, replacement, refs))
                 return Projection.SameProjection;
             else 
-                return lastProjection = new Projection(this, screenRect.Rect, canPlace, screenRect.Rect.center, replacement, refs);
+                return lastProjection = new Projection(this, screenRect.NormalizedRectToScreenRect(new Rect(0,0,1,1)), canPlace, screenRect.Rect.center, replacement, refs);
         }
 
         public override InventoryItem PlaceItem(InventoryItem item)

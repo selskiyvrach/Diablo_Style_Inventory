@@ -18,4 +18,3 @@ MonoBehaviour:
   pairType: {fileID: 11400000, guid: c2cb2aff411dfd440a51ec8d26ba748c, type: 2}
   allowed:
   - {fileID: 11400000, guid: c898153ac7ec9df4db3a361353eb1c6e, type: 2}
-  - {fileID: 11400000, guid: c2cb2aff411dfd440a51ec8d26ba748c, type: 2}

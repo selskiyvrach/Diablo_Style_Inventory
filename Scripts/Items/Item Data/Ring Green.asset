@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Ring Green
   sprite: {fileID: -5535581229082037240, guid: 163bf2089f70d7d4182cafd13c560903, type: 3}
+  visuals: []
   fitRule: {fileID: 11400000, guid: 6cdba0dad7021954fa54dcddd28bc112, type: 2}
   size: {fileID: 11400000, guid: 88ead192dbe8ace4fa072ff1b7f651dd, type: 2}
   imageScale: 1

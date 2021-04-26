@@ -1,25 +1,32 @@
 using UnityEngine;
 
 
-[CreateAssetMenu(menuName="Scriptable Objects/Inventory/Inventory Item Data")]
-public class InventoryItemData : ScriptableObject
+namespace D2Inventory
 {
-    [SerializeField] string itemName;
-    [SerializeField] Sprite sprite;
-    [SerializeField] ItemFitRule fitRule;
-    [SerializeField] Vector2IntSpaceData size;
-    [SerializeField] [Range(0.33f, 2f)] float imageScale = .8f;
 
-    public string Name => itemName;
 
-    public Sprite Sprite => sprite; 
+    [CreateAssetMenu(menuName="Scriptable Objects/Inventory/Inventory Item Data")]
+    public class InventoryItemData : ScriptableObject
+    {
+        [SerializeField] string itemName;
+        [SerializeField] Sprite sprite;
+        [SerializeField] ItemVisuals[] visuals;
+        [SerializeField] ItemFitRule fitRule;
+        [SerializeField] Vector2IntSpaceData size;
+        [SerializeField] [Range(0.33f, 2f)] float imageScale = .8f;
 
-    public ItemFitRule FitRule => fitRule;
+        public string Name => itemName;
 
-    public Vector2Int SizeInt => size.SizeInt;
+        public Sprite Sprite => sprite; 
 
-    public float ImageScale => imageScale;
+        public ItemFitRule FitRule => fitRule;
 
-    public bool TwoHanded => fitRule.TwoHanded;
+        public Vector2Int SizeInt => size.SizeInt;
 
+        public float ImageScale => imageScale;
+
+        public bool TwoHanded => fitRule.TwoHanded;
+
+    }
+    
 }
