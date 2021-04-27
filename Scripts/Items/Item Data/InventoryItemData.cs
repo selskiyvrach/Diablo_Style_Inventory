@@ -5,12 +5,11 @@ namespace D2Inventory
 {
 
 
-    [CreateAssetMenu(menuName="Scriptable Objects/Inventory/Inventory Item Data")]
+    [CreateAssetMenu(menuName="Scriptable Objects/Inventory/Item Data")]
     public class InventoryItemData : ScriptableObject
     {
         [SerializeField] string itemName;
         [SerializeField] Sprite sprite;
-        [SerializeField] ItemVisuals[] visuals;
         [SerializeField] ItemFitRule fitRule;
         [SerializeField] Vector2IntSpaceData size;
         [SerializeField] [Range(0.33f, 2f)] float imageScale = .8f;
