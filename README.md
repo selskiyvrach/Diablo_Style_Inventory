@@ -1,4 +1,4 @@
-# Diablo_Style_Inventory
+Diablo Style Inventory
 
 Overview
 
