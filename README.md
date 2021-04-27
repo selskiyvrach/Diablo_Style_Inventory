@@ -1,67 +1,65 @@
 # Diablo_Style_Inventory
-Overview
-	- a diablo-style inventory with identical capabilities (except for 
-		quick slots for potions, which are not implemented yet)
 
-Features
+#	Overview
 
-    Game behaviour
+	This is a small project I've made for my portfolio. It's a Diablo 2 inventory copy with the identical features.
+
+#	Game behaviour
 
 	- auto-pickup when closed 
 	- auto-equip when closed and suitable slot is empty
 	- only chosen weapon types can appear in hands' slots together (e.g. 
 		one-handed + shield; bow + arrows and so on)
 	- two-handed weapon occupy both hands' slots and can be retrieved from either one
-	- two hands' slots pairs for quick swap
+	- hands' slots have alternative pair of slots for quick weapon swap
 	- autoscalable slots - all slots will have screen sizes depending on their size in cells
-		with common cell size. (set 'execute' on FixedRatioRectTransform script on 
-		Inventory Game Object to false if you don't need this feature, or remove
-		items you want to exclude from 'ItemContainers' serialized array.)
-	- event with item info and coords when hovered over item in inventory
+		with common cell size, same is true for items
+	- item gets dropped into world if clicked outside inventory panel while cursor-carrying one
+	- item gets dropped into world immediately on pickup if inventory is slosed and full
+	- if cursor-carried item overlaps only one item in a storage - it will replace it on click
+		if more than one - operation will not be possible
+	- If you equip a two-handed weapon when there're already two items equipped in both hands  
+		or you equip an item that cannot be paired with already equipped one in another hand
+		item from the second slot will be put in a backpack automatically if there's a place for it. 
+		Otherwise you will not be able to do it without rearranging your items manually
+	- all the cases from above are reflected via highlighting - it shows whether you can put an item having certain 
+		conditions or not by color and shows a potentially replaced item's projection instead of a carried item's 
+		projection if there's a possibility to replace one 
 
-    API
+#	API
 
-	- easy input - single class InventoryController with "default" option (when 
-		no input needed whatsoever. hover over 'Control' in inspector to
-		see the default keys. Use InventoryController's  public methods 
-		for custom control)
-	- easy output - everything is being translated to InventoryEventsManager's events. 
-		Latter contain all important references and coordinates
-	- all you need is to supply InventoryItemData to InventoryController's 
-		AddItem method when weapon object is being picked up in a game world. 
-		InventoryItemData will determine weapon's representation in inventory-related space.
-	- all other stuff is fully controlled by inventory system unless item is dropped
-		back to a world, which you will get notified about by OnItemDroppedIntoWorld
-		event with InventoryItem object and screen space coordinates
-		
-		InventoryItemData contains:
-			- Sprite
-			- Size in cells object
-			- FitRule (determines, which slots can be equipped to. e.g 
-				Hands, Body, Ring, Consumable and so on)
-			- Instead of FitRule hands' items contain it's subclass
-				FitAndPairRule, which contains PairTypes. Latter determines
-				item which it can be matched with (e.g. OneHandedWeapon 
-				can be paired with Shield and OneHandedWeapon, Bow - with Arrows 
-				only and so on)
-			- ImageScale range, that can add scale to item's image if native 
-				size is unhandy
+	InventoryController.cs manages input and output of the system. First is made by serialized input handlers for each action, second
+		is made by a series of special event handlers, that describe system's behaviour via events and provide last arguments raised anytime in between:
+	- Pickup/Equip/Upequip/Drop of an item
+	- Highlight area changes
+	- Opening/Closing of an inventory, Switching weapons
+	
+#	Prefabs
 
-			* InventoryItemData, FitRule, FitType, FitAndPairRule, PairRule and IntSize
-				objects can be created via:
-				right-click -> Create -> Scriptable Objects -> Inventory
+	- Inventory - standard layout inventory
+	- Container - simple one-item container
+	- Paired Container - subversion that should be connected with another container via serialized reference 
+	- Multi Item Container - "main storage" of standard layout inventory. Cell-divided space
+	- Weapons swithcer - containes two serialized lists of containers to switch between 
 
-     Prefabs
+#	Asset menu (Right Click -> Create -> Scriptable Object -> Inventory -> ...)
 
-	- Standard Inventory prefab contains fully functional inventory
-	- Item Slot - single item slot
-	- Item Storage Space - celled space for items
-	- Paired Item Slot - hands slots, that should reference each other since
-		their content is codependent
-	- TestObject contains UI for interactions with inventory (pickUpItem, open/close, switch slots)
-		as well as two windows printing events data. smaller one - for minor stuff such as
-		new highlights. larger one - for major events like ItemEquipped and so on.
+	- Item Data. Template of an inventory appearance of an item. Sprite, size, fit rule, pair rule, additional sprite scale, size in cells
+	- Fit Rule. Part of an item template. Compared to slot's fit rule to determine, whether an item can be equipped there
+	- Fit Type. Content of a fit rule. A single one or a list of types that are associated with that rule. "All" can be checked as well
+	- Pair Rule, Pair Type. Same as the above but a subversion that adds pairing logic for paired slots and items that goes there
+	- Int Size. Just a serialized Vector2Int. Used to describe containers' and items' size in cells 
 
-	* Don't forget to set [SerializedField] references on newly added to scene objects
+#	Custom inventory layout notes
+	
+	- all containers must be added to ContainerManager serialized list in order to function
+	- first in the list should be the one you consider a default storage/backpack
+	- paired containers should be paired to one-another - no chaining availible
+	- switchable containers should be added to a container switcher (only one switch button is availible at this moment
+		so if you want several switchable groups on different buttons - go edit InventoryController.cs SwitchWeapons method)
+	- autosizing for containers is performed by FixedRatioForScreenRects.cs that makes all the work in editor mode automatically
+		once you provide it with ContainerManager reference and check "Execute" box
+	- ScreenRect instance on the core "Inventory" object is there to detect whether a cursor is overlapping inventory panel
+		so InventoryController knows whether it should drop an item on click or just do nothing
 	
      Have Fun! Ivan Kryuchkov
