@@ -1,10 +1,10 @@
 # Diablo_Style_Inventory
 
-#	Overview
+Overview
 
 	This is a small project I've made for my portfolio. It's a Diablo 2 inventory copy with the identical features.
 
-#	Game behaviour
+Game behaviour
 
 	- auto-pickup when closed 
 	- auto-equip when closed and suitable slot is empty
@@ -26,7 +26,7 @@
 		conditions or not by color and shows a potentially replaced item's projection instead of a carried item's 
 		projection if there's a possibility to replace one 
 
-#	API
+API
 
 	InventoryController.cs manages input and output of the system. First is made by serialized input handlers for each action, second
 		is made by a series of special event handlers, that describe system's behaviour via events and provide last arguments raised anytime in between:
@@ -34,7 +34,7 @@
 	- Highlight area changes
 	- Opening/Closing of an inventory, Switching weapons
 	
-#	Prefabs
+Prefabs
 
 	- Inventory - standard layout inventory
 	- Container - simple one-item container
@@ -42,7 +42,7 @@
 	- Multi Item Container - "main storage" of standard layout inventory. Cell-divided space
 	- Weapons swithcer - containes two serialized lists of containers to switch between 
 
-#	Asset menu (Right Click -> Create -> Scriptable Object -> Inventory -> ...)
+Asset menu (Right Click -> Create -> Scriptable Object -> Inventory -> ...)
 
 	- Item Data. Template of an inventory appearance of an item. Sprite, size, fit rule, pair rule, additional sprite scale, size in cells
 	- Fit Rule. Part of an item template. Compared to slot's fit rule to determine, whether an item can be equipped there
@@ -50,7 +50,7 @@
 	- Pair Rule, Pair Type. Same as the above but a subversion that adds pairing logic for paired slots and items that goes there
 	- Int Size. Just a serialized Vector2Int. Used to describe containers' and items' size in cells 
 
-#	Custom inventory layout notes
+Custom inventory layout notes
 	
 	- all containers must be added to ContainerManager serialized list in order to function
 	- first in the list should be the one you consider a default storage/backpack
